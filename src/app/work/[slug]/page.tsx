@@ -5,6 +5,8 @@ import { ArrowLeft, ArrowUpRight, CheckCircle2, Layers, Cpu, Sparkles } from 'lu
 import { PROJECTS, BRAND_INFO } from '@/data/portfolioData';
 import { ProjectSchematicVisual } from '@/components/ProjectSchematicVisual';
 
+export const instant = false;
+
 export function generateStaticParams() {
   return PROJECTS.map((p) => ({
     slug: p.slug,

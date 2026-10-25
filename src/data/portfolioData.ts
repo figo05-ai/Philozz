@@ -1,4 +1,4 @@
-import { ProjectItem, NoteItem, ExpertiseArea } from '@/types';
+import { ProjectItem, NoteItem, ExpertiseArea, CompactProjectMeta, BlogCategoryFilter } from '@/types';
 
 export const BRAND_INFO = {
   name: 'PHILOZZ',
@@ -481,13 +481,99 @@ export const PROJECTS: ProjectItem[] = [
   },
 ];
 
+export interface ProjectCategoryFilter {
+  id: string;
+  label: string;
+}
+
+export const ARCHIVE_CATEGORIES: ProjectCategoryFilter[] = [
+  { id: 'all', label: 'All Projects' },
+  { id: 'backend', label: 'Backend Systems' },
+  { id: 'erp-pos', label: 'ERP / POS' },
+  { id: 'ecommerce', label: 'E-Commerce & APIs' },
+  { id: 'security', label: 'Security & Systems' },
+  { id: 'learning', label: 'Learning Platforms' },
+];
+
+export const COMPACT_PROJECT_META: Record<string, CompactProjectMeta> = {
+  'skillup-platform': {
+    categoryLabel: 'HIGH-CONCURRENCY ARCHITECTURE',
+    archiveCategory: 'backend',
+    shortSummary:
+      'High-throughput backend infrastructure engineered for burst traffic spikes, utilizing Redis caching and Horizon queue workers with sub-50ms latency.',
+    primaryTechs: ['Laravel', 'Redis Cluster', 'MySQL 8'],
+  },
+  'smartpos-erp': {
+    categoryLabel: 'DESKTOP RUNTIME & HARDWARE I/O',
+    archiveCategory: 'erp-pos',
+    shortSummary:
+      'Cross-platform retail POS built with NativePHP, featuring real-time barcode/IMEI hardware scanning, instant checkout, and offline-resilient sync.',
+    primaryTechs: ['Laravel', 'NativePHP', 'MySQL 8'],
+  },
+  'tanqia-skills': {
+    categoryLabel: 'WORKFLOW AUTOMATION & QUEUES',
+    archiveCategory: 'backend',
+    shortSummary:
+      'Enterprise task delegation platform with role-based access control, automated bulk Excel ingestion with bounded memory, and advisory mutex locks.',
+    primaryTechs: ['Laravel', 'Tailwind CSS', 'MySQL 8'],
+  },
+  'sip-and-snug': {
+    categoryLabel: 'E-COMMERCE & OPENAPI SERVICES',
+    archiveCategory: 'ecommerce',
+    shortSummary:
+      'Token-authenticated RESTful backend powering web and mobile clients with dynamic cart reservations, delivery zones, and OpenAPI 3.0 contracts.',
+    primaryTechs: ['Laravel 13', 'Sanctum', 'OpenAPI 3.0'],
+  },
+  'academy-lms': {
+    categoryLabel: 'EDUCATION TECHNOLOGY & SECURITY',
+    archiveCategory: 'learning',
+    shortSummary:
+      'Secure learning platform utilizing the Services Design Pattern, sequential course progression, strict CSP headers, and certificate verification.',
+    primaryTechs: ['Laravel 13', 'Docker', 'CSP Headers'],
+  },
+  'clothes-ecommerce': {
+    categoryLabel: 'FINANCIAL MODULES & RMA',
+    archiveCategory: 'ecommerce',
+    shortSummary:
+      'Enterprise fashion e-commerce backend featuring double-entry digital wallet accounting, customer loyalty rewards, and Filament administration.',
+    primaryTechs: ['Laravel 13', 'Filament v3', 'TALL Stack'],
+  },
+  'maxtree-licensing': {
+    categoryLabel: 'CRYPTOGRAPHIC AUTH & SECURITY',
+    archiveCategory: 'security',
+    shortSummary:
+      'Asymmetric Ed25519 cryptographic license authorization service and desktop verification bridge with tamper resistance and offline grace periods.',
+    primaryTechs: ['Laravel', 'Python 3', 'Ed25519'],
+  },
+  'zodiak-portfolio': {
+    categoryLabel: 'CYBERSECURITY & REACT ARCHITECTURE',
+    archiveCategory: 'security',
+    shortSummary:
+      'Cybersecurity intelligence platform with declarative role-based access control, encrypted payload transfer, and real-time posture monitoring.',
+    primaryTechs: ['React', 'TypeScript', 'Firestore Rules'],
+  },
+};
+
+export const BLOG_CATEGORIES: BlogCategoryFilter[] = [
+  { id: 'all', label: 'All Articles' },
+  { id: 'backend', label: 'Backend Architecture' },
+  { id: 'database', label: 'Database Engineering' },
+  { id: 'distributed', label: 'Distributed Systems' },
+  { id: 'architecture', label: 'Software Architecture' },
+  { id: 'tooling', label: 'Developer Tooling' },
+  { id: 'principles', label: 'Engineering Principles' },
+];
+
 export const NOTES: NoteItem[] = [
   {
     slug: 'building-scalable-apis-with-laravel',
     title: 'Building Scalable APIs with Laravel',
     category: 'Backend Architecture',
+    archiveCategory: 'backend',
     readTime: '8 min read',
     date: 'Apr 12, 2026',
+    featured: true,
+    tags: ['Laravel', 'RESTful APIs', 'OpenAPI 3.0', 'Redis', 'Idempotency'],
     abstract:
       'A practical guide to designing high-throughput RESTful APIs: strict FormRequests, idempotent endpoints, rate limiting, and contract testing with OpenAPI.',
     sections: [
@@ -527,8 +613,10 @@ public function rules(): array
     slug: 'my-development-workflow-2026',
     title: 'My Development Workflow in 2026',
     category: 'Developer Tooling',
+    archiveCategory: 'tooling',
     readTime: '6 min read',
     date: 'Mar 28, 2026',
+    tags: ['Docker', 'PHPStan L8', 'Laravel Pulse', 'CI/CD Pipelines'],
     abstract:
       'Tools, habits, and mindset for building robust backend systems: Docker environments, Laravel Pulse profiling, PHPStan level 8, and automated CI/CD checks.',
     sections: [
@@ -553,8 +641,10 @@ public function rules(): array
     slug: 'what-ive-learned-as-a-developer',
     title: "What I've Learned as a Developer",
     category: 'Engineering Principles',
+    archiveCategory: 'principles',
     readTime: '7 min read',
     date: 'Feb 18, 2026',
+    tags: ['Engineering Principles', 'Database Scaling', 'Fail Fast', 'Simplicity'],
     abstract:
       'Key lessons, mistakes, and architectural principles that transformed my journey from writing syntax to engineering reliable, scalable backend systems.',
     sections: [
@@ -579,8 +669,10 @@ public function rules(): array
     slug: 'sql-query-optimization',
     title: 'SQL Query Optimization: From Slow Scans to Index-Only Executions',
     category: 'Database Engineering',
+    archiveCategory: 'database',
     readTime: '9 min read',
     date: 'Jan 24, 2026',
+    tags: ['PostgreSQL', 'MySQL 8', 'EXPLAIN ANALYZE', 'B-Tree Indexes', 'Covering Indexes'],
     abstract:
       'A practical deep-dive into examining Postgres/MySQL EXPLAIN ANALYZE trees, eliminating accidental sequential scans, and leveraging composite covering indexes for high-throughput queries.',
     sections: [
@@ -617,8 +709,10 @@ WHERE status = 'completed'
     slug: 'reliable-background-jobs',
     title: 'Reliable Background Jobs: Queues, Retries, and Idempotency',
     category: 'Distributed Systems',
+    archiveCategory: 'distributed',
     readTime: '8 min read',
     date: 'Jan 10, 2026',
+    tags: ['Horizon Queues', 'Redis Locks', 'Dead-Letter Queues', 'Exponential Backoff'],
     abstract:
       'Designing background queue pipelines that never drop messages, prevent double execution during worker crashes, and handle poisoned tasks gracefully.',
     sections: [
@@ -670,8 +764,10 @@ public function handle(PaymentGateway $gateway): void
     slug: 'clean-architecture-in-laravel',
     title: 'Clean Architecture in Laravel: Service Layers & Domain Separation',
     category: 'Software Architecture',
+    archiveCategory: 'architecture',
     readTime: '7 min read',
     date: 'Dec 18, 2025',
+    tags: ['Clean Architecture', 'DTOs', 'Service Layer', 'Interface Contracts'],
     abstract:
       'Breaking out of fat controllers and bloated Eloquent models: applying Service-Oriented MVC, DTOs, and interface contracts in modern Laravel applications.',
     sections: [
@@ -691,8 +787,10 @@ public function handle(PaymentGateway $gateway): void
     slug: 'designing-scalable-systems',
     title: 'Designing Scalable Systems: From Monolith to Decoupled Services',
     category: 'System Design',
+    archiveCategory: 'architecture',
     readTime: '9 min read',
     date: 'Nov 30, 2025',
+    tags: ['System Design', 'Caching Hierarchy', 'Read/Write Replicas', 'Modular Monolith'],
     abstract:
       'Strategic patterns for scaling backend systems: caching layers, database read/write replicas, asynchronous decoupling, and fault isolation boundaries.',
     sections: [

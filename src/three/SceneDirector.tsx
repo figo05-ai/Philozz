@@ -6,13 +6,13 @@ import * as THREE from 'three';
 import { LuxuryCosmos } from './LuxuryCosmos';
 
 interface SceneDirectorProps {
-  scrollProgress: number;
+  scrollProgressRef: React.RefObject<number | null>;
   isMobile?: boolean;
   isMotionDisabled?: boolean;
 }
 
 export function SceneDirector({
-  scrollProgress,
+  scrollProgressRef,
   isMobile = false,
   isMotionDisabled = false,
 }: SceneDirectorProps) {
@@ -34,7 +34,7 @@ export function SceneDirector({
       return;
     }
 
-    const sp = scrollProgress; // 0.0 to 1.0
+    const sp = scrollProgressRef.current ?? 0; // 0.0 to 1.0
     const pointer = state.pointer;
 
     // Gentle camera drift linked to scroll & pointer
@@ -90,7 +90,7 @@ export function SceneDirector({
       />
 
       {/* 3D Luxury Cosmos Ambient World */}
-      <LuxuryCosmos scrollProgress={scrollProgress} isMobile={isMobile} />
+      <LuxuryCosmos scrollProgressRef={scrollProgressRef} isMobile={isMobile} />
     </>
   );
 }

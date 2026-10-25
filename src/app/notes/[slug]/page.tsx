@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowUpRight, Clock, Calendar, Sparkles } from 'lucide-react';
 import { NOTES, BRAND_INFO, PHOTO_ASSETS } from '@/data/portfolioData';
 
+export const instant = false;
+
 export function generateStaticParams() {
   return NOTES.map((n) => ({
     slug: n.slug,

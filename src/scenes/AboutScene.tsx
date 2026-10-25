@@ -105,6 +105,8 @@ export function AboutScene({ isTransitionStage = false }: AboutSceneProps = {}) 
                   fill
                   sizes="(max-width: 960px) 100vw, 360px"
                   style={{ objectFit: 'cover', objectPosition: 'center 15%' }}
+                  loading="lazy"
+                  quality={85}
                   priority={false}
                 />
                 <div className="comp-card-vignette" />

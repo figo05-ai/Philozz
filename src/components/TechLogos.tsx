@@ -151,7 +151,6 @@ export function LinuxLogo({ size = 36, className = '' }: { size?: number; classN
       className={`inline-block object-contain ${className}`}
       alt="Linux"
       unoptimized
-      priority
       style={{ width: `${size}px`, height: `${size}px` }}
     />
   );

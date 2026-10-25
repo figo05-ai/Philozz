@@ -3,145 +3,203 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowUpRight, BookOpen, Clock, Calendar } from 'lucide-react';
+import { ArrowUpRight, BookOpen, Clock, Calendar, Sparkles } from 'lucide-react';
 import { NOTES, BRAND_INFO, PHOTO_ASSETS } from '@/data/portfolioData';
+import { ProjectsToBlogTransition } from '@/components/ProjectsToBlogTransition';
+import {
+  ApiArchitectureVisual,
+  WorkflowVisual,
+  LessonsVisual,
+  SqlOptimizationVisual,
+} from '@/components/JournalVisuals';
 
 export function NotesScene() {
+  // Dominant Featured Article (Row 2)
+  const featuredArticle = NOTES[0]; // Building Scalable APIs with Laravel
+
+  // Three Secondary Articles (Row 3)
+  const secondaryArticles = NOTES.slice(1, 4);
+
   return (
     <section id="blog" className="scene-section scene-notes" aria-labelledby="notes-title">
+      {/* Cinematic Transition Bridge: Projects -> Blog ("THE ENGINEERING MANUSCRIPT") */}
+      <ProjectsToBlogTransition />
       <span id="notes" style={{ position: 'absolute', top: 0, opacity: 0, pointerEvents: 'none' }} />
+
       <div className="container-editorial">
-        {/* Section Header */}
-        <div style={{ maxWidth: '820px' }} className="notes-header-wrapper">
-          <div className="section-tag">
-            <BookOpen size={14} style={{ color: 'var(--color-gold)' }} />
-            <span>ENGINEERING JOURNAL // BLOG</span>
+        {/* ========================================================
+            ROW 1: EDITORIAL HEADER & REFINED AUTHOR IDENTITY
+            ======================================================== */}
+        <div className="notes-header-wrapper journal-header-row">
+          <div className="journal-header-text">
+            <div className="section-tag">
+              <BookOpen size={14} style={{ color: 'var(--color-gold)' }} />
+              <span>ENGINEERING JOURNAL // BLOG</span>
+            </div>
+
+            <h2 id="notes-title" className="font-editorial-large journal-editorial-heading">
+              Thoughts. Learnings. <span className="font-gold-gradient">Progress.</span>
+            </h2>
+
+            <p className="journal-editorial-description">
+              I write about backend engineering, distributed queue topologies, query plan optimization,
+              and the mindset required to build scalable software.
+            </p>
           </div>
 
-          <h2 id="notes-title" className="font-editorial-large" style={{ marginBottom: '1.25rem' }}>
-            Thoughts. Learnings. <span className="font-gold-gradient">Progress.</span>
-          </h2>
-
-          <p
-            style={{
-              fontSize: 'clamp(1.05rem, 1.8vw, 1.25rem)',
-              color: 'var(--color-ivory)',
-              lineHeight: 1.68,
-            }}
-          >
-            I write about backend engineering, distributed queue topologies, query plan optimization,
-            and the mindset required to build scalable software.
-          </p>
-        </div>
-
-        {/* Split Editorial Layout */}
-        <div className="journal-layout">
-          {/* Left Column: Atmospheric Personal Portrait & Philosophy Quote */}
-          <div>
-            <div className="journal-portrait-card">
+          {/* Refined Author Identity Badge (Replaces oversized portrait) */}
+          <div className="journal-author-badge journal-portrait-card">
+            <div className="journal-author-avatar-wrap">
               <Image
                 src={PHOTO_ASSETS.portraitSitting}
                 alt="Felopater Nabil — Engineer at Work"
-                width={768}
-                height={920}
-                sizes="(max-width: 960px) 100vw, 420px"
+                width={52}
+                height={52}
+                loading="lazy"
+                quality={85}
+                className="journal-author-avatar-img"
               />
+              <span className="journal-author-status-dot" aria-hidden="true" />
+            </div>
 
-              <div className="journal-quote-box">
-                <blockquote
-                  style={{
-                    fontFamily: 'var(--font-serif)',
-                    fontSize: 'clamp(1.15rem, 2vw, 1.35rem)',
-                    fontStyle: 'italic',
-                    color: 'var(--color-ivory)',
-                    lineHeight: 1.45,
-                    marginBottom: '1rem',
-                  }}
-                >
-                  &ldquo;Better Developers Build a Brighter Internet.&rdquo;
-                </blockquote>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.84rem',
-                    fontWeight: 600,
-                    color: 'var(--color-gold-light)',
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  — {BRAND_INFO.name} {'//'} ARCHITECTURAL NOTES
-                </div>
+            <div className="journal-author-details">
+              <div className="journal-author-name">{BRAND_INFO.developerName}</div>
+              <div className="journal-author-role">Backend-focused Full-Stack Engineer</div>
+              <div className="journal-author-meta-bar">
+                <span className="journal-author-tag">AUTHOR & ARCHITECT</span>
+                <span className="journal-author-bullet" aria-hidden="true">•</span>
+                <span className="journal-author-tag text-gold">PRODUCTION ESSAYS</span>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Right Column: Editorial Article Cards */}
-          <div className="journal-articles-list">
-            {NOTES.slice(0, 4).map((note) => (
-              <Link
-                key={note.slug}
-                href={`/notes/${note.slug}`}
-                className="journal-article-card"
-                aria-label={`Read engineering note: ${note.title}`}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.82rem',
-                    color: 'var(--color-gold-light)',
-                    flexWrap: 'wrap',
-                    gap: '0.5rem',
-                  }}
-                >
-                  <span className="badge-gold">{note.category}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px', color: '#D6D6E2' }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Calendar size={14} style={{ color: 'var(--color-gold-light)' }} />
-                      <span>{note.date}</span>
-                    </span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Clock size={14} style={{ color: 'var(--color-gold-light)' }} />
-                      <span>{note.readTime}</span>
-                    </span>
-                  </div>
+        {/* ========================================================
+            ROW 2: DOMINANT FEATURED ARTICLE (Wide Asymmetrical Editorial Panel)
+            ======================================================== */}
+        <div className="journal-featured-wrapper">
+          <Link
+            href={`/notes/${featuredArticle.slug}`}
+            className="journal-article-card journal-featured-card"
+            aria-label={`Read featured engineering article: ${featuredArticle.title}`}
+          >
+            {/* Left Content Column */}
+            <div className="journal-featured-content">
+              <div className="journal-featured-meta-header">
+                <div className="journal-badge-group">
+                  <span className="badge-gold">FEATURED ARTICLE</span>
+                  <span className="badge-tech">{featuredArticle.category.toUpperCase()}</span>
                 </div>
 
-                <h3 className="journal-article-title">
-                  {note.title}
-                </h3>
+                <div className="journal-meta-cluster">
+                  <span className="journal-meta-item">
+                    <Calendar size={14} className="text-gold" />
+                    <span>{featuredArticle.date}</span>
+                  </span>
+                  <span className="journal-meta-item">
+                    <Clock size={14} className="text-gold" />
+                    <span>{featuredArticle.readTime}</span>
+                  </span>
+                </div>
+              </div>
 
-                <p
-                  style={{
-                    fontSize: '0.975rem',
-                    lineHeight: 1.65,
-                    color: 'var(--color-ivory)',
-                    marginBottom: '1.25rem',
-                  }}
-                >
-                  {note.abstract}
+              <h3 className="journal-featured-title">
+                {featuredArticle.title}
+              </h3>
+
+              <p className="journal-featured-description">
+                {featuredArticle.abstract}
+              </p>
+
+              {/* Architectural Topics / Highlights */}
+              <div className="journal-tech-pills">
+                <span className="badge-tech">Laravel 11/13</span>
+                <span className="badge-tech">FormRequest Idempotency</span>
+                <span className="badge-tech">OpenAPI 3.0</span>
+                <span className="badge-tech">Redis Caching</span>
+              </div>
+
+              {/* Action Link Button */}
+              <div className="journal-read-action journal-featured-action">
+                <span>Read Full Case Article</span>
+                <ArrowUpRight size={17} />
+              </div>
+            </div>
+
+            {/* Right Visualization Column */}
+            <div className="journal-featured-visual-wrapper">
+              <ApiArchitectureVisual />
+            </div>
+          </Link>
+        </div>
+
+        {/* ========================================================
+            ROW 3: THREE SECONDARY ARTICLE CARDS (Side by Side on Desktop)
+            ======================================================== */}
+        <div className="journal-secondary-grid">
+          {secondaryArticles.map((article) => (
+            <Link
+              key={article.slug}
+              href={`/notes/${article.slug}`}
+              className="journal-article-card journal-secondary-card"
+              aria-label={`Read engineering article: ${article.title}`}
+            >
+              {/* Meaningful Technical Visual Header */}
+              <div className="journal-secondary-visual-slot">
+                {article.slug === 'my-development-workflow-2026' && <WorkflowVisual />}
+                {article.slug === 'what-ive-learned-as-a-developer' && <LessonsVisual />}
+                {article.slug === 'sql-query-optimization' && <SqlOptimizationVisual />}
+              </div>
+
+              {/* Card Body */}
+              <div className="journal-secondary-body">
+                {/* Category & Read Time */}
+                <div className="journal-secondary-meta-row">
+                  <span className="badge-gold">{article.category.toUpperCase()}</span>
+                  <span className="journal-meta-item">
+                    <Clock size={13} className="text-gold" />
+                    <span>{article.readTime}</span>
+                  </span>
+                </div>
+
+                {/* Title */}
+                <h4 className="journal-secondary-title">
+                  {article.title}
+                </h4>
+
+                {/* Description */}
+                <p className="journal-secondary-description">
+                  {article.abstract}
                 </p>
+              </div>
 
-                <div
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.88rem',
-                    fontWeight: 600,
-                    color: 'var(--color-gold-light)',
-                  }}
-                >
+              {/* Card Footer Action */}
+              <div className="journal-secondary-footer">
+                <span className="journal-meta-item">
+                  <Calendar size={13} className="text-gold" />
+                  <span>{article.date}</span>
+                </span>
+
+                <div className="journal-read-action">
                   <span>Read Article</span>
-                  <ArrowUpRight size={16} />
+                  <ArrowUpRight size={15} />
                 </div>
-              </Link>
-            ))}
-          </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* View All Blogs Action Link — Navigates to dedicated /blog archive */}
+        <div className="journal-toggle-wrapper">
+          <Link
+            href="/blog"
+            className="btn-outline-gold journal-toggle-btn"
+            aria-label={`View all ${NOTES.length} engineering articles in the journal archive`}
+          >
+            <Sparkles size={16} style={{ color: 'var(--color-gold)' }} />
+            <span>View All Blogs ({NOTES.length})</span>
+            <ArrowUpRight size={16} />
+          </Link>
         </div>
       </div>
     </section>

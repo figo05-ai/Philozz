@@ -393,10 +393,13 @@ export function HeroScene() {
     };
 
     const loop = () => {
-      currentX += (targetX - currentX) * 0.05;
-      currentY += (targetY - currentY) * 0.05;
-      if (bgInnerRef.current) {
-        bgInnerRef.current.style.transform = `translate3d(${(currentX * 6).toFixed(2)}px, ${(currentY * 4).toFixed(2)}px, 0)`;
+      // Pause transform updates when user is scrolled well past Hero
+      if (window.scrollY < window.innerHeight * 1.5) {
+        currentX += (targetX - currentX) * 0.05;
+        currentY += (targetY - currentY) * 0.05;
+        if (bgInnerRef.current) {
+          bgInnerRef.current.style.transform = `translate3d(${(currentX * 6).toFixed(2)}px, ${(currentY * 4).toFixed(2)}px, 0)`;
+        }
       }
       rAFId = requestAnimationFrame(loop);
     };
@@ -436,7 +439,8 @@ export function HeroScene() {
               alt="Felopater Nabil — Full-Stack Software Engineer seated at executive desk"
               fill
               priority
-              quality={100}
+              fetchPriority="high"
+              quality={85}
               sizes="(max-width: 960px) 1px, 100vw"
               className="hero-cinematic-bg-img"
             />
@@ -523,7 +527,8 @@ export function HeroScene() {
                   alt="Felopater Nabil seated at executive desk with laptop"
                   fill
                   priority
-                  quality={100}
+                  fetchPriority="high"
+                  quality={85}
                   sizes="(min-width: 961px) 1px, (max-width: 480px) 100vw, 460px"
                   className="hero-mobile-visual-img"
                 />
@@ -585,22 +590,17 @@ export function HeroScene() {
         </div>
       </div>
 
-      {/* Mobile Flow: render AboutScene directly when on mobile viewports */}
-      <div className="hero-mobile-about-section">
-        <AboutScene />
-      </div>
-
-      {/* Anchor for nav link #about: positioned at transition completion */}
+      {/* Anchor for nav link #about: positioned at transition completion on desktop, directly above About on mobile */}
       <div
         id="about"
-        style={{
-          position: 'absolute',
-          top: '100vh',
-          height: '1px',
-          pointerEvents: 'none',
-        }}
+        className="hero-about-nav-anchor"
         aria-hidden="true"
       />
+
+      {/* Mobile Flow: render AboutScene directly when on mobile viewports */}
+      <div className="hero-mobile-about-section">
+        <AboutScene isTransitionStage={true} />
+      </div>
     </section>
   );
 }

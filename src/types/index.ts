@@ -33,6 +33,13 @@ export interface ProjectItem {
   githubUrl?: string;
 }
 
+export interface CompactProjectMeta {
+  shortSummary: string;
+  primaryTechs: string[];
+  categoryLabel: string;
+  archiveCategory: string;
+}
+
 export interface NoteItem {
   slug: string;
   title: string;
@@ -40,12 +47,20 @@ export interface NoteItem {
   readTime: string;
   date: string;
   abstract: string;
+  archiveCategory?: string;
+  tags?: string[];
+  featured?: boolean;
   sections: {
     heading: string;
     content: string;
     codeSnippet?: string;
     codeLang?: string;
   }[];
+}
+
+export interface BlogCategoryFilter {
+  id: string;
+  label: string;
 }
 
 export interface ExpertiseArea {

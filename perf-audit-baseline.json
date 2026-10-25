@@ -1,0 +1,262 @@
+[
+  {
+    "page": "Homepage",
+    "profile": "Desktop",
+    "url": "http://localhost:3005/",
+    "metrics": {
+      "fcp": 172,
+      "lcp": 172,
+      "lcpElement": "SPAN.title-line title-gold",
+      "cls": 0,
+      "tbt": 3,
+      "domContentLoaded": 154,
+      "loadComplete": 1365,
+      "resourceCount": 15,
+      "jsBytes": 486,
+      "cssBytes": 0,
+      "imgBytes": 90,
+      "fontBytes": 0,
+      "totalTransferKB": 591,
+      "memory": {
+        "usedJSHeapSize": 10,
+        "totalJSHeapSize": 18.4
+      },
+      "longTaskCount": 1
+    },
+    "scrollFPS": 61
+  },
+  {
+    "page": "Projects Archive",
+    "profile": "Desktop",
+    "url": "http://localhost:3005/projects",
+    "metrics": {
+      "fcp": 96,
+      "lcp": 144,
+      "lcpElement": "H1.archive-heading-main font-editorial-large",
+      "cls": 0,
+      "tbt": 0,
+      "domContentLoaded": 72,
+      "loadComplete": 94,
+      "resourceCount": 19,
+      "jsBytes": 503,
+      "cssBytes": 0,
+      "imgBytes": 0,
+      "fontBytes": 0,
+      "totalTransferKB": 528,
+      "memory": {
+        "usedJSHeapSize": 13.3,
+        "totalJSHeapSize": 20.1
+      },
+      "longTaskCount": 0
+    },
+    "scrollFPS": 60
+  },
+  {
+    "page": "Blog Archive",
+    "profile": "Desktop",
+    "url": "http://localhost:3005/blog",
+    "metrics": {
+      "fcp": 56,
+      "lcp": 80,
+      "lcpElement": "H1.archive-heading-main font-editorial-large",
+      "cls": 0,
+      "tbt": 0,
+      "domContentLoaded": 27,
+      "loadComplete": 41,
+      "resourceCount": 19,
+      "jsBytes": 502,
+      "cssBytes": 0,
+      "imgBytes": 0,
+      "fontBytes": 0,
+      "totalTransferKB": 526,
+      "memory": {
+        "usedJSHeapSize": 14.6,
+        "totalJSHeapSize": 18.2
+      },
+      "longTaskCount": 0
+    },
+    "scrollFPS": 60
+  },
+  {
+    "page": "Case Study: SkillUp",
+    "profile": "Desktop",
+    "url": "http://localhost:3005/work/skillup-platform",
+    "metrics": {
+      "fcp": 68,
+      "lcp": 68,
+      "lcpElement": "H1.font-editorial-large",
+      "cls": 0,
+      "tbt": 0,
+      "domContentLoaded": 45,
+      "loadComplete": 67,
+      "resourceCount": 14,
+      "jsBytes": 496,
+      "cssBytes": 0,
+      "imgBytes": 0,
+      "fontBytes": 0,
+      "totalTransferKB": 513,
+      "memory": {
+        "usedJSHeapSize": 11,
+        "totalJSHeapSize": 20.2
+      },
+      "longTaskCount": 0
+    },
+    "scrollFPS": 61
+  },
+  {
+    "page": "Article: Scalable APIs",
+    "profile": "Desktop",
+    "url": "http://localhost:3005/notes/building-scalable-apis-with-laravel",
+    "metrics": {
+      "fcp": 52,
+      "lcp": 52,
+      "lcpElement": "H1.font-editorial-large",
+      "cls": 0,
+      "tbt": 0,
+      "domContentLoaded": 36,
+      "loadComplete": 45,
+      "resourceCount": 15,
+      "jsBytes": 496,
+      "cssBytes": 0,
+      "imgBytes": 2,
+      "fontBytes": 0,
+      "totalTransferKB": 515,
+      "memory": {
+        "usedJSHeapSize": 13.8,
+        "totalJSHeapSize": 20.3
+      },
+      "longTaskCount": 0
+    },
+    "scrollFPS": 60
+  },
+  {
+    "page": "Homepage",
+    "profile": "Mobile",
+    "url": "http://localhost:3005/",
+    "metrics": {
+      "fcp": 324,
+      "lcp": 756,
+      "lcpElement": "IMG.hero-mobile-visual-img",
+      "cls": 0,
+      "tbt": 132,
+      "domContentLoaded": 362,
+      "loadComplete": 1305,
+      "resourceCount": 16,
+      "jsBytes": 486,
+      "cssBytes": 0,
+      "imgBytes": 93,
+      "fontBytes": 0,
+      "totalTransferKB": 595,
+      "memory": {
+        "usedJSHeapSize": 14.6,
+        "totalJSHeapSize": 26.3
+      },
+      "longTaskCount": 6
+    },
+    "scrollFPS": 61
+  },
+  {
+    "page": "Projects Archive",
+    "profile": "Mobile",
+    "url": "http://localhost:3005/projects",
+    "metrics": {
+      "fcp": 204,
+      "lcp": 540,
+      "lcpElement": "H1.archive-heading-main font-editorial-large",
+      "cls": 0,
+      "tbt": 0,
+      "domContentLoaded": 201,
+      "loadComplete": 479,
+      "resourceCount": 17,
+      "jsBytes": 503,
+      "cssBytes": 0,
+      "imgBytes": 0,
+      "fontBytes": 0,
+      "totalTransferKB": 527,
+      "memory": {
+        "usedJSHeapSize": 19.3,
+        "totalJSHeapSize": 28.3
+      },
+      "longTaskCount": 0
+    },
+    "scrollFPS": 60
+  },
+  {
+    "page": "Blog Archive",
+    "profile": "Mobile",
+    "url": "http://localhost:3005/blog",
+    "metrics": {
+      "fcp": 236,
+      "lcp": 536,
+      "lcpElement": "H1.archive-heading-main font-editorial-large",
+      "cls": 0,
+      "tbt": 0,
+      "domContentLoaded": 219,
+      "loadComplete": 469,
+      "resourceCount": 14,
+      "jsBytes": 493,
+      "cssBytes": 0,
+      "imgBytes": 0,
+      "fontBytes": 0,
+      "totalTransferKB": 510,
+      "memory": {
+        "usedJSHeapSize": 15.3,
+        "totalJSHeapSize": 17.3
+      },
+      "longTaskCount": 0
+    },
+    "scrollFPS": 60
+  },
+  {
+    "page": "Case Study: SkillUp",
+    "profile": "Mobile",
+    "url": "http://localhost:3005/work/skillup-platform",
+    "metrics": {
+      "fcp": 244,
+      "lcp": 244,
+      "lcpElement": "H1.font-editorial-large",
+      "cls": 0,
+      "tbt": 0,
+      "domContentLoaded": 237,
+      "loadComplete": 437,
+      "resourceCount": 14,
+      "jsBytes": 496,
+      "cssBytes": 0,
+      "imgBytes": 0,
+      "fontBytes": 0,
+      "totalTransferKB": 513,
+      "memory": {
+        "usedJSHeapSize": 11.3,
+        "totalJSHeapSize": 18.2
+      },
+      "longTaskCount": 0
+    },
+    "scrollFPS": 60
+  },
+  {
+    "page": "Article: Scalable APIs",
+    "profile": "Mobile",
+    "url": "http://localhost:3005/notes/building-scalable-apis-with-laravel",
+    "metrics": {
+      "fcp": 240,
+      "lcp": 240,
+      "lcpElement": "P.",
+      "cls": 0,
+      "tbt": 0,
+      "domContentLoaded": 234,
+      "loadComplete": 442,
+      "resourceCount": 14,
+      "jsBytes": 496,
+      "cssBytes": 0,
+      "imgBytes": 0,
+      "fontBytes": 0,
+      "totalTransferKB": 513,
+      "memory": {
+        "usedJSHeapSize": 13,
+        "totalJSHeapSize": 18
+      },
+      "longTaskCount": 0
+    },
+    "scrollFPS": 61
+  }
+]

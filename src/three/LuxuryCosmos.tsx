@@ -5,11 +5,11 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 interface LuxuryCosmosProps {
-  scrollProgress: number;
+  scrollProgressRef: React.RefObject<number | null>;
   isMobile?: boolean;
 }
 
-export function LuxuryCosmos({ scrollProgress, isMobile = false }: LuxuryCosmosProps) {
+export function LuxuryCosmos({ scrollProgressRef, isMobile = false }: LuxuryCosmosProps) {
   const cosmosGroupRef = useRef<THREE.Group>(null);
   const ring1Ref = useRef<THREE.Mesh>(null);
   const ring2Ref = useRef<THREE.Mesh>(null);
@@ -55,13 +55,29 @@ export function LuxuryCosmos({ scrollProgress, isMobile = false }: LuxuryCosmosP
   }, [isMobile]);
 
   useFrame((state) => {
-    const time = state.clock.getElapsedTime();
-    const pointer = state.pointer;
+    const scrollProgress = scrollProgressRef.current ?? 0;
 
-    // Strict Scope Rule:
+    // Strict Scope Rule & Performance Optimization:
     // Gold orbital rings are active EXCLUSIVELY in the Technology/Skills cosmos region (~0.20 to ~0.50).
     // They emerge smoothly as visitor enters Skills, and fade out completely BEFORE Projects (> 0.52)
     // so they NEVER leak into Featured Projects or Engineering Journal.
+    // Beyond 0.55, suspend mesh updates and buffer uploads completely.
+    if (scrollProgress >= 0.55) {
+      if (ring1Ref.current && ring1Ref.current.visible) ring1Ref.current.visible = false;
+      if (ring2Ref.current && ring2Ref.current.visible) ring2Ref.current.visible = false;
+      if (ring3Ref.current && ring3Ref.current.visible) ring3Ref.current.visible = false;
+      if (coreHaloRef.current && coreHaloRef.current.visible) coreHaloRef.current.visible = false;
+      if (particlesRef.current && particlesRef.current.visible) particlesRef.current.visible = false;
+      return;
+    }
+
+    if (particlesRef.current && !particlesRef.current.visible) {
+      particlesRef.current.visible = true;
+    }
+
+    const time = state.clock.getElapsedTime();
+    const pointer = state.pointer;
+
     const fadeIn = THREE.MathUtils.smoothstep(scrollProgress, 0.20, 0.32);
     const fadeOut = 1.0 - THREE.MathUtils.smoothstep(scrollProgress, 0.46, 0.53);
     const ringsActive = fadeIn * fadeOut;

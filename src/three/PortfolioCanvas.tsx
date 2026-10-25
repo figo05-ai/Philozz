@@ -5,20 +5,36 @@ import { Canvas } from '@react-three/fiber';
 import { SceneDirector } from './SceneDirector';
 
 interface PortfolioCanvasProps {
-  scrollProgress: number;
+  scrollProgress?: number;
   isWebGLDisabled?: boolean;
   isMotionDisabled?: boolean;
   isMobile?: boolean;
 }
 
 export function PortfolioCanvas({
-  scrollProgress,
   isWebGLDisabled = false,
   isMotionDisabled = false,
   isMobile = false,
 }: PortfolioCanvasProps) {
   const [hasWebGLContextLoss, setHasWebGLContextLoss] = useState(false);
   const [isTabVisible, setIsTabVisible] = useState(true);
+  const scrollProgressRef = React.useRef<number>(0);
+
+  // Passive natural scroll tracking without triggering React re-renders
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      scrollProgressRef.current = totalHeight > 0 ? Math.min(1, Math.max(0, scrollY / totalHeight)) : 0;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   // Monitor document visibility to suspend frame loop when tab is hidden
   useEffect(() => {
@@ -60,7 +76,7 @@ export function PortfolioCanvas({
         }}
       >
         <SceneDirector
-          scrollProgress={scrollProgress}
+          scrollProgressRef={scrollProgressRef}
           isMobile={isMobile}
           isMotionDisabled={isMotionDisabled}
         />

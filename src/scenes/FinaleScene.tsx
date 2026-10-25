@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Mail, ArrowUp, Download, MapPin, Globe } from 'lucide-react';
 import { BRAND_INFO, PHOTO_ASSETS } from '@/data/portfolioData';
+import { BlogToContactTransition } from '@/components/BlogToContactTransition';
 
 function GithubIcon({ size = 16 }: { size?: number }) {
   return (
@@ -31,19 +32,23 @@ export function FinaleScene() {
 
   return (
     <footer id="contact" className="scene-section scene-finale" role="contentinfo">
+      {/* Cinematic Transition Bridge: Blog -> Contact ("THE FINAL COMMIT") */}
+      <BlogToContactTransition />
+
       <div className="container-editorial">
         <div className="finale-grid">
           {/* Left Column: Direct Inquiries & Real Contact Data */}
           <div>
-            <div className="section-tag">
+            <div className="section-tag contact-header-tag">
               <span>LET&apos;S BUILD SOMETHING GREAT</span>
             </div>
 
-            <h2 className="font-editorial-large" style={{ marginBottom: '1.5rem', color: 'var(--color-ivory)' }}>
+            <h2 className="font-editorial-large contact-main-heading" style={{ marginBottom: '1.5rem', color: 'var(--color-ivory)' }}>
               Get In <span className="font-gold-gradient">Touch</span>
             </h2>
 
             <p
+              className="contact-desc"
               style={{
                 fontSize: 'clamp(1.05rem, 1.8vw, 1.25rem)',
                 color: 'var(--color-ivory)',
@@ -57,7 +62,7 @@ export function FinaleScene() {
             </p>
 
             {/* Main Action Buttons */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', alignItems: 'center' }}>
+            <div className="contact-cta-group" style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', alignItems: 'center' }}>
               <a
                 href={`mailto:${BRAND_INFO.email}`}
                 className="btn-gold"
@@ -80,7 +85,7 @@ export function FinaleScene() {
             </div>
 
             {/* Direct Channels */}
-            <div className="contact-links-list">
+            <div className="contact-links-list contact-channels-group">
               <a href={`mailto:${BRAND_INFO.email}`} className="contact-link-pill">
                 <Mail size={16} style={{ color: 'var(--color-gold-light)' }} />
                 <span>{BRAND_INFO.email}</span>
@@ -119,7 +124,7 @@ export function FinaleScene() {
           </div>
 
           {/* Right Column: Confident Personal Portrait & Signature */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+          <div className="contact-portrait-group" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
             <div className="finale-portrait-box">
               <Image
                 src={PHOTO_ASSETS.portraitThinking}
@@ -127,6 +132,8 @@ export function FinaleScene() {
                 width={840}
                 height={1050}
                 sizes="(max-width: 960px) 320px, 420px"
+                loading="lazy"
+                quality={85}
               />
 
               <div
