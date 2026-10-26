@@ -226,6 +226,7 @@ export async function updateBrandInfoAction(
 
   revalidatePath('/');
   revalidatePath('/admin/sections');
+  revalidatePath('/admin/settings');
 
   return {
     success: true,

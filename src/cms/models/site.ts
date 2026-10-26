@@ -26,10 +26,21 @@ export interface BrandInfoEntity {
   experienceYears: string;
   projectsCount: string;
   curiosity: string;
-  status: string;
+  status: string; // Availability status statement
   isDemoEnvironment: boolean;
+  publishStatus?: 'draft' | 'published';
+  version?: number;
   updatedAt: string;
+  publishedAt?: string;
 }
+
+export type UpdateBrandInfoInput = Partial<
+  Omit<BrandInfoEntity, 'id' | 'updatedAt' | 'publishedAt'>
+>;
+
+export type SiteSettingsEntity = BrandInfoEntity;
+export type UpdateSiteSettingsInput = UpdateBrandInfoInput;
+
 
 export interface HeroSectionConfig {
   eyebrow: string; // 'FULL-STACK DEVELOPER'

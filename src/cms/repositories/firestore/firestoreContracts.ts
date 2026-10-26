@@ -31,6 +31,11 @@ export type FirestoreCollectionName =
  */
 export const FIRESTORE_SINGLETON_DOCS = {
   BRAND_INFO: 'brand_info',
+  BRAND_INFO_DRAFT: 'brand_info_draft',
+  BRAND_INFO_PREV: 'brand_info_prev',
+  SITE_SETTINGS: 'brand_info',
+  SITE_SETTINGS_DRAFT: 'brand_info_draft',
+  SITE_SETTINGS_PREV: 'brand_info_prev',
   HOMEPAGE_CONFIG: 'homepage_config',
   HOMEPAGE_CONFIG_DRAFT: 'homepage_config_draft',
   HOMEPAGE_CONFIG_PREV: 'homepage_config_prev',

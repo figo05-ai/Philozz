@@ -13,6 +13,8 @@ export interface NavigationProps {
 export function Navigation({ brand }: NavigationProps = {}) {
   const brandName = brand?.name || BRAND_INFO.name;
   const cvUrl = brand?.cvUrl || BRAND_INFO.cvUrl;
+  const isCvAvailable = brand?.cvAvailable !== false;
+  const isDemoEnvironment = Boolean(brand?.isDemoEnvironment);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const toggleBtnRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -88,10 +90,34 @@ export function Navigation({ brand }: NavigationProps = {}) {
   return (
     <header className="nav-header" role="banner">
       <div className="container-editorial nav-container">
-        <Link href="/" className="nav-brand" aria-label={`${brandName} Home`}>
-          <span>{brandName}</span>
-          <span className="nav-brand-dot" aria-hidden="true" />
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Link href="/" className="nav-brand" aria-label={`${brandName} Home`}>
+            <span>{brandName}</span>
+            <span className="nav-brand-dot" aria-hidden="true" />
+          </Link>
+          {isDemoEnvironment && (
+            <span
+              style={{
+                fontSize: '0.62rem',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                padding: '0.15rem 0.5rem',
+                borderRadius: '9999px',
+                backgroundColor: 'rgba(201, 164, 92, 0.12)',
+                color: 'var(--color-gold-light, #E4C88A)',
+                border: '1px solid rgba(201, 164, 92, 0.3)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+              }}
+              aria-label="Demo Environment Indicator"
+            >
+              <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#E4C88A' }} />
+              Demo
+            </span>
+          )}
+        </div>
 
         {/* Desktop Navigation Links */}
         <nav className="nav-links-desktop" aria-label="Main Navigation">
@@ -101,16 +127,18 @@ export function Navigation({ brand }: NavigationProps = {}) {
             </a>
           ))}
 
-          <a
-            href={cvUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-resume-btn"
-            aria-label={`Download ${brand?.developerName || 'Felopater Nabil'} Resume`}
-          >
-            <span>Resume</span>
-            <Download size={15} />
-          </a>
+          {isCvAvailable && (
+            <a
+              href={cvUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-resume-btn"
+              aria-label={`Download ${brand?.developerName || 'Felopater Nabil'} Resume`}
+            >
+              <span>Resume</span>
+              <Download size={15} />
+            </a>
+          )}
         </nav>
 
         {/* Mobile Menu Button */}
@@ -149,19 +177,21 @@ export function Navigation({ brand }: NavigationProps = {}) {
               </a>
             ))}
 
-            <div style={{ marginTop: '2rem' }}>
-              <a
-                href={cvUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-gold"
-                style={{ width: '100%', justifyContent: 'center' }}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <span>Download Resume</span>
-                <Download size={16} />
-              </a>
-            </div>
+            {isCvAvailable && (
+              <div style={{ marginTop: '2rem' }}>
+                <a
+                  href={cvUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-gold"
+                  style={{ width: '100%', justifyContent: 'center' }}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <span>Download Resume</span>
+                  <Download size={16} />
+                </a>
+              </div>
+            )}
           </nav>
         </div>
       )}

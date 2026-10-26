@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "exportedAt": "2026-10-26T18:10:26.334Z",
+  "exportedAt": "2026-10-26T18:38:53.356Z",
   "counts": {
     "projects": 8,
     "articles": 7,
@@ -1414,7 +1414,10 @@
       "curiosity": "∞",
       "status": "Available for high-impact backend & full-stack engineering engagements",
       "isDemoEnvironment": false,
-      "updatedAt": "2026-04-15T00:00:00.000Z"
+      "publishStatus": "published",
+      "version": 1,
+      "updatedAt": "2026-04-15T00:00:00.000Z",
+      "publishedAt": "2026-04-15T00:00:00.000Z"
     },
     "homepageConfig": {
       "id": "homepage_config",

@@ -50,7 +50,18 @@ export class FirestoreSiteContentRepository implements ISiteContentRepository {
     return getFirebaseFirestore().collection(FIRESTORE_COLLECTIONS.EXPERTISE_AREAS);
   }
 
-  async getBrandInfo(): Promise<BrandInfoEntity> {
+  async getBrandInfo(options?: { preview?: boolean }): Promise<BrandInfoEntity> {
+    if (options?.preview) {
+      const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.BRAND_INFO_DRAFT);
+      const draftSnap = await draftRef.get();
+      if (draftSnap.exists) {
+        return {
+          ...(draftSnap.data()! as BrandInfoEntity),
+          id: 'brand_info',
+        };
+      }
+    }
+
     const docRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.BRAND_INFO);
     const snap = await docRef.get();
 
@@ -67,11 +78,105 @@ export class FirestoreSiteContentRepository implements ISiteContentRepository {
     };
   }
 
+  async getBrandInfoDraft(): Promise<BrandInfoEntity | null> {
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.BRAND_INFO_DRAFT);
+    const snap = await draftRef.get();
+    if (!snap.exists) return null;
+    return {
+      ...(snap.data()! as BrandInfoEntity),
+      id: 'brand_info',
+    };
+  }
+
+  async saveBrandInfoDraft(data: Partial<BrandInfoEntity>): Promise<BrandInfoEntity> {
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.BRAND_INFO_DRAFT);
+    const published = await this.getBrandInfo();
+    const existingDraft = await this.getBrandInfoDraft();
+    const base = existingDraft || published;
+    const now = new Date().toISOString();
+
+    const updatedDraft: BrandInfoEntity = {
+      ...base,
+      ...data,
+      id: 'brand_info',
+      publishStatus: 'draft',
+      updatedAt: now,
+    };
+
+    await draftRef.set(updatedDraft);
+    return updatedDraft;
+  }
+
+  async publishBrandInfo(data?: Partial<BrandInfoEntity>): Promise<BrandInfoEntity> {
+    const firestore = getFirebaseFirestore();
+    const publishedRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.BRAND_INFO);
+    const prevRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.BRAND_INFO_PREV);
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.BRAND_INFO_DRAFT);
+
+    const published = await this.getBrandInfo();
+    const existingDraft = await this.getBrandInfoDraft();
+    const base = existingDraft || published;
+    const now = new Date().toISOString();
+
+    const newPublished: BrandInfoEntity = {
+      ...base,
+      ...(data || {}),
+      id: 'brand_info',
+      publishStatus: 'published',
+      version: (published.version || 1) + 1,
+      publishedAt: now,
+      updatedAt: now,
+    };
+
+    const batch = firestore.batch();
+    batch.set(prevRef, published);
+    batch.set(publishedRef, newPublished);
+    batch.delete(draftRef);
+    await batch.commit();
+
+    return newPublished;
+  }
+
+  async rollbackBrandInfo(): Promise<BrandInfoEntity> {
+    const firestore = getFirebaseFirestore();
+    const publishedRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.BRAND_INFO);
+    const prevRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.BRAND_INFO_PREV);
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.BRAND_INFO_DRAFT);
+
+    const prevSnap = await prevRef.get();
+    if (!prevSnap.exists) {
+      throw new Error('No previous brand settings configuration found in Firestore for rollback.');
+    }
+
+    const prevData = prevSnap.data()! as BrandInfoEntity;
+    const currentSnap = await publishedRef.get();
+    const currentVersion = currentSnap.exists ? ((currentSnap.data()!.version as number) || 1) : 1;
+    const now = new Date().toISOString();
+
+    const restored: BrandInfoEntity = {
+      ...prevData,
+      id: 'brand_info',
+      publishStatus: 'published',
+      version: currentVersion + 1,
+      updatedAt: now,
+    };
+
+    const batch = firestore.batch();
+    batch.set(publishedRef, restored);
+    batch.delete(draftRef);
+    await batch.commit();
+
+    return restored;
+  }
+
   async updateBrandInfo(data: Partial<BrandInfoEntity>): Promise<BrandInfoEntity> {
     const docRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.BRAND_INFO);
     const updatedAt = new Date().toISOString();
+    const snap = await docRef.get();
+    const currentVersion = snap.exists ? ((snap.data()!.version as number) || 1) : 1;
     const updatePayload = {
       ...data,
+      version: currentVersion + 1,
       updatedAt,
     };
 
@@ -81,6 +186,27 @@ export class FirestoreSiteContentRepository implements ISiteContentRepository {
       ...(fresh.data()! as BrandInfoEntity),
       id: 'brand_info',
     };
+  }
+
+  // --- Site Settings Aliases ---
+  async getSiteSettings(options?: { preview?: boolean }): Promise<BrandInfoEntity> {
+    return this.getBrandInfo(options);
+  }
+
+  async getSiteSettingsDraft(): Promise<BrandInfoEntity | null> {
+    return this.getBrandInfoDraft();
+  }
+
+  async saveSiteSettingsDraft(data: Partial<BrandInfoEntity>): Promise<BrandInfoEntity> {
+    return this.saveBrandInfoDraft(data);
+  }
+
+  async publishSiteSettings(data?: Partial<BrandInfoEntity>): Promise<BrandInfoEntity> {
+    return this.publishBrandInfo(data);
+  }
+
+  async rollbackSiteSettings(): Promise<BrandInfoEntity> {
+    return this.rollbackBrandInfo();
   }
 
   async getHomepageConfig(options?: { preview?: boolean }): Promise<HomepageConfigEntity> {

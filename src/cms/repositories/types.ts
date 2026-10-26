@@ -17,6 +17,7 @@ import {
 } from '../models/article';
 import {
   BrandInfoEntity,
+  SiteSettingsEntity,
   HomepageConfigEntity,
   SiteSeoConfigEntity,
 } from '../models/site';
@@ -80,8 +81,21 @@ export interface IArticleRepository {
 }
 
 export interface ISiteContentRepository {
-  getBrandInfo(): Promise<BrandInfoEntity>;
+  // Brand & Global Site Settings
+  getBrandInfo(options?: { preview?: boolean }): Promise<BrandInfoEntity>;
+  getBrandInfoDraft(): Promise<BrandInfoEntity | null>;
+  saveBrandInfoDraft(data: Partial<BrandInfoEntity>): Promise<BrandInfoEntity>;
+  publishBrandInfo(data?: Partial<BrandInfoEntity>): Promise<BrandInfoEntity>;
+  rollbackBrandInfo(): Promise<BrandInfoEntity>;
   updateBrandInfo(data: Partial<BrandInfoEntity>): Promise<BrandInfoEntity>;
+
+  // Site Settings Aliases
+  getSiteSettings(options?: { preview?: boolean }): Promise<SiteSettingsEntity>;
+  getSiteSettingsDraft(): Promise<SiteSettingsEntity | null>;
+  saveSiteSettingsDraft(data: Partial<SiteSettingsEntity>): Promise<SiteSettingsEntity>;
+  publishSiteSettings(data?: Partial<SiteSettingsEntity>): Promise<SiteSettingsEntity>;
+  rollbackSiteSettings(): Promise<SiteSettingsEntity>;
+
   getHomepageConfig(options?: { preview?: boolean }): Promise<HomepageConfigEntity>;
   getHomepageConfigDraft(): Promise<HomepageConfigEntity | null>;
   saveHomepageConfigDraft(data: Partial<HomepageConfigEntity>): Promise<HomepageConfigEntity>;

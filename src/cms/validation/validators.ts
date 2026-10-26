@@ -400,26 +400,106 @@ export function validateHomepageConfig(config: Partial<HomepageConfigEntity>): V
 }
 
 /**
- * Validates Brand Information inputs.
+ * Whitelist of permissible fields for Brand Information & Global Site Settings.
+ */
+export const BRAND_INFO_ALLOWLIST = new Set([
+  'name',
+  'developerName',
+  'role',
+  'specialization',
+  'tagline',
+  'statement',
+  'philosophy',
+  'transformationHeadline',
+  'finaleHeadline',
+  'email',
+  'brandEmail',
+  'domain',
+  'phone',
+  'location',
+  'github',
+  'linkedin',
+  'cvAvailable',
+  'cvUrl',
+  'experienceYears',
+  'projectsCount',
+  'curiosity',
+  'status',
+  'isDemoEnvironment',
+  'publishStatus',
+  'version',
+  'updatedAt',
+  'publishedAt',
+  'id',
+]);
+
+/**
+ * Security-sensitive keys strictly forbidden from CMS updates.
+ */
+export const SENSITIVE_SECURITY_KEYS = new Set([
+  'admin',
+  'admin_owner_uid',
+  'adminowneruid',
+  'serviceaccount',
+  'service_account',
+  'firebaseapikey',
+  'apikey',
+  'secret',
+  'sessionlifetime',
+  'headers',
+  'securityheaders',
+  'csp',
+  'contentsecuritypolicy',
+  'cors',
+  'firestorerules',
+  'rules',
+  'credentials',
+]);
+
+/**
+ * Validates Brand Information & Global Site Settings inputs.
  */
 export function validateBrandInfo(brand: Partial<BrandInfoEntity>): ValidationResult {
   const errors: Record<string, string> = {};
 
-  if (!brand.name || brand.name.trim().length === 0) {
+  // Check for disallowed or security-sensitive keys
+  for (const key of Object.keys(brand)) {
+    const lowerKey = key.toLowerCase();
+    if (SENSITIVE_SECURITY_KEYS.has(lowerKey)) {
+      errors[key] = `Security parameter "${key}" cannot be modified via CMS.`;
+    } else if (!BRAND_INFO_ALLOWLIST.has(key)) {
+      errors[key] = `Unsupported or unauthorized field: "${key}".`;
+    }
+  }
+
+  if (brand.name !== undefined && (!brand.name || brand.name.trim().length === 0)) {
     errors.name = 'Brand name is required.';
+  } else if (brand.name && (brand.name.trim().length < 2 || brand.name.trim().length > 60)) {
+    errors.name = 'Brand name must be between 2 and 60 characters.';
   }
-  if (!brand.developerName || brand.developerName.trim().length === 0) {
+
+  if (brand.developerName !== undefined && (!brand.developerName || brand.developerName.trim().length === 0)) {
     errors.developerName = 'Developer name is required.';
+  } else if (brand.developerName && (brand.developerName.trim().length < 2 || brand.developerName.trim().length > 80)) {
+    errors.developerName = 'Developer name must be between 2 and 80 characters.';
   }
+
   if (brand.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(brand.email)) {
-    errors.email = 'Valid email is required.';
+    errors.email = 'Valid primary contact email is required.';
   }
+
+  if (brand.brandEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(brand.brandEmail)) {
+    errors.brandEmail = 'Valid brand inquiries email is required.';
+  }
+
   if (brand.github && !isValidSafeUrl(brand.github)) {
     errors.github = 'GitHub URL must be a valid safe URL.';
   }
+
   if (brand.linkedin && !isValidSafeUrl(brand.linkedin)) {
     errors.linkedin = 'LinkedIn URL must be a valid safe URL.';
   }
+
   if (brand.cvUrl && !isValidSafeUrl(brand.cvUrl)) {
     errors.cvUrl = 'CV/Resume URL must be a valid safe URL.';
   }
@@ -429,6 +509,8 @@ export function validateBrandInfo(brand: Partial<BrandInfoEntity>): ValidationRe
     errors,
   };
 }
+
+export const validateSiteSettings = validateBrandInfo;
 
 /**
  * Validates Technology entity inputs.

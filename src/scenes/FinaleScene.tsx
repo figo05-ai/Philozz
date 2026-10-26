@@ -43,6 +43,7 @@ export function FinaleScene({ config, brand }: FinaleSceneProps = {}) {
   const github = brand?.github || BRAND_INFO.github;
   const linkedin = brand?.linkedin || BRAND_INFO.linkedin;
   const cvUrl = config?.secondaryCtaHref || brand?.cvUrl || BRAND_INFO.cvUrl;
+  const isCvAvailable = brand?.cvAvailable !== false;
   const primaryCtaLabel = config?.primaryCtaLabel || 'Send a Message';
   const secondaryCtaLabel = config?.secondaryCtaLabel || 'View Resume';
   const portraitImageUrl = config?.portraitImageUrl || PHOTO_ASSETS.portraitThinking;
@@ -103,16 +104,18 @@ export function FinaleScene({ config, brand }: FinaleSceneProps = {}) {
                 <span>{primaryCtaLabel}</span>
               </a>
 
-              <a
-                href={cvUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-outline-gold"
-                aria-label="View and Download Resume PDF"
-              >
-                <Download size={16} style={{ color: 'var(--color-gold-light)' }} />
-                <span>{secondaryCtaLabel}</span>
-              </a>
+              {isCvAvailable && (
+                <a
+                  href={cvUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-outline-gold"
+                  aria-label="View and Download Resume PDF"
+                >
+                  <Download size={16} style={{ color: 'var(--color-gold-light)' }} />
+                  <span>{secondaryCtaLabel}</span>
+                </a>
+              )}
             </div>
 
             {/* Direct Channels */}

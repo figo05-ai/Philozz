@@ -33,6 +33,8 @@ import { ISiteContentRepository } from '../types';
 
 export class LocalSiteContentRepository implements ISiteContentRepository {
   private brandInfo: BrandInfoEntity;
+  private brandInfoDraft: BrandInfoEntity | null = null;
+  private previousBrandInfo: BrandInfoEntity | null = null;
   private homepageConfig: HomepageConfigEntity;
   private homepageConfigDraft: HomepageConfigEntity | null = null;
   private previousHomepageConfig: HomepageConfigEntity | null = null;
@@ -73,7 +75,10 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
       curiosity: BRAND_INFO.curiosity,
       status: BRAND_INFO.status,
       isDemoEnvironment: BRAND_INFO.isDemoEnvironment,
+      publishStatus: 'published',
+      version: 1,
       updatedAt: '2026-04-15T00:00:00.000Z',
+      publishedAt: '2026-04-15T00:00:00.000Z',
     };
 
     this.homepageConfig = {
@@ -383,17 +388,97 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
     };
   }
 
-  async getBrandInfo(): Promise<BrandInfoEntity> {
-    return { ...this.brandInfo };
+  async getBrandInfo(options?: { preview?: boolean }): Promise<BrandInfoEntity> {
+    if (options?.preview && this.brandInfoDraft) {
+      return JSON.parse(JSON.stringify(this.brandInfoDraft));
+    }
+    return JSON.parse(JSON.stringify(this.brandInfo));
+  }
+
+  async getBrandInfoDraft(): Promise<BrandInfoEntity | null> {
+    if (!this.brandInfoDraft) return null;
+    return JSON.parse(JSON.stringify(this.brandInfoDraft));
+  }
+
+  async saveBrandInfoDraft(data: Partial<BrandInfoEntity>): Promise<BrandInfoEntity> {
+    const base = this.brandInfoDraft || this.brandInfo;
+    const now = new Date().toISOString();
+    this.brandInfoDraft = {
+      ...base,
+      ...data,
+      id: 'brand_info',
+      publishStatus: 'draft',
+      updatedAt: now,
+    };
+    return JSON.parse(JSON.stringify(this.brandInfoDraft));
+  }
+
+  async publishBrandInfo(data?: Partial<BrandInfoEntity>): Promise<BrandInfoEntity> {
+    this.previousBrandInfo = JSON.parse(JSON.stringify(this.brandInfo));
+    const base = this.brandInfoDraft || this.brandInfo;
+    const currentVersion = this.brandInfo.version || 1;
+    const now = new Date().toISOString();
+
+    this.brandInfo = {
+      ...base,
+      ...(data || {}),
+      id: 'brand_info',
+      publishStatus: 'published',
+      version: currentVersion + 1,
+      publishedAt: now,
+      updatedAt: now,
+    };
+    this.brandInfoDraft = null;
+    return JSON.parse(JSON.stringify(this.brandInfo));
+  }
+
+  async rollbackBrandInfo(): Promise<BrandInfoEntity> {
+    if (!this.previousBrandInfo) {
+      throw new Error('No previous brand settings configuration available for rollback.');
+    }
+    const currentVersion = this.brandInfo.version || 1;
+    const now = new Date().toISOString();
+    this.brandInfo = {
+      ...this.previousBrandInfo,
+      publishStatus: 'published',
+      version: currentVersion + 1,
+      updatedAt: now,
+    };
+    this.brandInfoDraft = null;
+    return JSON.parse(JSON.stringify(this.brandInfo));
   }
 
   async updateBrandInfo(data: Partial<BrandInfoEntity>): Promise<BrandInfoEntity> {
+    const currentVersion = this.brandInfo.version || 1;
     this.brandInfo = {
       ...this.brandInfo,
       ...data,
+      id: 'brand_info',
+      version: currentVersion + 1,
       updatedAt: new Date().toISOString(),
     };
-    return { ...this.brandInfo };
+    return JSON.parse(JSON.stringify(this.brandInfo));
+  }
+
+  // --- Site Settings Aliases ---
+  async getSiteSettings(options?: { preview?: boolean }): Promise<BrandInfoEntity> {
+    return this.getBrandInfo(options);
+  }
+
+  async getSiteSettingsDraft(): Promise<BrandInfoEntity | null> {
+    return this.getBrandInfoDraft();
+  }
+
+  async saveSiteSettingsDraft(data: Partial<BrandInfoEntity>): Promise<BrandInfoEntity> {
+    return this.saveBrandInfoDraft(data);
+  }
+
+  async publishSiteSettings(data?: Partial<BrandInfoEntity>): Promise<BrandInfoEntity> {
+    return this.publishBrandInfo(data);
+  }
+
+  async rollbackSiteSettings(): Promise<BrandInfoEntity> {
+    return this.rollbackBrandInfo();
   }
 
   async getHomepageConfig(options?: { preview?: boolean }): Promise<HomepageConfigEntity> {
