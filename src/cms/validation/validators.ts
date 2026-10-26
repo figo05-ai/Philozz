@@ -254,3 +254,20 @@ export function sanitizeRichText(input: string): string {
     .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
     .replace(/javascript:/gi, '');
 }
+
+/**
+ * Calculates human-readable reading time from article sections.
+ */
+export function calculateReadTime(sections: { content?: string; codeSnippet?: string }[]): string {
+  if (!Array.isArray(sections) || sections.length === 0) {
+    return '1 min read';
+  }
+  const words = sections.reduce((total, s) => {
+    const textWords = (s.content || '').trim().split(/\s+/).filter(Boolean).length;
+    const codeLines = (s.codeSnippet || '').split('\n').filter(Boolean).length;
+    return total + textWords + codeLines * 5;
+  }, 0);
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  return `${minutes} min read`;
+}
+

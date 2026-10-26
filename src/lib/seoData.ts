@@ -44,7 +44,10 @@ export async function getPublishedNotes(): Promise<NoteItem[]> {
 
 export async function getNoteBySlug(slug: string): Promise<NoteItem | undefined> {
   const note = await articleRepository.getBySlug(slug);
-  return note ?? undefined;
+  if (!note || note.status !== 'published' || note.isDeleted) {
+    return undefined;
+  }
+  return note;
 }
 
 /**

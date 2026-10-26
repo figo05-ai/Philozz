@@ -51,13 +51,26 @@ export interface IProjectRepository {
 }
 
 export interface IArticleRepository {
-  getAll(options?: { status?: ContentStatus; category?: string; featuredOnly?: boolean }): Promise<ArticleEntity[]>;
-  getBySlug(slug: string): Promise<ArticleEntity | null>;
-  getById(id: string): Promise<ArticleEntity | null>;
-  getCategories(): Promise<BlogCategoryEntity[]>;
+  getAll(options?: {
+    status?: ContentStatus;
+    category?: string;
+    featuredOnly?: boolean;
+    includeDeleted?: boolean;
+  }): Promise<ArticleEntity[]>;
+  getBySlug(slug: string, options?: { includeDeleted?: boolean }): Promise<ArticleEntity | null>;
+  getById(id: string, options?: { includeDeleted?: boolean }): Promise<ArticleEntity | null>;
   create(data: CreateArticleInput): Promise<ArticleEntity>;
   update(id: string, data: UpdateArticleInput): Promise<ArticleEntity>;
-  delete(id: string): Promise<boolean>;
+  delete(id: string, permanent?: boolean): Promise<boolean>;
+  softDelete(id: string): Promise<boolean>;
+  restore(id: string): Promise<boolean>;
+  reorder(orderedIds: string[]): Promise<boolean>;
+  setHomepageJournalSlots(slots: [string, string, string, string]): Promise<boolean>;
+  getCategories(): Promise<BlogCategoryEntity[]>;
+  getCategoryById(id: string): Promise<BlogCategoryEntity | null>;
+  createCategory(category: BlogCategoryEntity): Promise<BlogCategoryEntity>;
+  updateCategory(id: string, patch: Partial<BlogCategoryEntity>): Promise<BlogCategoryEntity>;
+  deleteCategory(id: string): Promise<boolean>;
 }
 
 export interface ISiteContentRepository {

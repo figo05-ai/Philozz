@@ -223,11 +223,15 @@ export const articleFirestoreConverter: TypedFirestoreConverter<ArticleEntity> =
       sections: article.sections,
       status: article.status,
       ogImageUrl: article.ogImageUrl ?? null,
+      coverImageUrl: article.coverImageUrl ?? null,
       seoTitle: article.seoTitle ?? null,
       seoDescription: article.seoDescription ?? null,
       displayOrder: article.displayOrder,
+      version: article.version ?? 1,
       createdAt: article.createdAt,
       updatedAt: article.updatedAt,
+      isDeleted: Boolean(article.isDeleted),
+      deletedAt: article.deletedAt ?? null,
     };
   },
   fromFirestore(data: Record<string, unknown>, id: string): ArticleEntity {
@@ -247,11 +251,15 @@ export const articleFirestoreConverter: TypedFirestoreConverter<ArticleEntity> =
       sections: Array.isArray(data.sections) ? (data.sections as ArticleEntity['sections']) : [],
       status: (data.status as ArticleEntity['status']) || 'draft',
       ogImageUrl: (data.ogImageUrl as string) || undefined,
+      coverImageUrl: (data.coverImageUrl as string) || undefined,
       seoTitle: (data.seoTitle as string) || undefined,
       seoDescription: (data.seoDescription as string) || undefined,
       displayOrder: (data.displayOrder as number) || 1,
+      version: typeof data.version === 'number' ? data.version : 1,
       createdAt: (data.createdAt as string) || new Date().toISOString(),
       updatedAt: (data.updatedAt as string) || new Date().toISOString(),
+      isDeleted: Boolean(data.isDeleted),
+      deletedAt: (data.deletedAt as string) || undefined,
     };
   },
 };

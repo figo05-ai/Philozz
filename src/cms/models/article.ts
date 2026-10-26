@@ -28,11 +28,15 @@ export interface ArticleEntity {
   sections: ArticleSection[];
   status: ContentStatus;
   ogImageUrl?: string;
+  coverImageUrl?: string;
   seoTitle?: string;
   seoDescription?: string;
   displayOrder: number;
+  version?: number;
   createdAt: string; // ISO 8601
   updatedAt: string; // ISO 8601
+  isDeleted?: boolean;
+  deletedAt?: string;
 }
 
 export interface BlogCategoryEntity {
