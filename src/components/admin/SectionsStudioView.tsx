@@ -18,14 +18,23 @@ import {
   Compass,
   Mail,
   ExternalLink,
+  Orbit,
+  Layers,
 } from 'lucide-react';
 import { HomepageConfigEntity, BrandInfoEntity, MosaicCardEntity } from '@/cms/models/site';
+import {
+  TechnologyEntity,
+  OrbitSlotsTuple,
+  ExpertiseAreaEntity,
+} from '@/cms/models/technology';
 import {
   saveSectionsDraftAction,
   publishSectionsAction,
   rollbackSectionsAction,
   updateBrandInfoAction,
 } from '@/app/admin/sections/actions';
+import { SkillsStudioPanel } from '@/components/admin/SkillsStudioPanel';
+import { ExpertiseStudioPanel } from '@/components/admin/ExpertiseStudioPanel';
 
 export interface SectionsStudioViewProps {
   initialConfig: HomepageConfigEntity;
@@ -33,15 +42,23 @@ export interface SectionsStudioViewProps {
   brandInfo: BrandInfoEntity;
   hasDraft: boolean;
   dataSource: string;
+  initialTechnologies?: TechnologyEntity[];
+  initialOrbitSlotsDraft?: OrbitSlotsTuple | null;
+  initialOrbitSlotsPublished?: OrbitSlotsTuple;
+  initialExpertiseAreas?: ExpertiseAreaEntity[];
 }
 
-type TabKey = 'hero' | 'about' | 'contact' | 'brand';
+type TabKey = 'hero' | 'about' | 'skills' | 'expertise' | 'contact' | 'brand';
 
 export function SectionsStudioView({
   initialConfig,
   brandInfo: initialBrand,
   hasDraft: initialHasDraft,
   dataSource,
+  initialTechnologies = [],
+  initialOrbitSlotsDraft = null,
+  initialOrbitSlotsPublished = ['', '', '', '', '', '', '', '', ''] as unknown as OrbitSlotsTuple,
+  initialExpertiseAreas = [],
 }: SectionsStudioViewProps) {
   const [config, setConfig] = useState<HomepageConfigEntity>(initialConfig);
   const [brand, setBrand] = useState<BrandInfoEntity>(initialBrand);
@@ -421,6 +438,26 @@ export function SectionsStudioView({
         >
           <User size={14} />
           <span>About Scene</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('skills')}
+          className={`admin-filter-pill ${activeTab === 'skills' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}
+        >
+          <Orbit size={14} />
+          <span>Skills Galaxy &amp; Orbit</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('expertise')}
+          className={`admin-filter-pill ${activeTab === 'expertise' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}
+        >
+          <Layers size={14} />
+          <span>Disciplines Matrix</span>
         </button>
 
         <button
@@ -1269,6 +1306,26 @@ export function SectionsStudioView({
             </button>
           </div>
         </div>
+      )}
+
+      {/* ========================================================
+          PANEL: SKILLS GALAXY & ORBIT SLOTS
+          ======================================================== */}
+      {activeTab === 'skills' && (
+        <SkillsStudioPanel
+          initialTechnologies={initialTechnologies}
+          initialOrbitSlotsDraft={initialOrbitSlotsDraft}
+          initialOrbitSlotsPublished={initialOrbitSlotsPublished}
+        />
+      )}
+
+      {/* ========================================================
+          PANEL: DISCIPLINES MATRIX (EXPERTISE AREAS)
+          ======================================================== */}
+      {activeTab === 'expertise' && (
+        <ExpertiseStudioPanel
+          initialExpertiseAreas={initialExpertiseAreas}
+        />
       )}
     </div>
   );

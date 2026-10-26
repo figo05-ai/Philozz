@@ -15,9 +15,20 @@ import {
 } from '../../models/site';
 import {
   TechnologyEntity,
+  CreateTechnologyInput,
+  UpdateTechnologyInput,
   ExpertiseAreaEntity,
+  CreateExpertiseAreaInput,
+  UpdateExpertiseAreaInput,
   StackDetailsEntity,
+  OrbitSlotsTuple,
+  DEFAULT_ORBIT_SLOTS,
 } from '../../models/technology';
+import {
+  validateTechnology,
+  validateOrbitSlots,
+  validateExpertiseArea,
+} from '../../validation/validators';
 import { ISiteContentRepository } from '../types';
 import {
   FIRESTORE_COLLECTIONS,
@@ -219,53 +230,393 @@ export class FirestoreSiteContentRepository implements ISiteContentRepository {
     return updated;
   }
 
-  async getTechnologies(): Promise<TechnologyEntity[]> {
-    const snap = await this.technologiesCollection.get();
-    const techs: TechnologyEntity[] = snap.docs.map((doc) => {
-      const d = doc.data();
-      return {
-        id: (d.id as string) || doc.id,
-        name: (d.name as string) || '',
-        label: (d.label as string) || '',
-        category: (d.category as string) || '',
-        role: (d.role as string) || '',
-        description: (d.description as string) || '',
-        capability: (d.capability as string) || '',
-        logoKey: (d.logoKey as string) || doc.id,
-        logoSize: (d.logoSize as number) || 28,
-        x: (d.x as number) ?? 50,
-        y: (d.y as number) ?? 50,
-        svgX: (d.svgX as number) ?? 500,
-        svgY: (d.svgY as number) ?? 280,
-        isRear: Boolean(d.isRear),
-        scale: (d.scale as number) ?? 1,
-        floatDelay: (d.floatDelay as string) || '0s',
-        displayOrder: (d.displayOrder as number) ?? 1,
-        status: (d.status as TechnologyEntity['status']) || 'published',
-        updatedAt: (d.updatedAt as string) || new Date().toISOString(),
-      };
-    });
+  // ==========================================
+  // TECHNOLOGIES & INVENTORY MANAGEMENT
+  // ==========================================
 
+  async getTechnologies(_options?: { preview?: boolean }): Promise<TechnologyEntity[]> {
+    const snap = await this.technologiesCollection.where('status', '==', 'published').get();
+    const techs: TechnologyEntity[] = snap.docs.map((doc) => docToTechnology(doc.data(), doc.id));
     return techs.sort((a, b) => a.displayOrder - b.displayOrder);
   }
 
-  async getExpertiseAreas(): Promise<ExpertiseAreaEntity[]> {
-    const snap = await this.expertiseCollection.get();
-    const areas: ExpertiseAreaEntity[] = snap.docs.map((doc) => {
-      const d = doc.data();
-      return {
-        id: (d.id as string) || doc.id,
-        name: (d.name as string) || '',
-        level: (d.level as string) || '',
-        description: (d.description as string) || '',
-        coreConcepts: Array.isArray(d.coreConcepts) ? (d.coreConcepts as string[]) : [],
-        displayOrder: (d.displayOrder as number) ?? 1,
-        status: (d.status as ExpertiseAreaEntity['status']) || 'published',
-        updatedAt: (d.updatedAt as string) || new Date().toISOString(),
-      };
+  async getAllTechnologies(options?: { includeArchived?: boolean; preview?: boolean }): Promise<TechnologyEntity[]> {
+    const snap = await this.technologiesCollection.get();
+    let techs: TechnologyEntity[] = snap.docs.map((doc) => docToTechnology(doc.data(), doc.id));
+    if (!options?.includeArchived) {
+      techs = techs.filter((t) => t.status !== 'archived');
+    }
+    return techs.sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  async getTechnologyById(id: string): Promise<TechnologyEntity | null> {
+    const doc = await this.technologiesCollection.doc(id).get();
+    if (!doc.exists) return null;
+    return docToTechnology(doc.data()!, doc.id);
+  }
+
+  async createTechnology(data: CreateTechnologyInput): Promise<TechnologyEntity> {
+    const validation = validateTechnology(data);
+    if (!validation.valid) {
+      throw new Error(`Validation failed for technology: ${JSON.stringify(validation.errors)}`);
+    }
+
+    const id = data.id || data.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const docRef = this.technologiesCollection.doc(id);
+    const existing = await docRef.get();
+    if (existing.exists) {
+      throw new Error(`Technology with ID "${id}" already exists.`);
+    }
+
+    const now = new Date().toISOString();
+    const created: TechnologyEntity = {
+      ...data,
+      id,
+      displayOrder: data.displayOrder || 1,
+      status: data.status || 'published',
+      version: 1,
+      updatedAt: now,
+    };
+
+    await docRef.set(created);
+    return created;
+  }
+
+  async updateTechnology(id: string, data: UpdateTechnologyInput): Promise<TechnologyEntity> {
+    const docRef = this.technologiesCollection.doc(id);
+    const snap = await docRef.get();
+    if (!snap.exists) {
+      throw new Error(`Technology with ID "${id}" not found.`);
+    }
+
+    const current = docToTechnology(snap.data()!, snap.id);
+
+    // INVARIANT GUARD: Prevent archiving if currently occupying an active homepage Orbit slot
+    if (data.status === 'archived') {
+      const activeSlots = await this.getOrbitSlots();
+      if (activeSlots.includes(id)) {
+        throw new Error(
+          `Cannot archive technology "${current.name}" while it occupies an active Homepage Orbit slot. Reassign the orbit slot before archiving.`
+        );
+      }
+    }
+
+    const merged = { ...current, ...data };
+    const validation = validateTechnology(merged);
+    if (!validation.valid) {
+      throw new Error(`Validation failed for technology: ${JSON.stringify(validation.errors)}`);
+    }
+
+    const now = new Date().toISOString();
+    const updated: TechnologyEntity = {
+      ...current,
+      ...data,
+      id: current.id,
+      x: current.x,
+      y: current.y,
+      svgX: current.svgX,
+      svgY: current.svgY,
+      isRear: current.isRear,
+      scale: current.scale,
+      floatDelay: current.floatDelay,
+      version: (current.version || 1) + 1,
+      updatedAt: now,
+    };
+
+    await docRef.set(updated, { merge: true });
+    return updated;
+  }
+
+  async archiveTechnology(id: string): Promise<boolean> {
+    await this.updateTechnology(id, { status: 'archived' });
+    return true;
+  }
+
+  async restoreTechnology(id: string): Promise<boolean> {
+    await this.updateTechnology(id, { status: 'draft' });
+    return true;
+  }
+
+  async deleteTechnology(id: string): Promise<boolean> {
+    const docRef = this.technologiesCollection.doc(id);
+    const snap = await docRef.get();
+    if (!snap.exists) return false;
+
+    // INVARIANT GUARD: Cannot delete if occupying an active orbit slot
+    const activeSlots = await this.getOrbitSlots();
+    if (activeSlots.includes(id)) {
+      const tech = docToTechnology(snap.data()!, snap.id);
+      throw new Error(
+        `Cannot delete technology "${tech.name}" while it occupies an active Homepage Orbit slot. Reassign the orbit slot first.`
+      );
+    }
+
+    await docRef.delete();
+    return true;
+  }
+
+  async reorderTechnologies(orderedIds: string[]): Promise<boolean> {
+    const firestore = getFirebaseFirestore();
+    const batch = firestore.batch();
+    const now = new Date().toISOString();
+
+    orderedIds.forEach((id, idx) => {
+      const ref = this.technologiesCollection.doc(id);
+      batch.update(ref, {
+        displayOrder: idx + 1,
+        updatedAt: now,
+      });
     });
 
+    await batch.commit();
+    return true;
+  }
+
+  // ==========================================
+  // 9-SLOT 3D HOMEPAGE ORBIT MANAGEMENT
+  // ==========================================
+
+  async getOrbitSlots(options?: { preview?: boolean }): Promise<OrbitSlotsTuple> {
+    if (options?.preview) {
+      const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS_DRAFT);
+      const draftSnap = await draftRef.get();
+      if (draftSnap.exists) {
+        const d = draftSnap.data()!;
+        if (Array.isArray(d.slotTechnologyIds) && d.slotTechnologyIds.length === 9) {
+          return d.slotTechnologyIds as OrbitSlotsTuple;
+        }
+      }
+    }
+
+    const docRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS);
+    const snap = await docRef.get();
+    if (snap.exists) {
+      const d = snap.data()!;
+      if (Array.isArray(d.slotTechnologyIds) && d.slotTechnologyIds.length === 9) {
+        return d.slotTechnologyIds as OrbitSlotsTuple;
+      }
+    }
+
+    return [...DEFAULT_ORBIT_SLOTS];
+  }
+
+  async getOrbitSlotsDraft(): Promise<OrbitSlotsTuple | null> {
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS_DRAFT);
+    const draftSnap = await draftRef.get();
+    if (!draftSnap.exists) return null;
+    const d = draftSnap.data()!;
+    if (Array.isArray(d.slotTechnologyIds) && d.slotTechnologyIds.length === 9) {
+      return d.slotTechnologyIds as OrbitSlotsTuple;
+    }
+    return null;
+  }
+
+  async saveOrbitSlotsDraft(slotTechnologyIds: OrbitSlotsTuple): Promise<OrbitSlotsTuple> {
+    const techs = await this.getAllTechnologies();
+    const validation = validateOrbitSlots(slotTechnologyIds, techs);
+    if (!validation.valid) {
+      throw new Error(`Validation failed for Orbit slots: ${JSON.stringify(validation.errors)}`);
+    }
+
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS_DRAFT);
+    const now = new Date().toISOString();
+    await draftRef.set({
+      id: FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS_DRAFT,
+      status: 'draft',
+      slotTechnologyIds,
+      updatedAt: now,
+    });
+
+    return [...slotTechnologyIds];
+  }
+
+  async publishOrbitSlots(slotTechnologyIds?: OrbitSlotsTuple): Promise<OrbitSlotsTuple> {
+    const currentSlots = await this.getOrbitSlots();
+    const draft = await this.getOrbitSlotsDraft();
+    const target = slotTechnologyIds || draft;
+    if (!target) {
+      throw new Error('NO_DRAFT_TO_PUBLISH: No draft orbit configuration exists to publish.');
+    }
+    const techs = await this.getAllTechnologies();
+    const validation = validateOrbitSlots(target, techs);
+    if (!validation.valid) {
+      throw new Error(`Validation failed for Orbit slots: ${JSON.stringify(validation.errors)}`);
+    }
+
+    const firestore = getFirebaseFirestore();
+    const publishedRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS);
+    const prevRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS_PREV);
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS_DRAFT);
+
+    const now = new Date().toISOString();
+    const batch = firestore.batch();
+
+    // 1. Snapshot previous published configuration for atomic rollback
+    batch.set(prevRef, {
+      id: FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS_PREV,
+      status: 'published',
+      slotTechnologyIds: currentSlots,
+      updatedAt: now,
+    });
+
+    // 2. Publish new configuration
+    batch.set(publishedRef, {
+      id: FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS,
+      status: 'published',
+      slotTechnologyIds: target,
+      updatedAt: now,
+      publishedAt: now,
+    });
+
+    // 3. Clear draft
+    batch.delete(draftRef);
+
+    await batch.commit();
+    return [...target];
+  }
+
+  async rollbackOrbitSlots(): Promise<OrbitSlotsTuple> {
+    const prevRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS_PREV);
+    const prevSnap = await prevRef.get();
+    if (!prevSnap.exists) {
+      throw new Error('No previous published orbit slot configuration available to restore.');
+    }
+
+    const prevData = prevSnap.data()!;
+    const restoredSlots = prevData.slotTechnologyIds as OrbitSlotsTuple;
+
+    const firestore = getFirebaseFirestore();
+    const publishedRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS);
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS_DRAFT);
+
+    const now = new Date().toISOString();
+    const batch = firestore.batch();
+
+    batch.set(publishedRef, {
+      id: FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS,
+      status: 'published',
+      slotTechnologyIds: restoredSlots,
+      updatedAt: now,
+      publishedAt: now,
+    });
+    batch.delete(draftRef);
+
+    await batch.commit();
+    return [...restoredSlots];
+  }
+
+  // ==========================================
+  // EXPERTISE AREAS (ENGINEERING DISCIPLINES)
+  // ==========================================
+
+  async getExpertiseAreas(_options?: { preview?: boolean }): Promise<ExpertiseAreaEntity[]> {
+    const snap = await this.expertiseCollection.where('status', '==', 'published').get();
+    const areas: ExpertiseAreaEntity[] = snap.docs.map((doc) => docToExpertiseArea(doc.data(), doc.id));
     return areas.sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  async getAllExpertiseAreas(options?: { includeArchived?: boolean; preview?: boolean }): Promise<ExpertiseAreaEntity[]> {
+    const snap = await this.expertiseCollection.get();
+    let areas: ExpertiseAreaEntity[] = snap.docs.map((doc) => docToExpertiseArea(doc.data(), doc.id));
+    if (!options?.includeArchived) {
+      areas = areas.filter((a) => a.status !== 'archived');
+    }
+    return areas.sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  async getExpertiseAreaById(id: string): Promise<ExpertiseAreaEntity | null> {
+    const doc = await this.expertiseCollection.doc(id).get();
+    if (!doc.exists) return null;
+    return docToExpertiseArea(doc.data()!, doc.id);
+  }
+
+  async createExpertiseArea(data: CreateExpertiseAreaInput): Promise<ExpertiseAreaEntity> {
+    const validation = validateExpertiseArea(data);
+    if (!validation.valid) {
+      throw new Error(`Validation failed for expertise area: ${JSON.stringify(validation.errors)}`);
+    }
+
+    const id = data.id || data.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const docRef = this.expertiseCollection.doc(id);
+    const existing = await docRef.get();
+    if (existing.exists) {
+      throw new Error(`Expertise area with ID "${id}" already exists.`);
+    }
+
+    const now = new Date().toISOString();
+    const created: ExpertiseAreaEntity = {
+      ...data,
+      id,
+      displayOrder: data.displayOrder || 1,
+      status: data.status || 'published',
+      version: 1,
+      updatedAt: now,
+    };
+
+    await docRef.set(created);
+    return created;
+  }
+
+  async updateExpertiseArea(id: string, data: UpdateExpertiseAreaInput): Promise<ExpertiseAreaEntity> {
+    const docRef = this.expertiseCollection.doc(id);
+    const snap = await docRef.get();
+    if (!snap.exists) {
+      throw new Error(`Expertise area with ID "${id}" not found.`);
+    }
+
+    const current = docToExpertiseArea(snap.data()!, snap.id);
+    const merged = { ...current, ...data };
+    const validation = validateExpertiseArea(merged);
+    if (!validation.valid) {
+      throw new Error(`Validation failed for expertise area: ${JSON.stringify(validation.errors)}`);
+    }
+
+    const now = new Date().toISOString();
+    const updated: ExpertiseAreaEntity = {
+      ...current,
+      ...data,
+      id: current.id,
+      version: (current.version || 1) + 1,
+      updatedAt: now,
+    };
+
+    await docRef.set(updated, { merge: true });
+    return updated;
+  }
+
+  async archiveExpertiseArea(id: string): Promise<boolean> {
+    await this.updateExpertiseArea(id, { status: 'archived' });
+    return true;
+  }
+
+  async restoreExpertiseArea(id: string): Promise<boolean> {
+    await this.updateExpertiseArea(id, { status: 'draft' });
+    return true;
+  }
+
+  async deleteExpertiseArea(id: string): Promise<boolean> {
+    const docRef = this.expertiseCollection.doc(id);
+    const snap = await docRef.get();
+    if (!snap.exists) return false;
+    await docRef.delete();
+    return true;
+  }
+
+  async reorderExpertiseAreas(orderedIds: string[]): Promise<boolean> {
+    const firestore = getFirebaseFirestore();
+    const batch = firestore.batch();
+    const now = new Date().toISOString();
+
+    orderedIds.forEach((id, idx) => {
+      const ref = this.expertiseCollection.doc(id);
+      batch.update(ref, {
+        displayOrder: idx + 1,
+        updatedAt: now,
+      });
+    });
+
+    await batch.commit();
+    return true;
   }
 
   async getStackDetails(): Promise<StackDetailsEntity> {
@@ -288,3 +639,44 @@ export class FirestoreSiteContentRepository implements ISiteContentRepository {
     };
   }
 }
+
+function docToTechnology(d: FirebaseFirestore.DocumentData, id: string): TechnologyEntity {
+  return {
+    id: (d.id as string) || id,
+    name: (d.name as string) || '',
+    label: (d.label as string) || '',
+    category: (d.category as string) || '',
+    role: (d.role as string) || '',
+    description: (d.description as string) || '',
+    capability: (d.capability as string) || '',
+    logoKey: (d.logoKey as string) || id,
+    logoSize: (d.logoSize as number) || 28,
+    x: (d.x as number) ?? 50,
+    y: (d.y as number) ?? 50,
+    svgX: (d.svgX as number) ?? 500,
+    svgY: (d.svgY as number) ?? 280,
+    isRear: Boolean(d.isRear),
+    scale: (d.scale as number) ?? 1,
+    floatDelay: (d.floatDelay as string) || '0s',
+    displayOrder: (d.displayOrder as number) ?? 1,
+    status: (d.status as TechnologyEntity['status']) || 'published',
+    version: (d.version as number) ?? 1,
+    updatedAt: (d.updatedAt as string) || new Date().toISOString(),
+  };
+}
+
+function docToExpertiseArea(d: FirebaseFirestore.DocumentData, id: string): ExpertiseAreaEntity {
+  return {
+    id: (d.id as string) || id,
+    name: (d.name as string) || '',
+    level: (d.level as string) || '',
+    description: (d.description as string) || '',
+    coreConcepts: Array.isArray(d.coreConcepts) ? (d.coreConcepts as string[]) : [],
+    icon: (d.icon as string) || undefined,
+    displayOrder: (d.displayOrder as number) ?? 1,
+    status: (d.status as ExpertiseAreaEntity['status']) || 'published',
+    version: (d.version as number) ?? 1,
+    updatedAt: (d.updatedAt as string) || new Date().toISOString(),
+  };
+}
+

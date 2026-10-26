@@ -34,6 +34,9 @@ export const FIRESTORE_SINGLETON_DOCS = {
   HOMEPAGE_CONFIG: 'homepage_config',
   HOMEPAGE_CONFIG_DRAFT: 'homepage_config_draft',
   HOMEPAGE_CONFIG_PREV: 'homepage_config_prev',
+  ORBIT_SLOTS: 'orbit_slots',
+  ORBIT_SLOTS_DRAFT: 'orbit_slots_draft',
+  ORBIT_SLOTS_PREV: 'orbit_slots_prev',
   STACK_DETAILS: 'stack_details',
 } as const;
 

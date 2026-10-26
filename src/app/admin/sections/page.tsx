@@ -19,10 +19,22 @@ export const metadata: Metadata = {
 
 export default async function AdminSectionsPage() {
   const user = await requireAdminSession();
-  const [publishedConfig, draftConfig, brandInfo] = await Promise.all([
+  const [
+    publishedConfig,
+    draftConfig,
+    brandInfo,
+    technologies,
+    orbitSlotsDraft,
+    orbitSlotsPublished,
+    expertiseAreas,
+  ] = await Promise.all([
     siteContentRepository.getHomepageConfig(),
     siteContentRepository.getHomepageConfigDraft(),
     siteContentRepository.getBrandInfo(),
+    siteContentRepository.getAllTechnologies(),
+    siteContentRepository.getOrbitSlotsDraft(),
+    siteContentRepository.getOrbitSlots(),
+    siteContentRepository.getAllExpertiseAreas(),
   ]);
 
   const dataSource = getRepositoryDataSource();
@@ -31,7 +43,7 @@ export default async function AdminSectionsPage() {
     <AdminShell
       user={user}
       title="Site Sections Studio"
-      subtitle="Full content management for Hero, About, Contact, Footer, and Brand identity"
+      subtitle="Full content management for Hero, About, Skills Galaxy, Disciplines, Contact, Footer, and Brand identity"
     >
       <SectionsStudioView
         initialConfig={draftConfig || publishedConfig}
@@ -39,6 +51,10 @@ export default async function AdminSectionsPage() {
         brandInfo={brandInfo}
         hasDraft={Boolean(draftConfig)}
         dataSource={dataSource}
+        initialTechnologies={technologies}
+        initialOrbitSlotsDraft={orbitSlotsDraft}
+        initialOrbitSlotsPublished={orbitSlotsPublished}
+        initialExpertiseAreas={expertiseAreas}
       />
     </AdminShell>
   );

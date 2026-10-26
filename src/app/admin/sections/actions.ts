@@ -13,9 +13,21 @@ import { assertAdminSession } from '@/lib/auth/requireAdminSession';
 import { siteContentRepository, auditLogRepository } from '@/cms/repositories';
 import { HomepageConfigEntity, BrandInfoEntity } from '@/cms/models/site';
 import {
+  TechnologyEntity,
+  CreateTechnologyInput,
+  UpdateTechnologyInput,
+  OrbitSlotsTuple,
+  ExpertiseAreaEntity,
+  CreateExpertiseAreaInput,
+  UpdateExpertiseAreaInput,
+} from '@/cms/models/technology';
+import {
   validateHomepageConfig,
   validateBrandInfo,
   sanitizeRichText,
+  validateTechnology,
+  validateOrbitSlots,
+  validateExpertiseArea,
 } from '@/cms/validation/validators';
 
 export type ActionResponse<T = unknown> = {
@@ -220,3 +232,525 @@ export async function updateBrandInfoAction(
     data: updatedBrand,
   };
 }
+
+// ============================================================================
+// PHASE 16D.3B: TECHNOLOGIES & ORBIT FULL CRUD ACTIONS
+// ============================================================================
+
+/**
+ * Creates or updates a Technology item.
+ */
+export async function saveTechnologyAction(
+  payload: CreateTechnologyInput | UpdateTechnologyInput
+): Promise<ActionResponse<TechnologyEntity>> {
+  const admin = await assertAdminSession();
+
+  const validation = validateTechnology(payload);
+  if (!validation.valid) {
+    return {
+      success: false,
+      error: 'Validation failed. Please correct the highlighted errors.',
+      fieldErrors: validation.errors,
+    };
+  }
+
+  const isUpdate = 'id' in payload && Boolean(payload.id);
+
+  try {
+    let result: TechnologyEntity;
+    if (isUpdate) {
+      result = await siteContentRepository.updateTechnology(
+        payload.id!,
+        payload as UpdateTechnologyInput
+      );
+      await auditLogRepository.record({
+        actorId: admin.uid,
+        actorEmail: admin.email || 'owner@philozz.internal',
+        action: 'update',
+        entityType: 'technology',
+        entityId: result.id,
+        summary: `Updated technology: ${result.name}`,
+      });
+    } else {
+      result = await siteContentRepository.createTechnology(
+        payload as CreateTechnologyInput
+      );
+      await auditLogRepository.record({
+        actorId: admin.uid,
+        actorEmail: admin.email || 'owner@philozz.internal',
+        action: 'create',
+        entityType: 'technology',
+        entityId: result.id,
+        summary: `Created technology: ${result.name}`,
+      });
+    }
+
+    revalidatePath('/');
+    revalidatePath('/admin/sections');
+    revalidatePath('/admin/sections/preview');
+
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to save technology.',
+    };
+  }
+}
+
+/**
+ * Archives a Technology item.
+ * Guarded against archiving if currently occupying an active Orbit slot.
+ */
+export async function archiveTechnologyAction(
+  id: string
+): Promise<ActionResponse<boolean>> {
+  const admin = await assertAdminSession();
+
+  try {
+    const success = await siteContentRepository.archiveTechnology(id);
+
+    await auditLogRepository.record({
+      actorId: admin.uid,
+      actorEmail: admin.email || 'owner@philozz.internal',
+      action: 'update',
+      entityType: 'technology',
+      entityId: id,
+      summary: `Archived technology: ${id}`,
+    });
+
+    revalidatePath('/');
+    revalidatePath('/admin/sections');
+    revalidatePath('/admin/sections/preview');
+
+    return {
+      success: true,
+      data: success,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to archive technology.',
+    };
+  }
+}
+
+/**
+ * Restores an archived Technology item to draft status.
+ */
+export async function restoreTechnologyAction(
+  id: string
+): Promise<ActionResponse<boolean>> {
+  const admin = await assertAdminSession();
+
+  try {
+    const success = await siteContentRepository.restoreTechnology(id);
+
+    await auditLogRepository.record({
+      actorId: admin.uid,
+      actorEmail: admin.email || 'owner@philozz.internal',
+      action: 'update',
+      entityType: 'technology',
+      entityId: id,
+      summary: `Restored technology: ${id}`,
+    });
+
+    revalidatePath('/');
+    revalidatePath('/admin/sections');
+    revalidatePath('/admin/sections/preview');
+
+    return {
+      success: true,
+      data: success,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to restore technology.',
+    };
+  }
+}
+
+/**
+ * Deletes a Technology item.
+ * Guarded against deletion if currently occupying an active Orbit slot.
+ */
+export async function deleteTechnologyAction(
+  id: string
+): Promise<ActionResponse<void>> {
+  const admin = await assertAdminSession();
+
+  try {
+    await siteContentRepository.deleteTechnology(id);
+
+    await auditLogRepository.record({
+      actorId: admin.uid,
+      actorEmail: admin.email || 'owner@philozz.internal',
+      action: 'delete',
+      entityType: 'technology',
+      entityId: id,
+      summary: `Deleted technology: ${id}`,
+    });
+
+    revalidatePath('/');
+    revalidatePath('/admin/sections');
+    revalidatePath('/admin/sections/preview');
+
+    return {
+      success: true,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to delete technology.',
+    };
+  }
+}
+
+/**
+ * Reorders technology catalog items.
+ */
+export async function reorderTechnologiesAction(
+  orderedIds: string[]
+): Promise<ActionResponse<void>> {
+  await assertAdminSession();
+
+  try {
+    await siteContentRepository.reorderTechnologies(orderedIds);
+    revalidatePath('/');
+    revalidatePath('/admin/sections');
+    return { success: true };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to reorder technologies.',
+    };
+  }
+}
+
+/**
+ * Saves private draft assignments for the 9 Orbit slots.
+ */
+export async function saveOrbitSlotsDraftAction(
+  slots: OrbitSlotsTuple
+): Promise<ActionResponse<OrbitSlotsTuple>> {
+  const admin = await assertAdminSession();
+
+  const allTech = await siteContentRepository.getAllTechnologies();
+  const validation = validateOrbitSlots(slots, allTech);
+  if (!validation.valid) {
+    return {
+      success: false,
+      error: 'Validation failed for Orbit slot configuration.',
+      fieldErrors: validation.errors,
+    };
+  }
+
+  try {
+    const draft = await siteContentRepository.saveOrbitSlotsDraft(slots);
+
+    await auditLogRepository.record({
+      actorId: admin.uid,
+      actorEmail: admin.email || 'owner@philozz.internal',
+      action: 'update',
+      entityType: 'site_content',
+      entityId: 'orbit_slots_draft',
+      summary: 'Saved Orbit slots draft configuration',
+    });
+
+    revalidatePath('/admin/sections');
+    revalidatePath('/admin/sections/preview');
+
+    return {
+      success: true,
+      data: draft,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to save orbit slots draft.',
+    };
+  }
+}
+
+/**
+ * Publishes Orbit slots to the live website.
+ */
+export async function publishOrbitSlotsAction(
+  slots?: OrbitSlotsTuple
+): Promise<ActionResponse<OrbitSlotsTuple>> {
+  const admin = await assertAdminSession();
+
+  const allTech = await siteContentRepository.getAllTechnologies();
+  if (slots) {
+    const validation = validateOrbitSlots(slots, allTech);
+    if (!validation.valid) {
+      return {
+        success: false,
+        error: 'Validation failed for Orbit slot configuration.',
+        fieldErrors: validation.errors,
+      };
+    }
+  }
+
+  try {
+    const published = await siteContentRepository.publishOrbitSlots(slots);
+
+    await auditLogRepository.record({
+      actorId: admin.uid,
+      actorEmail: admin.email || 'owner@philozz.internal',
+      action: 'publish',
+      entityType: 'site_content',
+      entityId: 'orbit_slots',
+      summary: 'Published Orbit slot assignments to live website',
+    });
+
+    revalidatePath('/');
+    revalidatePath('/admin/sections');
+    revalidatePath('/admin/sections/preview');
+
+    return {
+      success: true,
+      data: published,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to publish orbit slots.',
+    };
+  }
+}
+
+/**
+ * Rolls back Orbit slots to previous configuration.
+ */
+export async function rollbackOrbitSlotsAction(): Promise<ActionResponse<OrbitSlotsTuple>> {
+  const admin = await assertAdminSession();
+
+  try {
+    const rolledBack = await siteContentRepository.rollbackOrbitSlots();
+
+    await auditLogRepository.record({
+      actorId: admin.uid,
+      actorEmail: admin.email || 'owner@philozz.internal',
+      action: 'update',
+      entityType: 'site_content',
+      entityId: 'orbit_slots',
+      summary: 'Rolled back Orbit slots to previous configuration',
+    });
+
+    revalidatePath('/');
+    revalidatePath('/admin/sections');
+    revalidatePath('/admin/sections/preview');
+
+    return {
+      success: true,
+      data: rolledBack,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to rollback orbit slots.',
+    };
+  }
+}
+
+// ============================================================================
+// PHASE 16D.3B: EXPERTISE AREAS FULL CRUD ACTIONS
+// ============================================================================
+
+/**
+ * Creates or updates an Expertise Area item.
+ */
+export async function saveExpertiseAreaAction(
+  payload: CreateExpertiseAreaInput | UpdateExpertiseAreaInput
+): Promise<ActionResponse<ExpertiseAreaEntity>> {
+  const admin = await assertAdminSession();
+
+  const validation = validateExpertiseArea(payload);
+  if (!validation.valid) {
+    return {
+      success: false,
+      error: 'Validation failed for expertise area.',
+      fieldErrors: validation.errors,
+    };
+  }
+
+  const isUpdate = 'id' in payload && Boolean(payload.id);
+
+  try {
+    let result: ExpertiseAreaEntity;
+    if (isUpdate) {
+      result = await siteContentRepository.updateExpertiseArea(
+        payload.id!,
+        payload as UpdateExpertiseAreaInput
+      );
+      await auditLogRepository.record({
+        actorId: admin.uid,
+        actorEmail: admin.email || 'owner@philozz.internal',
+        action: 'update',
+        entityType: 'site_content',
+        entityId: result.id,
+        summary: `Updated expertise area: ${result.name}`,
+      });
+    } else {
+      result = await siteContentRepository.createExpertiseArea(
+        payload as CreateExpertiseAreaInput
+      );
+      await auditLogRepository.record({
+        actorId: admin.uid,
+        actorEmail: admin.email || 'owner@philozz.internal',
+        action: 'create',
+        entityType: 'site_content',
+        entityId: result.id,
+        summary: `Created expertise area: ${result.name}`,
+      });
+    }
+
+    revalidatePath('/');
+    revalidatePath('/admin/sections');
+    revalidatePath('/admin/sections/preview');
+
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to save expertise area.',
+    };
+  }
+}
+
+/**
+ * Archives an Expertise Area.
+ */
+export async function archiveExpertiseAreaAction(
+  id: string
+): Promise<ActionResponse<boolean>> {
+  const admin = await assertAdminSession();
+
+  try {
+    const success = await siteContentRepository.archiveExpertiseArea(id);
+
+    await auditLogRepository.record({
+      actorId: admin.uid,
+      actorEmail: admin.email || 'owner@philozz.internal',
+      action: 'update',
+      entityType: 'site_content',
+      entityId: id,
+      summary: `Archived expertise area: ${id}`,
+    });
+
+    revalidatePath('/');
+    revalidatePath('/admin/sections');
+    revalidatePath('/admin/sections/preview');
+
+    return {
+      success: true,
+      data: success,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to archive expertise area.',
+    };
+  }
+}
+
+/**
+ * Restores an archived Expertise Area to draft status.
+ */
+export async function restoreExpertiseAreaAction(
+  id: string
+): Promise<ActionResponse<boolean>> {
+  const admin = await assertAdminSession();
+
+  try {
+    const success = await siteContentRepository.restoreExpertiseArea(id);
+
+    await auditLogRepository.record({
+      actorId: admin.uid,
+      actorEmail: admin.email || 'owner@philozz.internal',
+      action: 'update',
+      entityType: 'site_content',
+      entityId: id,
+      summary: `Restored expertise area: ${id}`,
+    });
+
+    revalidatePath('/');
+    revalidatePath('/admin/sections');
+    revalidatePath('/admin/sections/preview');
+
+    return {
+      success: true,
+      data: success,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to restore expertise area.',
+    };
+  }
+}
+
+/**
+ * Deletes an Expertise Area.
+ */
+export async function deleteExpertiseAreaAction(
+  id: string
+): Promise<ActionResponse<void>> {
+  const admin = await assertAdminSession();
+
+  try {
+    await siteContentRepository.deleteExpertiseArea(id);
+
+    await auditLogRepository.record({
+      actorId: admin.uid,
+      actorEmail: admin.email || 'owner@philozz.internal',
+      action: 'delete',
+      entityType: 'site_content',
+      entityId: id,
+      summary: `Deleted expertise area: ${id}`,
+    });
+
+    revalidatePath('/');
+    revalidatePath('/admin/sections');
+    revalidatePath('/admin/sections/preview');
+
+    return {
+      success: true,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to delete expertise area.',
+    };
+  }
+}
+
+/**
+ * Reorders expertise area items.
+ */
+export async function reorderExpertiseAreasAction(
+  orderedIds: string[]
+): Promise<ActionResponse<void>> {
+  await assertAdminSession();
+
+  try {
+    await siteContentRepository.reorderExpertiseAreas(orderedIds);
+    revalidatePath('/');
+    revalidatePath('/admin/sections');
+    return { success: true };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to reorder expertise areas.',
+    };
+  }
+}
+

@@ -21,7 +21,12 @@ import {
 } from '../models/site';
 import {
   TechnologyEntity,
+  CreateTechnologyInput,
+  UpdateTechnologyInput,
   ExpertiseAreaEntity,
+  CreateExpertiseAreaInput,
+  UpdateExpertiseAreaInput,
+  OrbitSlotsTuple,
   StackDetailsEntity,
 } from '../models/technology';
 import {
@@ -82,8 +87,36 @@ export interface ISiteContentRepository {
   publishHomepageConfig(data?: Partial<HomepageConfigEntity>): Promise<HomepageConfigEntity>;
   rollbackHomepageConfig(): Promise<HomepageConfigEntity>;
   updateHomepageConfig(data: Partial<HomepageConfigEntity>): Promise<HomepageConfigEntity>;
-  getTechnologies(): Promise<TechnologyEntity[]>;
-  getExpertiseAreas(): Promise<ExpertiseAreaEntity[]>;
+
+  // Technologies (Inventory & Focus Mode Content)
+  getTechnologies(options?: { preview?: boolean }): Promise<TechnologyEntity[]>;
+  getAllTechnologies(options?: { includeArchived?: boolean; preview?: boolean }): Promise<TechnologyEntity[]>;
+  getTechnologyById(id: string): Promise<TechnologyEntity | null>;
+  createTechnology(data: CreateTechnologyInput): Promise<TechnologyEntity>;
+  updateTechnology(id: string, data: UpdateTechnologyInput): Promise<TechnologyEntity>;
+  archiveTechnology(id: string): Promise<boolean>;
+  restoreTechnology(id: string): Promise<boolean>;
+  deleteTechnology(id: string): Promise<boolean>;
+  reorderTechnologies(orderedIds: string[]): Promise<boolean>;
+
+  // 9-Slot 3D Orbit Mapping
+  getOrbitSlots(options?: { preview?: boolean }): Promise<OrbitSlotsTuple>;
+  getOrbitSlotsDraft(): Promise<OrbitSlotsTuple | null>;
+  saveOrbitSlotsDraft(slotTechnologyIds: OrbitSlotsTuple): Promise<OrbitSlotsTuple>;
+  publishOrbitSlots(slotTechnologyIds?: OrbitSlotsTuple): Promise<OrbitSlotsTuple>;
+  rollbackOrbitSlots(): Promise<OrbitSlotsTuple>;
+
+  // Expertise Areas (Homepage Disciplines & Skills)
+  getExpertiseAreas(options?: { preview?: boolean }): Promise<ExpertiseAreaEntity[]>;
+  getAllExpertiseAreas(options?: { includeArchived?: boolean; preview?: boolean }): Promise<ExpertiseAreaEntity[]>;
+  getExpertiseAreaById(id: string): Promise<ExpertiseAreaEntity | null>;
+  createExpertiseArea(data: CreateExpertiseAreaInput): Promise<ExpertiseAreaEntity>;
+  updateExpertiseArea(id: string, data: UpdateExpertiseAreaInput): Promise<ExpertiseAreaEntity>;
+  archiveExpertiseArea(id: string): Promise<boolean>;
+  restoreExpertiseArea(id: string): Promise<boolean>;
+  deleteExpertiseArea(id: string): Promise<boolean>;
+  reorderExpertiseAreas(orderedIds: string[]): Promise<boolean>;
+
   getStackDetails(): Promise<StackDetailsEntity>;
 }
 

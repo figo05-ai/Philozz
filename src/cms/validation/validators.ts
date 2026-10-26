@@ -7,6 +7,11 @@ import { CreateProjectInput } from '../models/project';
 import { CreateArticleInput } from '../models/article';
 import { MediaUploadPayload } from '../models/media';
 import { HomepageConfigEntity, BrandInfoEntity } from '../models/site';
+import {
+  TechnologyEntity,
+  ExpertiseAreaEntity,
+  isSupportedLogoKey,
+} from '../models/technology';
 
 export interface ValidationResult {
   valid: boolean;
@@ -424,4 +429,156 @@ export function validateBrandInfo(brand: Partial<BrandInfoEntity>): ValidationRe
     errors,
   };
 }
+
+/**
+ * Validates Technology entity inputs.
+ */
+export function validateTechnology(input: Partial<TechnologyEntity>): ValidationResult {
+  const errors: Record<string, string> = {};
+
+  if (!input.name || input.name.trim().length === 0) {
+    errors.name = 'Technology name is required.';
+  } else if (input.name.trim().length < 2 || input.name.trim().length > 60) {
+    errors.name = 'Technology name must be between 2 and 60 characters.';
+  }
+
+  if (!input.label || input.label.trim().length === 0) {
+    errors.label = 'Display label is required.';
+  } else if (input.label.trim().length > 30) {
+    errors.label = 'Display label cannot exceed 30 characters.';
+  }
+
+  if (!input.category || input.category.trim().length === 0) {
+    errors.category = 'Category is required.';
+  } else if (input.category.trim().length > 50) {
+    errors.category = 'Category cannot exceed 50 characters.';
+  }
+
+  if (!input.role || input.role.trim().length === 0) {
+    errors.role = 'Engineering role summary is required.';
+  } else if (input.role.trim().length < 5 || input.role.trim().length > 120) {
+    errors.role = 'Engineering role must be between 5 and 120 characters.';
+  }
+
+  if (!input.description || input.description.trim().length === 0) {
+    errors.description = 'Description is required.';
+  } else if (input.description.trim().length < 10 || input.description.trim().length > 400) {
+    errors.description = 'Description must be between 10 and 400 characters.';
+  }
+
+  if (!input.capability || input.capability.trim().length === 0) {
+    errors.capability = 'Core capability details are required.';
+  } else if (input.capability.trim().length < 5 || input.capability.trim().length > 120) {
+    errors.capability = 'Core capability must be between 5 and 120 characters.';
+  }
+
+  if (!input.logoKey || input.logoKey.trim().length === 0) {
+    errors.logoKey = 'Logo reference key is required.';
+  }
+
+  if (input.status && !['draft', 'published', 'archived'].includes(input.status)) {
+    errors.status = 'Status must be one of: draft, published, archived.';
+  }
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors,
+  };
+}
+
+/**
+ * Validates 9-slot Homepage Orbit assignments.
+ * Enforces:
+ * 1. Exactly 9 slots.
+ * 2. Distinct IDs (no duplicates).
+ * 3. All referenced technologies exist and are published.
+ * 4. All referenced technologies have a supported logo in our logo registry.
+ * 5. All referenced technologies have valid focus mode content.
+ */
+export function validateOrbitSlots(
+  slotTechnologyIds: string[],
+  availableTechnologies: TechnologyEntity[]
+): ValidationResult {
+  const errors: Record<string, string> = {};
+
+  if (!Array.isArray(slotTechnologyIds) || slotTechnologyIds.length !== 9) {
+    errors.slots = `Orbit composition requires exactly 9 technology slots (received ${slotTechnologyIds?.length || 0}).`;
+    return { valid: false, errors };
+  }
+
+  const unique = new Set(slotTechnologyIds);
+  if (unique.size !== 9) {
+    errors.slots = 'Duplicate technologies detected. All 9 orbit slots must reference unique technologies.';
+  }
+
+  const techMap = new Map(availableTechnologies.map((t) => [t.id, t]));
+
+  slotTechnologyIds.forEach((techId, idx) => {
+    const tech = techMap.get(techId);
+    if (!tech) {
+      errors[`slot.${idx}`] = `Technology with ID "${techId}" does not exist in inventory.`;
+      return;
+    }
+
+    if (tech.status !== 'published') {
+      errors[`slot.${idx}`] = `Cannot assign "${tech.name}" (Slot ${idx + 1}): Only published technologies can occupy an Orbit slot (current status: ${tech.status}).`;
+    }
+
+    if (!isSupportedLogoKey(tech.logoKey)) {
+      errors[`slot.${idx}`] = `Cannot assign "${tech.name}" (Slot ${idx + 1}): Unsupported logo key "${tech.logoKey}". A supported logo is required before assigning to an Orbit slot.`;
+    }
+
+    if (!tech.name || !tech.label || !tech.category || !tech.description || !tech.capability) {
+      errors[`slot.${idx}`] = `Cannot assign "${tech.name || techId}" (Slot ${idx + 1}): Technology has incomplete Focus Mode content.`;
+    }
+  });
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors,
+  };
+}
+
+/**
+ * Validates Expertise Area entity inputs.
+ */
+export function validateExpertiseArea(input: Partial<ExpertiseAreaEntity>): ValidationResult {
+  const errors: Record<string, string> = {};
+
+  if (!input.name || input.name.trim().length === 0) {
+    errors.name = 'Discipline name is required.';
+  } else if (input.name.trim().length < 2 || input.name.trim().length > 60) {
+    errors.name = 'Discipline name must be between 2 and 60 characters.';
+  }
+
+  if (!input.level || input.level.trim().length === 0) {
+    errors.level = 'Skill level or classification is required.';
+  }
+
+  if (!input.description || input.description.trim().length === 0) {
+    errors.description = 'Description is required.';
+  } else if (input.description.trim().length < 10 || input.description.trim().length > 400) {
+    errors.description = 'Description must be between 10 and 400 characters.';
+  }
+
+  if (!Array.isArray(input.coreConcepts) || input.coreConcepts.length === 0) {
+    errors.coreConcepts = 'At least one core concept is required.';
+  } else {
+    input.coreConcepts.forEach((c, idx) => {
+      if (!c || c.trim().length === 0) {
+        errors[`coreConcepts.${idx}`] = 'Core concept cannot be empty.';
+      }
+    });
+  }
+
+  if (input.status && !['draft', 'published', 'archived'].includes(input.status)) {
+    errors.status = 'Status must be one of: draft, published, archived.';
+  }
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors,
+  };
+}
+
 

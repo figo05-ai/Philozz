@@ -23,12 +23,17 @@ export default async function AdminSectionsPreviewPage() {
   await requireAdminSession();
 
   // Fetch draft if exists, falling back to published
-  const [previewConfig, brandInfo] = await Promise.all([
+  const [previewConfig, brandInfo, technologies, orbitSlotsDraft, orbitSlotsPublished, expertiseAreas] = await Promise.all([
     siteContentRepository.getHomepageConfig({ preview: true }),
     siteContentRepository.getBrandInfo(),
+    siteContentRepository.getAllTechnologies(),
+    siteContentRepository.getOrbitSlotsDraft(),
+    siteContentRepository.getOrbitSlots(),
+    siteContentRepository.getAllExpertiseAreas(),
   ]);
 
-  const isDraft = previewConfig.status === 'draft';
+  const activeOrbitSlots = orbitSlotsDraft || orbitSlotsPublished;
+  const isDraft = previewConfig.status === 'draft' || Boolean(orbitSlotsDraft);
 
   return (
     <div style={{ position: 'relative', minHeight: '100vh' }}>
@@ -112,9 +117,13 @@ export default async function AdminSectionsPreviewPage() {
       </div>
 
       {/* Main Homepage Render with Draft Configurations */}
-      <div style={{ paddingTop: '52px' }}>
-        <HomePageClient homepageConfig={previewConfig} brandInfo={brandInfo} />
-      </div>
+        <HomePageClient
+          homepageConfig={previewConfig}
+          brandInfo={brandInfo}
+          technologies={technologies}
+          orbitSlots={activeOrbitSlots}
+          expertiseAreas={expertiseAreas}
+        />
     </div>
   );
 }

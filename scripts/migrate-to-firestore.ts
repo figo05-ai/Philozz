@@ -121,7 +121,7 @@ export async function runMigration(mode: 'dry-run' | 'live' = 'dry-run'): Promis
       technologies: bundle.collections.technologies.map((t) => ({
         id: t.id,
         name: t.name,
-        isRear: t.isRear,
+        isRear: Boolean(t.isRear),
         hash: computeSha256(t),
       })),
       expertiseAreas: bundle.collections.expertiseAreas.map((e) => ({

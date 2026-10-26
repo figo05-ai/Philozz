@@ -240,3 +240,21 @@ export const CORE_TECH_STACK: TechItem[] = [
     icon: LinuxLogo,
   },
 ];
+
+export const TECH_LOGO_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  laravel: LaravelLogo,
+  php: PhpLogo,
+  mysql: MysqlLogo,
+  javascript: JavascriptLogo,
+  react: ReactLogo,
+  nextjs: NextjsLogo,
+  redis: RedisLogo,
+  docker: DockerLogo,
+  linux: LinuxLogo,
+};
+
+export function getTechLogo(logoKey: string): React.ComponentType<{ size?: number; className?: string }> {
+  const normalized = logoKey.toLowerCase().trim();
+  return TECH_LOGO_MAP[normalized] || PhpLogo;
+}
+

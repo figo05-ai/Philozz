@@ -11,7 +11,13 @@ import {
   RedisLogo,
   DockerLogo,
   LinuxLogo,
+  getTechLogo,
 } from './TechLogos';
+import {
+  FIXED_ORBIT_SLOT_GEOMETRY,
+  TechnologyEntity,
+  OrbitSlotsTuple,
+} from '@/cms/models/technology';
 
 export interface TechnologyItem {
   id: string;
@@ -200,7 +206,60 @@ export const TECHNOLOGIES: TechnologyItem[] = [
   },
 ];
 
-export function TechOrbitEcosystem() {
+/**
+ * Resolves 9 active TechnologyItem instances from repository entities and orbit slots.
+ * Maps technology content directly onto fixed system-controlled OrbitSlotGeometry,
+ * guaranteeing 100% preservation of elliptical orbital coordinates, scales, and depths.
+ */
+export function resolveOrbitItems(
+  technologies?: TechnologyEntity[],
+  orbitSlots?: OrbitSlotsTuple
+): TechnologyItem[] {
+  if (!technologies || technologies.length === 0 || !orbitSlots || orbitSlots.length !== 9) {
+    return TECHNOLOGIES;
+  }
+
+  const techMap = new Map(technologies.map((t) => [t.id, t]));
+  const resolved: TechnologyItem[] = [];
+
+  for (let i = 0; i < 9; i++) {
+    const slotId = orbitSlots[i];
+    const tech = techMap.get(slotId);
+    const geom = FIXED_ORBIT_SLOT_GEOMETRY[i];
+
+    if (!tech) {
+      resolved.push(TECHNOLOGIES[i]);
+      continue;
+    }
+
+    resolved.push({
+      id: tech.id,
+      name: tech.name,
+      label: tech.label,
+      category: tech.category,
+      role: tech.role,
+      description: tech.description,
+      capability: tech.capability,
+      logo: getTechLogo(tech.logoKey),
+      logoSize: geom.logoSize,
+      x: geom.x,
+      y: geom.y,
+      svgX: geom.svgX,
+      svgY: geom.svgY,
+      isRear: geom.isRear,
+      scale: geom.scale,
+      floatDelay: geom.floatDelay,
+    });
+  }
+
+  return resolved;
+}
+
+export interface TechOrbitEcosystemProps {
+  items?: TechnologyItem[];
+}
+
+export function TechOrbitEcosystem({ items = TECHNOLOGIES }: TechOrbitEcosystemProps = {}) {
   const [hoveredItem, setHoveredItem] = useState<TechnologyItem | null>(null);
   const [selectedItem, setSelectedItem] = useState<TechnologyItem | null>(null);
 
@@ -214,7 +273,7 @@ export function TechOrbitEcosystem() {
   // Keyboard navigation handler for pedestals with Arrow Key traversal
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent, item: TechnologyItem) => {
-      const currentIndex = TECHNOLOGIES.findIndex((t) => t.id === item.id);
+      const currentIndex = items.findIndex((t) => t.id === item.id);
 
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -225,21 +284,21 @@ export function TechOrbitEcosystem() {
         setHoveredItem(null);
       } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         e.preventDefault();
-        const nextIndex = (currentIndex + 1) % TECHNOLOGIES.length;
-        const nextItem = TECHNOLOGIES[nextIndex];
+        const nextIndex = (currentIndex + 1) % items.length;
+        const nextItem = items[nextIndex];
         const nextEl = document.getElementById(`pedestal-${nextItem.id}`);
         nextEl?.focus();
         setSelectedItem(nextItem);
       } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         e.preventDefault();
-        const prevIndex = (currentIndex - 1 + TECHNOLOGIES.length) % TECHNOLOGIES.length;
-        const prevItem = TECHNOLOGIES[prevIndex];
+        const prevIndex = (currentIndex - 1 + items.length) % items.length;
+        const prevItem = items[prevIndex];
         const prevEl = document.getElementById(`pedestal-${prevItem.id}`);
         prevEl?.focus();
         setSelectedItem(prevItem);
       }
     },
-    [handleToggleSelect]
+    [items, handleToggleSelect]
   );
 
   // Keyboard navigation handler for mobile tablist chips
@@ -247,24 +306,24 @@ export function TechOrbitEcosystem() {
     (e: React.KeyboardEvent, index: number) => {
       let targetIndex = -1;
       if (e.key === 'ArrowRight') {
-        targetIndex = (index + 1) % TECHNOLOGIES.length;
+        targetIndex = (index + 1) % items.length;
       } else if (e.key === 'ArrowLeft') {
-        targetIndex = (index - 1 + TECHNOLOGIES.length) % TECHNOLOGIES.length;
+        targetIndex = (index - 1 + items.length) % items.length;
       } else if (e.key === 'Home') {
         targetIndex = 0;
       } else if (e.key === 'End') {
-        targetIndex = TECHNOLOGIES.length - 1;
+        targetIndex = items.length - 1;
       }
 
       if (targetIndex !== -1) {
         e.preventDefault();
-        const targetItem = TECHNOLOGIES[targetIndex];
+        const targetItem = items[targetIndex];
         setSelectedItem(targetItem);
         const targetBtn = document.getElementById(`tech-chip-${targetItem.id}`);
         targetBtn?.focus();
       }
     },
-    []
+    [items]
   );
 
   // Clear hover on window blur or unmount
@@ -434,7 +493,7 @@ export function TechOrbitEcosystem() {
         </div>
 
         {/* 9 3D Raised Technology Pedestals */}
-        {TECHNOLOGIES.map((item) => {
+        {items.map((item) => {
           const Logo = item.logo;
           const isFocused = activeItem?.id === item.id;
           const isSelected = selectedItem?.id === item.id;
@@ -614,7 +673,7 @@ export function TechOrbitEcosystem() {
 
       {/* Synchronized Mobile Technology Chips Selector (Accessible 44px Tap Targets) */}
       <div className="mobile-tech-chips" role="tablist" aria-label="Technology platform selector">
-        {TECHNOLOGIES.map((item, idx) => {
+        {items.map((item, idx) => {
           const isSelected = activeItem?.id === item.id;
           const ChipLogo = item.logo;
           return (

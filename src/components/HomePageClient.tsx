@@ -12,6 +12,12 @@ import { FallbackView } from '@/components/FallbackView';
 import { useTestOverrides } from '@/lib/useTestOverrides';
 import { HomepageConfigEntity, BrandInfoEntity } from '@/cms/models/site';
 
+import {
+  TechnologyEntity,
+  OrbitSlotsTuple,
+  ExpertiseAreaEntity,
+} from '@/cms/models/technology';
+
 // Dynamically import Three.js Canvas to split WebGL from initial critical bundle
 const PortfolioCanvas = dynamic(
   () => import('@/three/PortfolioCanvas').then((mod) => mod.PortfolioCanvas),
@@ -21,9 +27,18 @@ const PortfolioCanvas = dynamic(
 export interface HomePageClientProps {
   homepageConfig?: HomepageConfigEntity;
   brandInfo?: BrandInfoEntity;
+  technologies?: TechnologyEntity[];
+  orbitSlots?: OrbitSlotsTuple;
+  expertiseAreas?: ExpertiseAreaEntity[];
 }
 
-export function HomePageClient({ homepageConfig, brandInfo }: HomePageClientProps = {}) {
+export function HomePageClient({
+  homepageConfig,
+  brandInfo,
+  technologies,
+  orbitSlots,
+  expertiseAreas,
+}: HomePageClientProps = {}) {
   const isMounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -52,7 +67,11 @@ export function HomePageClient({ homepageConfig, brandInfo }: HomePageClientProp
           brand={brandInfo}
           aboutConfig={homepageConfig?.about}
         />
-        <ArchitectureScene />
+        <ArchitectureScene
+          technologies={technologies}
+          orbitSlots={orbitSlots}
+          expertiseAreas={expertiseAreas}
+        />
         <ProjectsScene />
         <NotesScene />
       </main>

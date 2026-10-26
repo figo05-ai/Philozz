@@ -13,9 +13,20 @@ import {
 } from '../../models/site';
 import {
   TechnologyEntity,
+  CreateTechnologyInput,
+  UpdateTechnologyInput,
   ExpertiseAreaEntity,
+  CreateExpertiseAreaInput,
+  UpdateExpertiseAreaInput,
   StackDetailsEntity,
+  OrbitSlotsTuple,
+  DEFAULT_ORBIT_SLOTS,
 } from '../../models/technology';
+import {
+  validateTechnology,
+  validateOrbitSlots,
+  validateExpertiseArea,
+} from '../../validation/validators';
 import { ISiteContentRepository } from '../types';
 
 export class LocalSiteContentRepository implements ISiteContentRepository {
@@ -23,6 +34,9 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
   private homepageConfig: HomepageConfigEntity;
   private homepageConfigDraft: HomepageConfigEntity | null = null;
   private previousHomepageConfig: HomepageConfigEntity | null = null;
+  private orbitSlots: OrbitSlotsTuple = [...DEFAULT_ORBIT_SLOTS];
+  private orbitSlotsDraft: OrbitSlotsTuple | null = null;
+  private previousOrbitSlots: OrbitSlotsTuple | null = null;
   private technologies: TechnologyEntity[];
   private expertiseAreas: ExpertiseAreaEntity[];
   private stackDetails: StackDetailsEntity;
@@ -460,12 +474,285 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
     return JSON.parse(JSON.stringify(this.homepageConfig));
   }
 
-  async getTechnologies(): Promise<TechnologyEntity[]> {
-    return [...this.technologies].sort((a, b) => a.displayOrder - b.displayOrder);
+  // ==========================================
+  // TECHNOLOGIES & INVENTORY MANAGEMENT
+  // ==========================================
+
+  async getTechnologies(_options?: { preview?: boolean }): Promise<TechnologyEntity[]> {
+    return [...this.technologies]
+      .filter((t) => t.status === 'published')
+      .sort((a, b) => a.displayOrder - b.displayOrder);
   }
 
-  async getExpertiseAreas(): Promise<ExpertiseAreaEntity[]> {
-    return [...this.expertiseAreas].sort((a, b) => a.displayOrder - b.displayOrder);
+  async getAllTechnologies(options?: { includeArchived?: boolean; preview?: boolean }): Promise<TechnologyEntity[]> {
+    return [...this.technologies]
+      .filter((t) => (options?.includeArchived ? true : t.status !== 'archived'))
+      .sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  async getTechnologyById(id: string): Promise<TechnologyEntity | null> {
+    const tech = this.technologies.find((t) => t.id === id);
+    return tech ? JSON.parse(JSON.stringify(tech)) : null;
+  }
+
+  async createTechnology(data: CreateTechnologyInput): Promise<TechnologyEntity> {
+    const validation = validateTechnology(data);
+    if (!validation.valid) {
+      throw new Error(`Validation failed for technology: ${JSON.stringify(validation.errors)}`);
+    }
+
+    const id = data.id || data.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    if (this.technologies.some((t) => t.id === id)) {
+      throw new Error(`Technology with ID "${id}" already exists.`);
+    }
+
+    const now = new Date().toISOString();
+    const created: TechnologyEntity = {
+      ...data,
+      id,
+      displayOrder: data.displayOrder || this.technologies.length + 1,
+      status: data.status || 'published',
+      version: 1,
+      updatedAt: now,
+    };
+
+    this.technologies.push(created);
+    return JSON.parse(JSON.stringify(created));
+  }
+
+  async updateTechnology(id: string, data: UpdateTechnologyInput): Promise<TechnologyEntity> {
+    const index = this.technologies.findIndex((t) => t.id === id);
+    if (index === -1) {
+      throw new Error(`Technology with ID "${id}" not found.`);
+    }
+
+    const current = this.technologies[index];
+
+    // INVARIANT GUARD: Prevent archiving if currently occupying an active homepage Orbit slot
+    if (data.status === 'archived' && this.orbitSlots.includes(id)) {
+      throw new Error(
+        `Cannot archive technology "${current.name}" while it occupies an active Homepage Orbit slot. Reassign the orbit slot before archiving.`
+      );
+    }
+
+    // Validate merged payload
+    const merged = { ...current, ...data };
+    const validation = validateTechnology(merged);
+    if (!validation.valid) {
+      throw new Error(`Validation failed for technology: ${JSON.stringify(validation.errors)}`);
+    }
+
+    const updated: TechnologyEntity = {
+      ...current,
+      ...data,
+      id: current.id, // Immutable ID
+      // Preserve system-controlled orbital coordinates
+      x: current.x,
+      y: current.y,
+      svgX: current.svgX,
+      svgY: current.svgY,
+      isRear: current.isRear,
+      scale: current.scale,
+      floatDelay: current.floatDelay,
+      version: (current.version || 1) + 1,
+      updatedAt: new Date().toISOString(),
+    };
+
+    this.technologies[index] = updated;
+    return JSON.parse(JSON.stringify(updated));
+  }
+
+  async archiveTechnology(id: string): Promise<boolean> {
+    await this.updateTechnology(id, { status: 'archived' });
+    return true;
+  }
+
+  async restoreTechnology(id: string): Promise<boolean> {
+    await this.updateTechnology(id, { status: 'draft' });
+    return true;
+  }
+
+  async deleteTechnology(id: string): Promise<boolean> {
+    const index = this.technologies.findIndex((t) => t.id === id);
+    if (index === -1) {
+      return false;
+    }
+
+    // INVARIANT GUARD: Cannot delete if occupying an active orbit slot
+    if (this.orbitSlots.includes(id)) {
+      throw new Error(
+        `Cannot delete technology "${this.technologies[index].name}" while it occupies an active Homepage Orbit slot. Reassign the orbit slot first.`
+      );
+    }
+
+    this.technologies.splice(index, 1);
+    return true;
+  }
+
+  async reorderTechnologies(orderedIds: string[]): Promise<boolean> {
+    const map = new Map(this.technologies.map((t) => [t.id, t]));
+    orderedIds.forEach((id, idx) => {
+      const tech = map.get(id);
+      if (tech) {
+        tech.displayOrder = idx + 1;
+        tech.updatedAt = new Date().toISOString();
+      }
+    });
+    return true;
+  }
+
+  // ==========================================
+  // 9-SLOT 3D HOMEPAGE ORBIT MANAGEMENT
+  // ==========================================
+
+  async getOrbitSlots(options?: { preview?: boolean }): Promise<OrbitSlotsTuple> {
+    if (options?.preview && this.orbitSlotsDraft) {
+      return [...this.orbitSlotsDraft];
+    }
+    return [...this.orbitSlots];
+  }
+
+  async getOrbitSlotsDraft(): Promise<OrbitSlotsTuple | null> {
+    return this.orbitSlotsDraft ? [...this.orbitSlotsDraft] : null;
+  }
+
+  async saveOrbitSlotsDraft(slotTechnologyIds: OrbitSlotsTuple): Promise<OrbitSlotsTuple> {
+    const validation = validateOrbitSlots(slotTechnologyIds, this.technologies);
+    if (!validation.valid) {
+      throw new Error(`Validation failed for Orbit slots: ${JSON.stringify(validation.errors)}`);
+    }
+
+    this.orbitSlotsDraft = [...slotTechnologyIds];
+    return [...this.orbitSlotsDraft];
+  }
+
+  async publishOrbitSlots(slotTechnologyIds?: OrbitSlotsTuple): Promise<OrbitSlotsTuple> {
+    const target = slotTechnologyIds || this.orbitSlotsDraft;
+    if (!target) {
+      throw new Error('NO_DRAFT_TO_PUBLISH: No draft orbit configuration exists to publish.');
+    }
+    const validation = validateOrbitSlots(target, this.technologies);
+    if (!validation.valid) {
+      throw new Error(`Validation failed for Orbit slots: ${JSON.stringify(validation.errors)}`);
+    }
+
+    // Backup current for rollback
+    this.previousOrbitSlots = [...this.orbitSlots];
+    this.orbitSlots = [...target];
+    this.orbitSlotsDraft = null;
+
+    return [...this.orbitSlots];
+  }
+
+  async rollbackOrbitSlots(): Promise<OrbitSlotsTuple> {
+    if (!this.previousOrbitSlots) {
+      throw new Error('No previous published orbit slot configuration available to restore.');
+    }
+
+    this.orbitSlots = [...this.previousOrbitSlots];
+    this.orbitSlotsDraft = null;
+    return [...this.orbitSlots];
+  }
+
+  // ==========================================
+  // EXPERTISE AREAS (ENGINEERING DISCIPLINES)
+  // ==========================================
+
+  async getExpertiseAreas(_options?: { preview?: boolean }): Promise<ExpertiseAreaEntity[]> {
+    return [...this.expertiseAreas]
+      .filter((a) => a.status === 'published')
+      .sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  async getAllExpertiseAreas(options?: { includeArchived?: boolean; preview?: boolean }): Promise<ExpertiseAreaEntity[]> {
+    return [...this.expertiseAreas]
+      .filter((a) => (options?.includeArchived ? true : a.status !== 'archived'))
+      .sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  async getExpertiseAreaById(id: string): Promise<ExpertiseAreaEntity | null> {
+    const area = this.expertiseAreas.find((a) => a.id === id);
+    return area ? JSON.parse(JSON.stringify(area)) : null;
+  }
+
+  async createExpertiseArea(data: CreateExpertiseAreaInput): Promise<ExpertiseAreaEntity> {
+    const validation = validateExpertiseArea(data);
+    if (!validation.valid) {
+      throw new Error(`Validation failed for expertise area: ${JSON.stringify(validation.errors)}`);
+    }
+
+    const id = data.id || data.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    if (this.expertiseAreas.some((a) => a.id === id)) {
+      throw new Error(`Expertise area with ID "${id}" already exists.`);
+    }
+
+    const created: ExpertiseAreaEntity = {
+      ...data,
+      id,
+      displayOrder: data.displayOrder || this.expertiseAreas.length + 1,
+      status: data.status || 'published',
+      version: 1,
+      updatedAt: new Date().toISOString(),
+    };
+
+    this.expertiseAreas.push(created);
+    return JSON.parse(JSON.stringify(created));
+  }
+
+  async updateExpertiseArea(id: string, data: UpdateExpertiseAreaInput): Promise<ExpertiseAreaEntity> {
+    const index = this.expertiseAreas.findIndex((a) => a.id === id);
+    if (index === -1) {
+      throw new Error(`Expertise area with ID "${id}" not found.`);
+    }
+
+    const current = this.expertiseAreas[index];
+    const merged = { ...current, ...data };
+    const validation = validateExpertiseArea(merged);
+    if (!validation.valid) {
+      throw new Error(`Validation failed for expertise area: ${JSON.stringify(validation.errors)}`);
+    }
+
+    const updated: ExpertiseAreaEntity = {
+      ...current,
+      ...data,
+      id: current.id,
+      version: (current.version || 1) + 1,
+      updatedAt: new Date().toISOString(),
+    };
+
+    this.expertiseAreas[index] = updated;
+    return JSON.parse(JSON.stringify(updated));
+  }
+
+  async archiveExpertiseArea(id: string): Promise<boolean> {
+    await this.updateExpertiseArea(id, { status: 'archived' });
+    return true;
+  }
+
+  async restoreExpertiseArea(id: string): Promise<boolean> {
+    await this.updateExpertiseArea(id, { status: 'draft' });
+    return true;
+  }
+
+  async deleteExpertiseArea(id: string): Promise<boolean> {
+    const index = this.expertiseAreas.findIndex((a) => a.id === id);
+    if (index === -1) {
+      return false;
+    }
+    this.expertiseAreas.splice(index, 1);
+    return true;
+  }
+
+  async reorderExpertiseAreas(orderedIds: string[]): Promise<boolean> {
+    const map = new Map(this.expertiseAreas.map((a) => [a.id, a]));
+    orderedIds.forEach((id, idx) => {
+      const area = map.get(id);
+      if (area) {
+        area.displayOrder = idx + 1;
+        area.updatedAt = new Date().toISOString();
+      }
+    });
+    return true;
   }
 
   async getStackDetails(): Promise<StackDetailsEntity> {
