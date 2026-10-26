@@ -70,7 +70,18 @@ export class FirestoreSiteContentRepository implements ISiteContentRepository {
     };
   }
 
-  async getHomepageConfig(): Promise<HomepageConfigEntity> {
+  async getHomepageConfig(options?: { preview?: boolean }): Promise<HomepageConfigEntity> {
+    if (options?.preview) {
+      const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.HOMEPAGE_CONFIG_DRAFT);
+      const draftSnap = await draftRef.get();
+      if (draftSnap.exists) {
+        return {
+          ...(draftSnap.data()! as HomepageConfigEntity),
+          id: 'homepage_config',
+        };
+      }
+    }
+
     const docRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.HOMEPAGE_CONFIG);
     const snap = await docRef.get();
 
@@ -87,22 +98,125 @@ export class FirestoreSiteContentRepository implements ISiteContentRepository {
     };
   }
 
+  async getHomepageConfigDraft(): Promise<HomepageConfigEntity | null> {
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.HOMEPAGE_CONFIG_DRAFT);
+    const snap = await draftRef.get();
+    if (!snap.exists) return null;
+    return {
+      ...(snap.data()! as HomepageConfigEntity),
+      id: 'homepage_config',
+    };
+  }
+
+  async saveHomepageConfigDraft(data: Partial<HomepageConfigEntity>): Promise<HomepageConfigEntity> {
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.HOMEPAGE_CONFIG_DRAFT);
+    const publishedConfig = await this.getHomepageConfig();
+    const existingDraft = await this.getHomepageConfigDraft();
+    const base = existingDraft || publishedConfig;
+    const now = new Date().toISOString();
+
+    const updatedDraft: HomepageConfigEntity = {
+      ...base,
+      ...data,
+      hero: { ...base.hero, ...(data.hero || {}) },
+      about: { ...base.about, ...(data.about || {}) },
+      contact: { ...base.contact, ...(data.contact || {}) },
+      id: 'homepage_config',
+      status: 'draft',
+      version: (base.version || 1) + 1,
+      updatedAt: now,
+    };
+
+    await draftRef.set(updatedDraft);
+    return updatedDraft;
+  }
+
+  async publishHomepageConfig(data?: Partial<HomepageConfigEntity>): Promise<HomepageConfigEntity> {
+    const firestore = getFirebaseFirestore();
+    const publishedRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.HOMEPAGE_CONFIG);
+    const prevRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.HOMEPAGE_CONFIG_PREV);
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.HOMEPAGE_CONFIG_DRAFT);
+
+    const publishedConfig = await this.getHomepageConfig();
+    const existingDraft = await this.getHomepageConfigDraft();
+    const base = existingDraft || publishedConfig;
+    const now = new Date().toISOString();
+
+    const newPublished: HomepageConfigEntity = {
+      ...base,
+      ...(data || {}),
+      hero: { ...base.hero, ...(data?.hero || {}) },
+      about: { ...base.about, ...(data?.about || {}) },
+      contact: { ...base.contact, ...(data?.contact || {}) },
+      id: 'homepage_config',
+      status: 'published',
+      version: (publishedConfig.version || 1) + 1,
+      updatedAt: now,
+      publishedAt: now,
+    };
+
+    const batch = firestore.batch();
+    // 1. Backup current published to prevRef
+    batch.set(prevRef, publishedConfig);
+    // 2. Set new published config
+    batch.set(publishedRef, newPublished);
+    // 3. Delete draft
+    batch.delete(draftRef);
+
+    await batch.commit();
+    return newPublished;
+  }
+
+  async rollbackHomepageConfig(): Promise<HomepageConfigEntity> {
+    const firestore = getFirebaseFirestore();
+    const publishedRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.HOMEPAGE_CONFIG);
+    const prevRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.HOMEPAGE_CONFIG_PREV);
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.HOMEPAGE_CONFIG_DRAFT);
+
+    const prevSnap = await prevRef.get();
+    if (!prevSnap.exists) {
+      throw new Error('No previous published homepage configuration available to restore.');
+    }
+
+    const current = await this.getHomepageConfig();
+    const prevData = prevSnap.data()! as HomepageConfigEntity;
+    const now = new Date().toISOString();
+
+    const restored: HomepageConfigEntity = {
+      ...prevData,
+      id: 'homepage_config',
+      status: 'published',
+      version: (current.version || 1) + 1,
+      updatedAt: now,
+      publishedAt: now,
+    };
+
+    const batch = firestore.batch();
+    batch.set(publishedRef, restored);
+    batch.delete(draftRef);
+    await batch.commit();
+
+    return restored;
+  }
+
   async updateHomepageConfig(
     data: Partial<HomepageConfigEntity>
   ): Promise<HomepageConfigEntity> {
     const docRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.HOMEPAGE_CONFIG);
+    const current = await this.getHomepageConfig();
     const updatedAt = new Date().toISOString();
-    const updatePayload = {
+    const updated: HomepageConfigEntity = {
+      ...current,
       ...data,
+      hero: { ...current.hero, ...(data.hero || {}) },
+      about: { ...current.about, ...(data.about || {}) },
+      contact: { ...current.contact, ...(data.contact || {}) },
+      version: (current.version || 1) + 1,
       updatedAt,
     };
 
-    await docRef.set(updatePayload, { merge: true });
-    const fresh = await docRef.get();
-    return {
-      ...(fresh.data()! as HomepageConfigEntity),
-      id: 'homepage_config',
-    };
+    await docRef.set(updated, { merge: true });
+    return updated;
   }
 
   async getTechnologies(): Promise<TechnologyEntity[]> {

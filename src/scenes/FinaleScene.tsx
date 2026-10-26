@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Mail, ArrowUp, Download, MapPin, Globe } from 'lucide-react';
 import { BRAND_INFO, PHOTO_ASSETS } from '@/data/portfolioData';
 import { BlogToContactTransition } from '@/components/BlogToContactTransition';
+import { ContactSectionConfig, BrandInfoEntity } from '@/cms/models/site';
 
 function GithubIcon({ size = 16 }: { size?: number }) {
   return (
@@ -25,7 +26,32 @@ function LinkedinIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-export function FinaleScene() {
+export interface FinaleSceneProps {
+  config?: ContactSectionConfig;
+  brand?: BrandInfoEntity;
+}
+
+export function FinaleScene({ config, brand }: FinaleSceneProps = {}) {
+  const sectionTag = config?.sectionTag || "LET'S BUILD SOMETHING GREAT";
+  const headline = config?.headline || 'Get In Touch';
+  const subheadline =
+    config?.subheadline ||
+    "Have a project in mind, an architectural challenge to solve, or looking to scale your backend infrastructure? I'm always open to discussing new high-impact opportunities.";
+  const email = config?.email || brand?.email || BRAND_INFO.email;
+  const location = config?.location || brand?.location || BRAND_INFO.location;
+  const domain = brand?.domain || BRAND_INFO.domain;
+  const github = brand?.github || BRAND_INFO.github;
+  const linkedin = brand?.linkedin || BRAND_INFO.linkedin;
+  const cvUrl = config?.secondaryCtaHref || brand?.cvUrl || BRAND_INFO.cvUrl;
+  const primaryCtaLabel = config?.primaryCtaLabel || 'Send a Message';
+  const secondaryCtaLabel = config?.secondaryCtaLabel || 'View Resume';
+  const portraitImageUrl = config?.portraitImageUrl || PHOTO_ASSETS.portraitThinking;
+  const scriptBadgeText = config?.scriptBadgeText || 'Same\nPerson.\nStill\nBuilding.';
+  const footerTagline = config?.footerTagline || 'Full-Stack Engineer. Backend at Heart.';
+  const brandName = brand?.name || BRAND_INFO.name;
+  const copyrightNotice =
+    config?.copyrightNotice || `© 2026 ${brandName}. All rights reserved.`;
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -40,11 +66,17 @@ export function FinaleScene() {
           {/* Left Column: Direct Inquiries & Real Contact Data */}
           <div>
             <div className="section-tag contact-header-tag">
-              <span>LET&apos;S BUILD SOMETHING GREAT</span>
+              <span>{sectionTag}</span>
             </div>
 
             <h2 className="font-editorial-large contact-main-heading" style={{ marginBottom: '1.5rem', color: 'var(--color-ivory)' }}>
-              Get In <span className="font-gold-gradient">Touch</span>
+              {headline.includes(' ') ? (
+                <>
+                  {headline.substring(0, headline.lastIndexOf(' '))} <span className="font-gold-gradient">{headline.substring(headline.lastIndexOf(' ') + 1)}</span>
+                </>
+              ) : (
+                <span className="font-gold-gradient">{headline}</span>
+              )}
             </h2>
 
             <p
@@ -57,68 +89,67 @@ export function FinaleScene() {
                 marginBottom: '2.5rem',
               }}
             >
-              Have a project in mind, an architectural challenge to solve, or looking to scale your backend infrastructure?
-              I&apos;m always open to discussing new high-impact opportunities.
+              {subheadline}
             </p>
 
             {/* Main Action Buttons */}
             <div className="contact-cta-group" style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', alignItems: 'center' }}>
               <a
-                href={`mailto:${BRAND_INFO.email}`}
+                href={`mailto:${email}`}
                 className="btn-gold"
-                aria-label={`Send direct email to ${BRAND_INFO.email}`}
+                aria-label={`Send direct email to ${email}`}
               >
                 <Mail size={18} />
-                <span>Send a Message</span>
+                <span>{primaryCtaLabel}</span>
               </a>
 
               <a
-                href={BRAND_INFO.cvUrl}
+                href={cvUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-outline-gold"
                 aria-label="View and Download Resume PDF"
               >
                 <Download size={16} style={{ color: 'var(--color-gold-light)' }} />
-                <span>View Resume</span>
+                <span>{secondaryCtaLabel}</span>
               </a>
             </div>
 
             {/* Direct Channels */}
             <div className="contact-links-list contact-channels-group">
-              <a href={`mailto:${BRAND_INFO.email}`} className="contact-link-pill">
+              <a href={`mailto:${email}`} className="contact-link-pill">
                 <Mail size={16} style={{ color: 'var(--color-gold-light)' }} />
-                <span>{BRAND_INFO.email}</span>
+                <span>{email}</span>
               </a>
 
               <a
-                href={BRAND_INFO.linkedin}
+                href={linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="contact-link-pill"
               >
                 <LinkedinIcon size={16} />
-                <span>linkedin.com/in/felopter-alexandir</span>
+                <span>{linkedin.replace(/^https?:\/\/(www\.)?/, '')}</span>
               </a>
 
               <a
-                href={BRAND_INFO.github}
+                href={github}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="contact-link-pill"
               >
                 <GithubIcon size={16} />
-                <span>github.com/figo05-ai</span>
+                <span>{github.replace(/^https?:\/\/(www\.)?/, '')}</span>
               </a>
 
               <div className="contact-link-pill" style={{ cursor: 'default' }}>
                 <Globe size={16} style={{ color: 'var(--color-gold-light)' }} />
-                <span>{BRAND_INFO.domain}</span>
+                <span>{domain}</span>
               </div>
 
               <div className="contact-link-pill" style={{ cursor: 'default' }}>
                 <MapPin size={16} style={{ color: 'var(--color-gold-light)' }} />
-                <span>{BRAND_INFO.location}</span>
+                <span>{location}</span>
               </div>
             </div>
           </div>
@@ -127,8 +158,8 @@ export function FinaleScene() {
           <div className="contact-portrait-group" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
             <div className="finale-portrait-box">
               <Image
-                src={PHOTO_ASSETS.portraitThinking}
-                alt="Felopater Nabil — Same Person. Still Building."
+                src={portraitImageUrl}
+                alt={`${brandName} — Same Person. Still Building.`}
                 width={840}
                 height={1050}
                 sizes="(max-width: 960px) 320px, 420px"
@@ -168,13 +199,12 @@ export function FinaleScene() {
                   textShadow: '0 4px 18px rgba(0,0,0,0.95)',
                 }}
               >
-                Same
-                <br />
-                Person.
-                <br />
-                Still
-                <br />
-                Building.
+                {scriptBadgeText.split('\n').map((line, idx, arr) => (
+                  <React.Fragment key={idx}>
+                    {line}
+                    {idx < arr.length - 1 && <br />}
+                  </React.Fragment>
+                ))}
               </div>
               <div
                 style={{
@@ -187,7 +217,7 @@ export function FinaleScene() {
                   textTransform: 'uppercase',
                 }}
               >
-                {BRAND_INFO.name}
+                {brandName}
               </div>
             </div>
           </div>
@@ -197,10 +227,10 @@ export function FinaleScene() {
         <div className="site-footer">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-ivory)', letterSpacing: '0.08em' }}>
-              {BRAND_INFO.name}
+              {brandName}
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.84rem', color: '#D6D6E2' }}>
-              Full-Stack Engineer. Backend at Heart.
+              {footerTagline}
             </div>
           </div>
 
@@ -218,7 +248,7 @@ export function FinaleScene() {
           </div>
 
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.84rem', color: '#D6D6E2' }}>
-            &copy; 2026 {BRAND_INFO.name}. All rights reserved.
+            {copyrightNotice}
           </div>
         </div>
       </div>

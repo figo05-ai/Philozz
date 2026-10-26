@@ -44,6 +44,9 @@ export interface HeroSectionConfig {
   signatureWords: string[]; // ['Code', 'Build', 'Improve', 'Repeat']
   signatureCredentials: string[]; // ['CLEAN CODE', 'SCALABLE SYSTEMS', 'REAL IMPACT']
   heroImageUrl: string;
+  experienceYears?: string;
+  projectsCount?: string;
+  curiosity?: string;
 }
 
 export interface MosaicCardEntity {
@@ -82,7 +85,8 @@ export interface AboutSectionConfig {
 }
 
 export interface ContactSectionConfig {
-  headline: string;
+  sectionTag?: string; // "LET'S BUILD SOMETHING GREAT"
+  headline: string; // 'Get In Touch'
   subheadline: string;
   email: string;
   phone: string;
@@ -93,14 +97,23 @@ export interface ContactSectionConfig {
     label: string;
   }>;
   footerTagline: string;
+  primaryCtaLabel?: string;
+  secondaryCtaLabel?: string;
+  secondaryCtaHref?: string;
+  portraitImageUrl?: string;
+  scriptBadgeText?: string;
+  copyrightNotice?: string;
 }
 
 export interface HomepageConfigEntity {
   id: 'homepage_config';
+  status?: 'draft' | 'published';
+  version?: number;
   hero: HeroSectionConfig;
   about: AboutSectionConfig;
   contact: ContactSectionConfig;
   updatedAt: string;
+  publishedAt?: string;
 }
 
 export type UpdateHomepageConfigInput = Partial<HomepageConfigEntity>;

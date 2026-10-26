@@ -21,6 +21,8 @@ import { ISiteContentRepository } from '../types';
 export class LocalSiteContentRepository implements ISiteContentRepository {
   private brandInfo: BrandInfoEntity;
   private homepageConfig: HomepageConfigEntity;
+  private homepageConfigDraft: HomepageConfigEntity | null = null;
+  private previousHomepageConfig: HomepageConfigEntity | null = null;
   private technologies: TechnologyEntity[];
   private expertiseAreas: ExpertiseAreaEntity[];
   private stackDetails: StackDetailsEntity;
@@ -56,6 +58,9 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
 
     this.homepageConfig = {
       id: 'homepage_config',
+      status: 'published',
+      version: 1,
+      publishedAt: '2026-04-15T00:00:00.000Z',
       hero: {
         eyebrow: 'FULL-STACK DEVELOPER',
         titleLine1: 'Full-Stack',
@@ -371,17 +376,88 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
     return { ...this.brandInfo };
   }
 
-  async getHomepageConfig(): Promise<HomepageConfigEntity> {
-    return { ...this.homepageConfig };
+  async getHomepageConfig(options?: { preview?: boolean }): Promise<HomepageConfigEntity> {
+    if (options?.preview && this.homepageConfigDraft) {
+      return JSON.parse(JSON.stringify(this.homepageConfigDraft));
+    }
+    return JSON.parse(JSON.stringify(this.homepageConfig));
+  }
+
+  async getHomepageConfigDraft(): Promise<HomepageConfigEntity | null> {
+    if (!this.homepageConfigDraft) return null;
+    return JSON.parse(JSON.stringify(this.homepageConfigDraft));
+  }
+
+  async saveHomepageConfigDraft(data: Partial<HomepageConfigEntity>): Promise<HomepageConfigEntity> {
+    const base = this.homepageConfigDraft || this.homepageConfig;
+    const now = new Date().toISOString();
+    const updatedDraft: HomepageConfigEntity = {
+      ...base,
+      ...data,
+      hero: { ...base.hero, ...(data.hero || {}) },
+      about: { ...base.about, ...(data.about || {}) },
+      contact: { ...base.contact, ...(data.contact || {}) },
+      id: 'homepage_config',
+      status: 'draft',
+      version: (base.version || 1) + 1,
+      updatedAt: now,
+    };
+    this.homepageConfigDraft = updatedDraft;
+    return JSON.parse(JSON.stringify(updatedDraft));
+  }
+
+  async publishHomepageConfig(data?: Partial<HomepageConfigEntity>): Promise<HomepageConfigEntity> {
+    const base = this.homepageConfigDraft || this.homepageConfig;
+    const now = new Date().toISOString();
+    // Backup current published config for rollback
+    this.previousHomepageConfig = JSON.parse(JSON.stringify(this.homepageConfig));
+
+    const updated: HomepageConfigEntity = {
+      ...base,
+      ...(data || {}),
+      hero: { ...base.hero, ...(data?.hero || {}) },
+      about: { ...base.about, ...(data?.about || {}) },
+      contact: { ...base.contact, ...(data?.contact || {}) },
+      id: 'homepage_config',
+      status: 'published',
+      version: (this.homepageConfig.version || 1) + 1,
+      updatedAt: now,
+      publishedAt: now,
+    };
+
+    this.homepageConfig = updated;
+    this.homepageConfigDraft = null;
+    return JSON.parse(JSON.stringify(updated));
+  }
+
+  async rollbackHomepageConfig(): Promise<HomepageConfigEntity> {
+    if (!this.previousHomepageConfig) {
+      throw new Error('No previous published homepage configuration available to restore.');
+    }
+    const now = new Date().toISOString();
+    const restored: HomepageConfigEntity = {
+      ...this.previousHomepageConfig,
+      version: (this.homepageConfig.version || 1) + 1,
+      updatedAt: now,
+      publishedAt: now,
+    };
+    this.homepageConfig = restored;
+    this.homepageConfigDraft = null;
+    return JSON.parse(JSON.stringify(restored));
   }
 
   async updateHomepageConfig(data: Partial<HomepageConfigEntity>): Promise<HomepageConfigEntity> {
+    const now = new Date().toISOString();
     this.homepageConfig = {
       ...this.homepageConfig,
       ...data,
-      updatedAt: new Date().toISOString(),
+      hero: { ...this.homepageConfig.hero, ...(data.hero || {}) },
+      about: { ...this.homepageConfig.about, ...(data.about || {}) },
+      contact: { ...this.homepageConfig.contact, ...(data.contact || {}) },
+      version: (this.homepageConfig.version || 1) + 1,
+      updatedAt: now,
     };
-    return { ...this.homepageConfig };
+    return JSON.parse(JSON.stringify(this.homepageConfig));
   }
 
   async getTechnologies(): Promise<TechnologyEntity[]> {

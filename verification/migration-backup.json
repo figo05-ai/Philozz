@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "exportedAt": "2026-10-26T01:01:57.461Z",
+  "exportedAt": "2026-10-26T01:49:35.044Z",
   "counts": {
     "projects": 8,
     "articles": 7,
@@ -1418,6 +1418,9 @@
     },
     "homepageConfig": {
       "id": "homepage_config",
+      "status": "published",
+      "version": 1,
+      "publishedAt": "2026-04-15T00:00:00.000Z",
       "hero": {
         "eyebrow": "FULL-STACK DEVELOPER",
         "titleLine1": "Full-Stack",

@@ -7,6 +7,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { BRAND_INFO } from '@/data/portfolioData';
 import { AboutScene } from '@/scenes/AboutScene';
+import { HeroSectionConfig, AboutSectionConfig, BrandInfoEntity } from '@/cms/models/site';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -28,7 +29,37 @@ function getServerSnapshot(): boolean {
   return false;
 }
 
-export function HeroScene() {
+export interface HeroSceneProps {
+  config?: HeroSectionConfig;
+  brand?: BrandInfoEntity;
+  aboutConfig?: AboutSectionConfig;
+}
+
+export function HeroScene({ config, brand, aboutConfig }: HeroSceneProps = {}) {
+  const eyebrow = config?.eyebrow || 'FULL-STACK DEVELOPER';
+  const titleLine1 = config?.titleLine1 || 'Full-Stack';
+  const titleLine2 = config?.titleLine2 || 'Engineer.';
+  const titleLine3 = config?.titleLine3 || 'Backend at Heart.';
+  const description =
+    config?.description ||
+    'Building performant, scalable, and meaningful web applications. I turn ideas into robust backend systems and delightful digital experiences.';
+  const primaryCtaLabel = config?.primaryCtaLabel || 'View My Work';
+  const primaryCtaHref = config?.primaryCtaHref || '#projects';
+  const secondaryCtaLabel = config?.secondaryCtaLabel || "Let's Talk";
+  const secondaryCtaHref = config?.secondaryCtaHref || '#contact';
+  const signatureWords =
+    config?.signatureWords && config.signatureWords.length > 0
+      ? config.signatureWords
+      : ['Code', 'Build', 'Improve', 'Repeat'];
+  const signatureCredentials =
+    config?.signatureCredentials && config.signatureCredentials.length > 0
+      ? config.signatureCredentials
+      : ['CLEAN CODE', 'SCALABLE SYSTEMS', 'REAL IMPACT'];
+  const heroImageUrl = config?.heroImageUrl || '/images/philozz-cinematic-hero.png';
+  const brandName = brand?.name || BRAND_INFO.name;
+  const experienceYears = config?.experienceYears || brand?.experienceYears || BRAND_INFO.experienceYears;
+  const projectsCount = config?.projectsCount || brand?.projectsCount || BRAND_INFO.projectsCount;
+  const curiosity = config?.curiosity || brand?.curiosity || BRAND_INFO.curiosity;
   const prefersReducedMotion = useSyncExternalStore(
     subscribeReducedMotion,
     getReducedMotionSnapshot,
@@ -435,8 +466,8 @@ export function HeroScene() {
         >
           <div ref={bgInnerRef} className="hero-cinematic-bg-inner">
             <Image
-              src="/images/philozz-cinematic-hero.png"
-              alt="Felopater Nabil — Full-Stack Software Engineer seated at executive desk"
+              src={heroImageUrl}
+              alt={`${brand?.developerName || 'Felopater Nabil'} — Full-Stack Software Engineer seated at executive desk`}
               fill
               priority
               fetchPriority="high"
@@ -455,19 +486,22 @@ export function HeroScene() {
             {/* Editorial Signature & Brand Credentials Lockup */}
             <div ref={signatureRef} className="hero-signature-lockup">
               <div className="hero-signature-script">
-                <span className="sig-word">Code</span>
-                <span className="sig-word">Build</span>
-                <span className="sig-word">Improve</span>
-                <span className="sig-word">Repeat</span>
+                {signatureWords.map((word, idx) => (
+                  <span key={idx} className="sig-word">
+                    {word}
+                  </span>
+                ))}
               </div>
 
               <div className="hero-signature-credentials">
-                <span className="sig-brand">PHILOZZ</span>
+                <span className="sig-brand">{brandName}</span>
                 <span className="sig-divider" />
-                <span className="sig-item">CLEAN CODE</span>
-                <span className="sig-item">SCALABLE SYSTEMS</span>
-                <span className="sig-item">REAL IMPACT</span>
-                <span className="sig-divider" />
+                {signatureCredentials.map((cred, idx) => (
+                  <React.Fragment key={idx}>
+                    <span className="sig-item">{cred}</span>
+                    {idx < signatureCredentials.length - 1 && <span className="sig-divider" />}
+                  </React.Fragment>
+                ))}
               </div>
             </div>
           </div>
@@ -498,7 +532,7 @@ export function HeroScene() {
             Soft radial aperture expanding from the workstation
             ======================================================== */}
         <div ref={aboutRevealRef} className="hero-about-reveal-layer">
-          <AboutScene isTransitionStage={true} />
+          <AboutScene isTransitionStage={true} config={aboutConfig} brand={brand} />
         </div>
 
         {/* ========================================================
@@ -510,21 +544,21 @@ export function HeroScene() {
               {/* Small Eyebrow Tag */}
               <div ref={eyebrowRef} className="hero-eyebrow-tag">
                 <Terminal size={14} style={{ color: 'var(--color-gold-light)' }} />
-                <span>FULL-STACK DEVELOPER</span>
+                <span>{eyebrow}</span>
               </div>
 
               {/* Main Editorial Headline */}
               <h1 id="hero-title" className="hero-editorial-title">
-                <span className="title-line title-white">Full-Stack</span>
-                <span className="title-line title-white">Engineer.</span>
-                <span className="title-line title-gold">Backend at Heart.</span>
+                <span className="title-line title-white">{titleLine1}</span>
+                <span className="title-line title-white">{titleLine2}</span>
+                <span className="title-line title-gold">{titleLine3}</span>
               </h1>
 
               {/* Mobile Cinematic Visual Frame: Visible only on mobile viewports */}
               <div ref={mobileFrameRef} className="hero-mobile-visual-frame" aria-hidden="true">
                 <Image
-                  src="/images/philozz-cinematic-hero.png"
-                  alt="Felopater Nabil seated at executive desk with laptop"
+                  src={heroImageUrl}
+                  alt={`${brand?.developerName || 'Felopater Nabil'} seated at executive desk with laptop`}
                   fill
                   priority
                   fetchPriority="high"
@@ -537,42 +571,41 @@ export function HeroScene() {
 
               {/* Supporting Editorial Description */}
               <p ref={descRef} className="hero-editorial-description">
-                Building performant, scalable, and meaningful web applications.
-                I turn ideas into robust backend systems and delightful digital experiences.
+                {description}
               </p>
 
               {/* Interactive Primary & Secondary CTA Buttons */}
               <div ref={ctaGroupRef} className="hero-editorial-cta-group">
                 <a
-                  href="#projects"
+                  href={primaryCtaHref}
                   className="btn-gold hero-btn-primary"
-                  aria-label="View My Work — Selected engineering projects"
+                  aria-label={`${primaryCtaLabel} — Selected engineering projects`}
                 >
-                  <span>View My Work</span>
+                  <span>{primaryCtaLabel}</span>
                   <ArrowRight size={18} />
                 </a>
 
                 <a
-                  href="#contact"
+                  href={secondaryCtaHref}
                   className="btn-outline-gold hero-btn-secondary"
-                  aria-label="Let's Talk — Contact Felopater Nabil"
+                  aria-label={`${secondaryCtaLabel} — Contact ${brand?.developerName || 'Felopater Nabil'}`}
                 >
                   <MessageSquare size={16} style={{ color: 'var(--color-gold-light)' }} />
-                  <span>Let&apos;s Talk</span>
+                  <span>{secondaryCtaLabel}</span>
                 </a>
               </div>
 
               {/* Verified Metrics Counter Row */}
               <div ref={metricsRowRef} className="hero-editorial-metrics-row" aria-label="Key Professional Metrics">
                 <div className="metric-box">
-                  <div className="metric-num">{BRAND_INFO.experienceYears}</div>
+                  <div className="metric-num">{experienceYears}</div>
                   <div className="metric-lbl">Years Experience</div>
                 </div>
 
                 <div className="metric-separator" aria-hidden="true" />
 
                 <div className="metric-box">
-                  <div className="metric-num">{BRAND_INFO.projectsCount}</div>
+                  <div className="metric-num">{projectsCount}</div>
                   <div className="metric-lbl">Projects Completed</div>
                 </div>
 
@@ -580,7 +613,7 @@ export function HeroScene() {
 
                 <div className="metric-box">
                   <div className="metric-num metric-curiosity">
-                    <span>{BRAND_INFO.curiosity}</span>
+                    <span>{curiosity}</span>
                   </div>
                   <div className="metric-lbl">Curiosity To Build More</div>
                 </div>
@@ -599,7 +632,7 @@ export function HeroScene() {
 
       {/* Mobile Flow: render AboutScene directly when on mobile viewports */}
       <div className="hero-mobile-about-section">
-        <AboutScene isTransitionStage={true} />
+        <AboutScene isTransitionStage={true} config={aboutConfig} brand={brand} />
       </div>
     </section>
   );

@@ -6,6 +6,7 @@
 import { CreateProjectInput } from '../models/project';
 import { CreateArticleInput } from '../models/article';
 import { MediaUploadPayload } from '../models/media';
+import { HomepageConfigEntity, BrandInfoEntity } from '../models/site';
 
 export interface ValidationResult {
   valid: boolean;
@@ -269,5 +270,158 @@ export function calculateReadTime(sections: { content?: string; codeSnippet?: st
   }, 0);
   const minutes = Math.max(1, Math.ceil(words / 200));
   return `${minutes} min read`;
+}
+
+/**
+ * Checks if a URL or anchor href is safe to render in href attributes.
+ * Allows relative paths ('/'), anchors ('#'), mailto:, tel:, and http:/https:.
+ * Strictly rejects javascript:, data:, vbscript:, etc.
+ */
+export function isValidSafeUrl(val: string): boolean {
+  if (!val || typeof val !== 'string') return false;
+  const trimmed = val.trim();
+  if (trimmed.startsWith('#') || trimmed.startsWith('/') || trimmed.startsWith('mailto:') || trimmed.startsWith('tel:')) {
+    return !/^(javascript|data|vbscript):/i.test(trimmed);
+  }
+  try {
+    const url = new URL(trimmed);
+    return (
+      (url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'mailto:' || url.protocol === 'tel:') &&
+      !/^(javascript|data|vbscript):/i.test(trimmed)
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Validates Homepage Section Configuration inputs.
+ */
+export function validateHomepageConfig(config: Partial<HomepageConfigEntity>): ValidationResult {
+  const errors: Record<string, string> = {};
+
+  if (config.hero) {
+    const h = config.hero;
+    if (!h.eyebrow || h.eyebrow.trim().length === 0) {
+      errors['hero.eyebrow'] = 'Hero eyebrow badge is required.';
+    } else if (h.eyebrow.length > 80) {
+      errors['hero.eyebrow'] = 'Hero eyebrow cannot exceed 80 characters.';
+    }
+
+    if (!h.titleLine1 || h.titleLine1.trim().length === 0) {
+      errors['hero.titleLine1'] = 'Headline Line 1 is required.';
+    } else if (h.titleLine1.length > 50) {
+      errors['hero.titleLine1'] = 'Headline Line 1 cannot exceed 50 characters.';
+    }
+
+    if (!h.titleLine2 || h.titleLine2.trim().length === 0) {
+      errors['hero.titleLine2'] = 'Headline Line 2 is required.';
+    } else if (h.titleLine2.length > 50) {
+      errors['hero.titleLine2'] = 'Headline Line 2 cannot exceed 50 characters.';
+    }
+
+    if (!h.titleLine3 || h.titleLine3.trim().length === 0) {
+      errors['hero.titleLine3'] = 'Headline Line 3 is required.';
+    } else if (h.titleLine3.length > 50) {
+      errors['hero.titleLine3'] = 'Headline Line 3 cannot exceed 50 characters.';
+    }
+
+    if (!h.description || h.description.trim().length < 20) {
+      errors['hero.description'] = 'Hero description must be at least 20 characters.';
+    } else if (h.description.length > 400) {
+      errors['hero.description'] = 'Hero description cannot exceed 400 characters.';
+    }
+
+    if (!h.primaryCtaLabel || h.primaryCtaLabel.trim().length === 0) {
+      errors['hero.primaryCtaLabel'] = 'Primary CTA label is required.';
+    }
+
+    if (h.primaryCtaHref && !isValidSafeUrl(h.primaryCtaHref)) {
+      errors['hero.primaryCtaHref'] = 'Primary CTA href must be a valid safe URL or anchor.';
+    }
+
+    if (h.secondaryCtaHref && !isValidSafeUrl(h.secondaryCtaHref)) {
+      errors['hero.secondaryCtaHref'] = 'Secondary CTA href must be a valid safe URL or anchor.';
+    }
+  }
+
+  if (config.about) {
+    const a = config.about;
+    if (!a.sectionTag || a.sectionTag.trim().length === 0) {
+      errors['about.sectionTag'] = 'About section tag is required.';
+    }
+    if (!a.titlePrefix || a.titlePrefix.trim().length === 0) {
+      errors['about.titlePrefix'] = 'About title prefix is required.';
+    }
+    if (!a.narrativeParagraph1 || a.narrativeParagraph1.trim().length < 20) {
+      errors['about.narrativeParagraph1'] = 'Biography paragraph 1 must be at least 20 characters.';
+    }
+    if (!a.narrativeParagraph2 || a.narrativeParagraph2.trim().length < 20) {
+      errors['about.narrativeParagraph2'] = 'Biography paragraph 2 must be at least 20 characters.';
+    }
+    if (a.ctaHref && !isValidSafeUrl(a.ctaHref)) {
+      errors['about.ctaHref'] = 'About CTA href must be a valid safe URL or anchor.';
+    }
+  }
+
+  if (config.contact) {
+    const c = config.contact;
+    if (!c.headline || c.headline.trim().length === 0) {
+      errors['contact.headline'] = 'Contact headline is required.';
+    }
+    if (!c.subheadline || c.subheadline.trim().length < 20) {
+      errors['contact.subheadline'] = 'Contact subheadline/intro must be at least 20 characters.';
+    }
+    if (c.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email)) {
+      errors['contact.email'] = 'Contact email must be a valid email address.';
+    }
+    if (c.secondaryCtaHref && !isValidSafeUrl(c.secondaryCtaHref)) {
+      errors['contact.secondaryCtaHref'] = 'Resume URL must be a valid safe URL.';
+    }
+    if (Array.isArray(c.socialLinks)) {
+      for (let i = 0; i < c.socialLinks.length; i++) {
+        const link = c.socialLinks[i];
+        if (link.url && !isValidSafeUrl(link.url)) {
+          errors[`contact.socialLinks.${i}.url`] = `Social link for ${link.platform || 'item'} must be a valid safe URL.`;
+        }
+      }
+    }
+  }
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors,
+  };
+}
+
+/**
+ * Validates Brand Information inputs.
+ */
+export function validateBrandInfo(brand: Partial<BrandInfoEntity>): ValidationResult {
+  const errors: Record<string, string> = {};
+
+  if (!brand.name || brand.name.trim().length === 0) {
+    errors.name = 'Brand name is required.';
+  }
+  if (!brand.developerName || brand.developerName.trim().length === 0) {
+    errors.developerName = 'Developer name is required.';
+  }
+  if (brand.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(brand.email)) {
+    errors.email = 'Valid email is required.';
+  }
+  if (brand.github && !isValidSafeUrl(brand.github)) {
+    errors.github = 'GitHub URL must be a valid safe URL.';
+  }
+  if (brand.linkedin && !isValidSafeUrl(brand.linkedin)) {
+    errors.linkedin = 'LinkedIn URL must be a valid safe URL.';
+  }
+  if (brand.cvUrl && !isValidSafeUrl(brand.cvUrl)) {
+    errors.cvUrl = 'CV/Resume URL must be a valid safe URL.';
+  }
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors,
+  };
 }
 

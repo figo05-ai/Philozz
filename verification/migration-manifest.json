@@ -1,6 +1,6 @@
 {
   "manifestVersion": "1.0.0",
-  "generatedAt": "2026-10-26T01:01:57.461Z",
+  "generatedAt": "2026-10-26T01:49:35.044Z",
   "mode": "dry-run",
   "summary": {
     "totalCollections": 8,
@@ -292,7 +292,7 @@
       {
         "id": "homepage_config",
         "collection": "site_config",
-        "hash": "e1a7f01892b075b4"
+        "hash": "aeaf5c7d022a270c"
       },
       {
         "id": "stack_details",
@@ -309,7 +309,7 @@
     "expertiseAreas": "f3acb118ebae9ef1",
     "mediaAssets": "8de1faae082eb5c2",
     "brandInfo": "d9704a3e0d615bda",
-    "homepageConfig": "e1a7f01892b075b4",
+    "homepageConfig": "aeaf5c7d022a270c",
     "stackDetails": "2aae9c0e3827062e"
   },
   "backupExportPath": "/home/figo/Desktop/Philo/portfolio/verification/migration-backup.json"

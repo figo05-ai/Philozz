@@ -76,7 +76,11 @@ export interface IArticleRepository {
 export interface ISiteContentRepository {
   getBrandInfo(): Promise<BrandInfoEntity>;
   updateBrandInfo(data: Partial<BrandInfoEntity>): Promise<BrandInfoEntity>;
-  getHomepageConfig(): Promise<HomepageConfigEntity>;
+  getHomepageConfig(options?: { preview?: boolean }): Promise<HomepageConfigEntity>;
+  getHomepageConfigDraft(): Promise<HomepageConfigEntity | null>;
+  saveHomepageConfigDraft(data: Partial<HomepageConfigEntity>): Promise<HomepageConfigEntity>;
+  publishHomepageConfig(data?: Partial<HomepageConfigEntity>): Promise<HomepageConfigEntity>;
+  rollbackHomepageConfig(): Promise<HomepageConfigEntity>;
   updateHomepageConfig(data: Partial<HomepageConfigEntity>): Promise<HomepageConfigEntity>;
   getTechnologies(): Promise<TechnologyEntity[]>;
   getExpertiseAreas(): Promise<ExpertiseAreaEntity[]>;

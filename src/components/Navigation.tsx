@@ -4,8 +4,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Menu, X, Download } from 'lucide-react';
 import { BRAND_INFO } from '@/data/portfolioData';
+import { BrandInfoEntity } from '@/cms/models/site';
 
-export function Navigation() {
+export interface NavigationProps {
+  brand?: BrandInfoEntity;
+}
+
+export function Navigation({ brand }: NavigationProps = {}) {
+  const brandName = brand?.name || BRAND_INFO.name;
+  const cvUrl = brand?.cvUrl || BRAND_INFO.cvUrl;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const toggleBtnRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -81,8 +88,8 @@ export function Navigation() {
   return (
     <header className="nav-header" role="banner">
       <div className="container-editorial nav-container">
-        <Link href="/" className="nav-brand" aria-label="PHILOZZ Home">
-          <span>{BRAND_INFO.name}</span>
+        <Link href="/" className="nav-brand" aria-label={`${brandName} Home`}>
+          <span>{brandName}</span>
           <span className="nav-brand-dot" aria-hidden="true" />
         </Link>
 
@@ -95,11 +102,11 @@ export function Navigation() {
           ))}
 
           <a
-            href={BRAND_INFO.cvUrl}
+            href={cvUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="nav-resume-btn"
-            aria-label="Download Felopater Nabil Resume"
+            aria-label={`Download ${brand?.developerName || 'Felopater Nabil'} Resume`}
           >
             <span>Resume</span>
             <Download size={15} />
@@ -144,7 +151,7 @@ export function Navigation() {
 
             <div style={{ marginTop: '2rem' }}>
               <a
-                href={BRAND_INFO.cvUrl}
+                href={cvUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-gold"
