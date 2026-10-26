@@ -211,9 +211,11 @@ export function TechOrbitEcosystem() {
     setSelectedItem((prev) => (prev?.id === item.id ? null : item));
   }, []);
 
-  // Keyboard navigation handler for pedestals
+  // Keyboard navigation handler for pedestals with Arrow Key traversal
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent, item: TechnologyItem) => {
+      const currentIndex = TECHNOLOGIES.findIndex((t) => t.id === item.id);
+
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         handleToggleSelect(item);
@@ -221,9 +223,48 @@ export function TechOrbitEcosystem() {
         e.preventDefault();
         setSelectedItem(null);
         setHoveredItem(null);
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        const nextIndex = (currentIndex + 1) % TECHNOLOGIES.length;
+        const nextItem = TECHNOLOGIES[nextIndex];
+        const nextEl = document.getElementById(`pedestal-${nextItem.id}`);
+        nextEl?.focus();
+        setSelectedItem(nextItem);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prevIndex = (currentIndex - 1 + TECHNOLOGIES.length) % TECHNOLOGIES.length;
+        const prevItem = TECHNOLOGIES[prevIndex];
+        const prevEl = document.getElementById(`pedestal-${prevItem.id}`);
+        prevEl?.focus();
+        setSelectedItem(prevItem);
       }
     },
     [handleToggleSelect]
+  );
+
+  // Keyboard navigation handler for mobile tablist chips
+  const handleChipKeyDown = useCallback(
+    (e: React.KeyboardEvent, index: number) => {
+      let targetIndex = -1;
+      if (e.key === 'ArrowRight') {
+        targetIndex = (index + 1) % TECHNOLOGIES.length;
+      } else if (e.key === 'ArrowLeft') {
+        targetIndex = (index - 1 + TECHNOLOGIES.length) % TECHNOLOGIES.length;
+      } else if (e.key === 'Home') {
+        targetIndex = 0;
+      } else if (e.key === 'End') {
+        targetIndex = TECHNOLOGIES.length - 1;
+      }
+
+      if (targetIndex !== -1) {
+        e.preventDefault();
+        const targetItem = TECHNOLOGIES[targetIndex];
+        setSelectedItem(targetItem);
+        const targetBtn = document.getElementById(`tech-chip-${targetItem.id}`);
+        targetBtn?.focus();
+      }
+    },
+    []
   );
 
   // Clear hover on window blur or unmount
@@ -573,17 +614,19 @@ export function TechOrbitEcosystem() {
 
       {/* Synchronized Mobile Technology Chips Selector (Accessible 44px Tap Targets) */}
       <div className="mobile-tech-chips" role="tablist" aria-label="Technology platform selector">
-        {TECHNOLOGIES.map((item) => {
+        {TECHNOLOGIES.map((item, idx) => {
           const isSelected = activeItem?.id === item.id;
           const ChipLogo = item.logo;
           return (
             <button
               key={item.id}
+              id={`tech-chip-${item.id}`}
               type="button"
               role="tab"
               aria-selected={isSelected}
               className={`tech-chip-btn ${isSelected ? 'is-selected' : ''}`}
               onClick={() => handleToggleSelect(item)}
+              onKeyDown={(e) => handleChipKeyDown(e, idx)}
             >
               <span className="chip-icon-wrap" aria-hidden="true">
                 <ChipLogo size={14} />
@@ -598,6 +641,7 @@ export function TechOrbitEcosystem() {
       <div
         className={`tech-focus-console ${activeItem ? 'is-active' : 'is-standby'}`}
         aria-live="polite"
+        aria-atomic="true"
       >
         {activeItem ? (
           <div className="console-active-content">

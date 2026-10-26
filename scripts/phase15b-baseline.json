@@ -1,0 +1,1071 @@
+[
+  {
+    "route": "Homepage (Desktop)",
+    "path": "/",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "violations": [
+      {
+        "id": "image-redundant-alt",
+        "impact": "minor",
+        "description": "Ensure image alternative is not repeated as text",
+        "help": "Alternative text of images should not be repeated as text",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/image-redundant-alt?application=axeAPI",
+        "nodesCount": 1,
+        "nodes": [
+          {
+            "html": "<img alt=\"Linux\" loading=\"lazy\" width=\"42\" height=\"42\" decoding=\"async\" data-nimg=\"1\" class=\"inline-block object-contain \" style=\"color:transparent;width:42px;height:42px\" src=\"/icons/tech/linux-tux.s",
+            "target": [
+              ".portal-logo-element > .inline-block.object-contain[alt=\"Linux\"]"
+            ],
+            "failureSummary": "Fix all of the following:\n  Element contains <img> element with alt text that duplicates existing text"
+          }
+        ]
+      },
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=axeAPI",
+        "nodesCount": 3,
+        "nodes": [
+          {
+            "html": "<a href=\"#projects\" class=\"btn-gold hero-btn-primary\" aria-label=\"View My Selected Engineering Work\">",
+            "target": [
+              ".hero-btn-primary"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<a class=\"btn-gold gallery-explore-btn\" aria-label=\"Explore architectural case study for SkillUp Platform\" href=\"/work/skillup-platform\">",
+            "target": [
+              ".gallery-explore-btn.btn-gold[href$=\"skillup-platform\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<a class=\"btn-outline-gold projects-toggle-btn\" aria-label=\"View all 8 verified projects in the project archive\" href=\"/projects\">",
+            "target": [
+              ".projects-toggle-btn"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      },
+      {
+        "id": "landmark-contentinfo-is-top-level",
+        "impact": "moderate",
+        "description": "Ensure the contentinfo landmark is at top level",
+        "help": "Contentinfo landmark should not be contained in another landmark",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-contentinfo-is-top-level?application=axeAPI",
+        "nodesCount": 1,
+        "nodes": [
+          {
+            "html": "<footer id=\"contact\" class=\"scene-section scene-finale\" role=\"contentinfo\">",
+            "target": [
+              "#contact"
+            ],
+            "failureSummary": "Fix any of the following:\n  The contentinfo landmark is contained in another landmark."
+          }
+        ]
+      }
+    ],
+    "passesCount": 40,
+    "incompleteCount": 3,
+    "structure": {
+      "headings": [
+        {
+          "tag": "H2",
+          "text": "The EngineerBehind PHILOZZ.",
+          "visible": true
+        },
+        {
+          "tag": "H1",
+          "text": "Full-StackEngineer.Backend at Heart.",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "The EngineerBehind PHILOZZ.",
+          "visible": false
+        },
+        {
+          "tag": "H2",
+          "text": "Tools forBigger Ideas.",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Engineering Case Studies. Built for Scale.",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "SkillUp Platform",
+          "visible": false
+        },
+        {
+          "tag": "H3",
+          "text": "SmartPOS ERP",
+          "visible": false
+        },
+        {
+          "tag": "H3",
+          "text": "Tanqia Skills",
+          "visible": false
+        },
+        {
+          "tag": "H3",
+          "text": "SkillUp Platform",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "SmartPOS ERP",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Tanqia Skills",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "SkillUp Platform",
+          "visible": false
+        },
+        {
+          "tag": "H3",
+          "text": "The Engineering Journal",
+          "visible": false
+        },
+        {
+          "tag": "H2",
+          "text": "Thoughts. Learnings. Progress.",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Building Scalable APIs with Laravel",
+          "visible": true
+        },
+        {
+          "tag": "H4",
+          "text": "My Development Workflow in 2026",
+          "visible": true
+        },
+        {
+          "tag": "H4",
+          "text": "What I've Learned as a Developer",
+          "visible": true
+        },
+        {
+          "tag": "H4",
+          "text": "SQL Query Optimization: From Slow Scans to Index-Only Execut",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "From Architecture to Conversation.",
+          "visible": false
+        },
+        {
+          "tag": "H2",
+          "text": "Get In Touch",
+          "visible": true
+        }
+      ],
+      "landmarks": {
+        "main": true,
+        "mainId": "main-content",
+        "nav": 1,
+        "header": 1,
+        "footer": 1
+      },
+      "skipLink": true
+    }
+  },
+  {
+    "route": "Projects Archive",
+    "path": "/projects",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=axeAPI",
+        "nodesCount": 9,
+        "nodes": [
+          {
+            "html": "<a class=\"archive-back-link\" aria-label=\"Return to portfolio homepage projects section\" href=\"/#projects\">",
+            "target": [
+              ".archive-back-link"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<a class=\"btn-gold gallery-explore-btn\" aria-label=\"Explore architectural case study for SkillUp Platform\" href=\"/work/skillup-platform\">",
+            "target": [
+              ".btn-gold.gallery-explore-btn[href$=\"skillup-platform\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<a class=\"btn-gold gallery-explore-btn\" aria-label=\"Explore architectural case study for SmartPOS ERP\" href=\"/work/smartpos-erp\">",
+            "target": [
+              ".btn-gold.gallery-explore-btn[href$=\"smartpos-erp\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<a class=\"btn-gold gallery-explore-btn\" aria-label=\"Explore architectural case study for Tanqia Skills\" href=\"/work/tanqia-skills\">",
+            "target": [
+              ".btn-gold.gallery-explore-btn[href$=\"tanqia-skills\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<a class=\"btn-gold gallery-explore-btn\" aria-label=\"Explore architectural case study for Sip & Snug\" href=\"/work/sip-and-snug\">",
+            "target": [
+              ".btn-gold.gallery-explore-btn[href$=\"sip-and-snug\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "passesCount": 41,
+    "incompleteCount": 2,
+    "structure": {
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Engineering Work. Built with Purpose.",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "SkillUp Platform",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "SmartPOS ERP",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Tanqia Skills",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Sip & Snug",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Academy LMS",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Clothes Enterprise",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Maxtree Licensing System",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "ZODiAK Platform",
+          "visible": true
+        }
+      ],
+      "landmarks": {
+        "main": true,
+        "mainId": "main-content",
+        "nav": 0,
+        "header": 1,
+        "footer": 1
+      },
+      "skipLink": false
+    }
+  },
+  {
+    "route": "Blog Archive",
+    "path": "/blog",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=axeAPI",
+        "nodesCount": 2,
+        "nodes": [
+          {
+            "html": "<a class=\"archive-back-link\" aria-label=\"Return to portfolio homepage blog section\" href=\"/#blog\">",
+            "target": [
+              ".archive-back-link"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<button type=\"button\" disabled=\"\" class=\"archive-page-btn\" aria-label=\"Go to previous page\">",
+            "target": [
+              "button[aria-label=\"Go to previous page\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "passesCount": 42,
+    "incompleteCount": 2,
+    "structure": {
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Ideas Worth Sharing. Lessons Worth Keeping.",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Building Scalable APIs with Laravel",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "My Development Workflow in 2026",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "What I've Learned as a Developer",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "SQL Query Optimization: From Slow Scans to Index-Only Execut",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Reliable Background Jobs: Queues, Retries, and Idempotency",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Clean Architecture in Laravel: Service Layers & Domain Separ",
+          "visible": true
+        }
+      ],
+      "landmarks": {
+        "main": true,
+        "mainId": "main-content",
+        "nav": 1,
+        "header": 1,
+        "footer": 1
+      },
+      "skipLink": false
+    }
+  },
+  {
+    "route": "Case Study (SkillUp)",
+    "path": "/work/skillup-platform",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=axeAPI",
+        "nodesCount": 1,
+        "nodes": [
+          {
+            "html": "<button type=\"button\" class=\"schematic-action-btn\" aria-label=\"Simulate burst traffic to test queue workers\">",
+            "target": [
+              "button"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "passesCount": 35,
+    "incompleteCount": 2,
+    "structure": {
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "SkillUp Platform",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "The Engineering Challenge",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Core Architectural Responsibilities",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "System Architecture",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "API Gateway",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Redis Queue Cluster",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Worker Cluster",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Primary Datastore",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Dead-Letter Registry",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Key Technical Decisions & Trade-Offs",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Composite Covering Indexes",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Redis Horizon Queue Segregation",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Read/Write Connection Splitting",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Technologies Deployed",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Lessons Learned & Retrospective",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "CONTINUE EXPLORING ARCHITECTURE CASE STUDIES",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "SmartPOS ERP",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Tanqia Skills",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Sip & Snug",
+          "visible": true
+        }
+      ],
+      "landmarks": {
+        "main": true,
+        "mainId": "",
+        "nav": 0,
+        "header": 1,
+        "footer": 0
+      },
+      "skipLink": false
+    }
+  },
+  {
+    "route": "Article (Laravel Scalable APIs)",
+    "path": "/notes/building-scalable-apis-with-laravel",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "violations": [],
+    "passesCount": 35,
+    "incompleteCount": 1,
+    "structure": {
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Building Scalable APIs with Laravel",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "1. The Architectural Role of the API Gateway",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "2. Idempotency Keys and Atomic Locks",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "3. Eloquent Resource Transforms & OpenAPI Synchronization",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "MORE ESSAYS & ENGINEERING NOTES",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "My Development Workflow in 2026",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "What I've Learned as a Developer",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "SQL Query Optimization: From Slow Scans to Index-Only Execut",
+          "visible": true
+        }
+      ],
+      "landmarks": {
+        "main": true,
+        "mainId": "",
+        "nav": 0,
+        "header": 2,
+        "footer": 0
+      },
+      "skipLink": false
+    }
+  },
+  {
+    "route": "404 Page",
+    "path": "/non-existent-page-xyz",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "violations": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "description": "Ensure the document has a main landmark",
+        "help": "Document should have one main landmark",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=axeAPI",
+        "nodesCount": 1,
+        "nodes": [
+          {
+            "html": "<html lang=\"en\" data-scroll-behavior=\"smooth\" class=\"lWs00W_variable zM0EUG_variable _5mpQDW_variable _6ynXca_variable\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "region",
+        "impact": "moderate",
+        "description": "Ensure all page content is contained by landmarks",
+        "help": "All page content should be contained by landmarks",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=axeAPI",
+        "nodesCount": 5,
+        "nodes": [
+          {
+            "html": "<div style=\"font-family:var(--font-mono);font-size:0.9rem;color:var(--color-gold-light);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:1rem\">HTTP 404 // RESOURCE NOT LOCATED</div>",
+            "target": [
+              "div:nth-child(2) > div > div:nth-child(1)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "html": "<h1 style=\"font-family:var(--font-serif);font-size:clamp(2.4rem, 5vw, 3.2rem);color:var(--color-ivory);font-weight:800;line-height:1.15;margin-bottom:1.25rem\">Page Not Found.</h1>",
+            "target": [
+              "h1"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "html": "<p style=\"font-size:1.05rem;color:var(--color-ivory-muted);line-height:1.6;margin-bottom:2.5rem\">The page or case study you requested does not exist or may have been relocated.</p>",
+            "target": [
+              "p"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "html": "<span>Return to Portfolio</span>",
+            "target": [
+              ".btn-gold > span"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "html": "<span>View All Projects</span>",
+            "target": [
+              ".btn-outline-gold > span"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          }
+        ]
+      }
+    ],
+    "passesCount": 25,
+    "incompleteCount": 1,
+    "structure": {
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Page Not Found.",
+          "visible": true
+        }
+      ],
+      "landmarks": {
+        "main": false,
+        "nav": 0,
+        "header": 0,
+        "footer": 0
+      },
+      "skipLink": false
+    }
+  },
+  {
+    "route": "Homepage Mobile (Drawer Closed)",
+    "path": "/",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "mobile": true
+    },
+    "violations": [
+      {
+        "id": "image-redundant-alt",
+        "impact": "minor",
+        "description": "Ensure image alternative is not repeated as text",
+        "help": "Alternative text of images should not be repeated as text",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/image-redundant-alt?application=axeAPI",
+        "nodesCount": 1,
+        "nodes": [
+          {
+            "html": "<img alt=\"Linux\" loading=\"lazy\" width=\"42\" height=\"42\" decoding=\"async\" data-nimg=\"1\" class=\"inline-block object-contain \" style=\"color:transparent;width:42px;height:42px\" src=\"/icons/tech/linux-tux.s",
+            "target": [
+              ".portal-logo-element > .inline-block.object-contain[alt=\"Linux\"]"
+            ],
+            "failureSummary": "Fix all of the following:\n  Element contains <img> element with alt text that duplicates existing text"
+          }
+        ]
+      },
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=axeAPI",
+        "nodesCount": 4,
+        "nodes": [
+          {
+            "html": "<a href=\"#projects\" class=\"btn-gold hero-btn-primary\" aria-label=\"View My Selected Engineering Work\">",
+            "target": [
+              ".hero-btn-primary"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<a href=\"#skills\" class=\"btn-outline-gold about-anim-btn\" aria-label=\"Explore my skills and system architecture\">",
+            "target": [
+              ".hero-mobile-about-section > .scene-about[aria-labelledby=\"about-title\"][data-transition-stage=\"true\"] > .container-editorial > .about-grid > div:nth-child(1) > .about-anim-text > .about-anim-btn.btn-outline-gold[href$=\"#skills\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<a class=\"btn-gold gallery-explore-btn\" aria-label=\"Explore architectural case study for Tanqia Skills\" href=\"/work/tanqia-skills\">",
+            "target": [
+              ".gallery-explore-btn.btn-gold[href$=\"tanqia-skills\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<a class=\"btn-outline-gold projects-toggle-btn\" aria-label=\"View all 8 verified projects in the project archive\" href=\"/projects\">",
+            "target": [
+              ".projects-toggle-btn"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      },
+      {
+        "id": "landmark-contentinfo-is-top-level",
+        "impact": "moderate",
+        "description": "Ensure the contentinfo landmark is at top level",
+        "help": "Contentinfo landmark should not be contained in another landmark",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-contentinfo-is-top-level?application=axeAPI",
+        "nodesCount": 1,
+        "nodes": [
+          {
+            "html": "<footer id=\"contact\" class=\"scene-section scene-finale\" role=\"contentinfo\">",
+            "target": [
+              "#contact"
+            ],
+            "failureSummary": "Fix any of the following:\n  The contentinfo landmark is contained in another landmark."
+          }
+        ]
+      }
+    ],
+    "passesCount": 43,
+    "incompleteCount": 3,
+    "structure": {
+      "headings": [
+        {
+          "tag": "H2",
+          "text": "The EngineerBehind PHILOZZ.",
+          "visible": false
+        },
+        {
+          "tag": "H1",
+          "text": "Full-StackEngineer.Backend at Heart.",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "The EngineerBehind PHILOZZ.",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Tools forBigger Ideas.",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Engineering Case Studies. Built for Scale.",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "SkillUp Platform",
+          "visible": false
+        },
+        {
+          "tag": "H3",
+          "text": "SmartPOS ERP",
+          "visible": false
+        },
+        {
+          "tag": "H3",
+          "text": "Tanqia Skills",
+          "visible": false
+        },
+        {
+          "tag": "H3",
+          "text": "SkillUp Platform",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "SmartPOS ERP",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Tanqia Skills",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "SkillUp Platform",
+          "visible": false
+        },
+        {
+          "tag": "H3",
+          "text": "The Engineering Journal",
+          "visible": false
+        },
+        {
+          "tag": "H2",
+          "text": "Thoughts. Learnings. Progress.",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Building Scalable APIs with Laravel",
+          "visible": true
+        },
+        {
+          "tag": "H4",
+          "text": "My Development Workflow in 2026",
+          "visible": true
+        },
+        {
+          "tag": "H4",
+          "text": "What I've Learned as a Developer",
+          "visible": true
+        },
+        {
+          "tag": "H4",
+          "text": "SQL Query Optimization: From Slow Scans to Index-Only Execut",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "From Architecture to Conversation.",
+          "visible": false
+        },
+        {
+          "tag": "H2",
+          "text": "Get In Touch",
+          "visible": true
+        }
+      ],
+      "landmarks": {
+        "main": true,
+        "mainId": "main-content",
+        "nav": 1,
+        "header": 1,
+        "footer": 1
+      },
+      "skipLink": true
+    }
+  },
+  {
+    "route": "Homepage Mobile (Drawer Open)",
+    "path": "/",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "mobile": true
+    },
+    "violations": [
+      {
+        "id": "image-redundant-alt",
+        "impact": "minor",
+        "description": "Ensure image alternative is not repeated as text",
+        "help": "Alternative text of images should not be repeated as text",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/image-redundant-alt?application=axeAPI",
+        "nodesCount": 1,
+        "nodes": [
+          {
+            "html": "<img alt=\"Linux\" loading=\"lazy\" width=\"42\" height=\"42\" decoding=\"async\" data-nimg=\"1\" class=\"inline-block object-contain \" style=\"color:transparent;width:42px;height:42px\" src=\"/icons/tech/linux-tux.s",
+            "target": [
+              ".portal-logo-element > .inline-block.object-contain[alt=\"Linux\"]"
+            ],
+            "failureSummary": "Fix all of the following:\n  Element contains <img> element with alt text that duplicates existing text"
+          }
+        ]
+      },
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=axeAPI",
+        "nodesCount": 4,
+        "nodes": [
+          {
+            "html": "<a href=\"#projects\" class=\"btn-gold hero-btn-primary\" aria-label=\"View My Selected Engineering Work\">",
+            "target": [
+              ".hero-btn-primary"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<a href=\"#skills\" class=\"btn-outline-gold about-anim-btn\" aria-label=\"Explore my skills and system architecture\">",
+            "target": [
+              ".hero-mobile-about-section > .scene-about[aria-labelledby=\"about-title\"][data-transition-stage=\"true\"] > .container-editorial > .about-grid > div:nth-child(1) > .about-anim-text > .about-anim-btn.btn-outline-gold[href$=\"#skills\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<a class=\"btn-gold gallery-explore-btn\" aria-label=\"Explore architectural case study for Tanqia Skills\" href=\"/work/tanqia-skills\">",
+            "target": [
+              ".gallery-explore-btn.btn-gold[href$=\"tanqia-skills\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          },
+          {
+            "html": "<a class=\"btn-outline-gold projects-toggle-btn\" aria-label=\"View all 8 verified projects in the project archive\" href=\"/projects\">",
+            "target": [
+              ".projects-toggle-btn"
+            ],
+            "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      },
+      {
+        "id": "landmark-contentinfo-is-top-level",
+        "impact": "moderate",
+        "description": "Ensure the contentinfo landmark is at top level",
+        "help": "Contentinfo landmark should not be contained in another landmark",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-contentinfo-is-top-level?application=axeAPI",
+        "nodesCount": 1,
+        "nodes": [
+          {
+            "html": "<footer id=\"contact\" class=\"scene-section scene-finale\" role=\"contentinfo\">",
+            "target": [
+              "#contact"
+            ],
+            "failureSummary": "Fix any of the following:\n  The contentinfo landmark is contained in another landmark."
+          }
+        ]
+      }
+    ],
+    "passesCount": 44,
+    "incompleteCount": 3,
+    "structure": {
+      "headings": [
+        {
+          "tag": "H2",
+          "text": "The EngineerBehind PHILOZZ.",
+          "visible": false
+        },
+        {
+          "tag": "H1",
+          "text": "Full-StackEngineer.Backend at Heart.",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "The EngineerBehind PHILOZZ.",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Tools forBigger Ideas.",
+          "visible": true
+        },
+        {
+          "tag": "H2",
+          "text": "Engineering Case Studies. Built for Scale.",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "SkillUp Platform",
+          "visible": false
+        },
+        {
+          "tag": "H3",
+          "text": "SmartPOS ERP",
+          "visible": false
+        },
+        {
+          "tag": "H3",
+          "text": "Tanqia Skills",
+          "visible": false
+        },
+        {
+          "tag": "H3",
+          "text": "SkillUp Platform",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "SmartPOS ERP",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Tanqia Skills",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "SkillUp Platform",
+          "visible": false
+        },
+        {
+          "tag": "H3",
+          "text": "The Engineering Journal",
+          "visible": false
+        },
+        {
+          "tag": "H2",
+          "text": "Thoughts. Learnings. Progress.",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "Building Scalable APIs with Laravel",
+          "visible": true
+        },
+        {
+          "tag": "H4",
+          "text": "My Development Workflow in 2026",
+          "visible": true
+        },
+        {
+          "tag": "H4",
+          "text": "What I've Learned as a Developer",
+          "visible": true
+        },
+        {
+          "tag": "H4",
+          "text": "SQL Query Optimization: From Slow Scans to Index-Only Execut",
+          "visible": true
+        },
+        {
+          "tag": "H3",
+          "text": "From Architecture to Conversation.",
+          "visible": false
+        },
+        {
+          "tag": "H2",
+          "text": "Get In Touch",
+          "visible": true
+        }
+      ],
+      "landmarks": {
+        "main": true,
+        "mainId": "main-content",
+        "nav": 2,
+        "header": 1,
+        "footer": 1
+      },
+      "skipLink": true
+    }
+  }
+]

@@ -3,7 +3,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowUpRight, Clock, Calendar, Sparkles } from 'lucide-react';
+import type { Metadata } from 'next';
 import { NOTES, BRAND_INFO, PHOTO_ASSETS } from '@/data/portfolioData';
+import { getNoteBySlug, getNoteJsonLd, getBreadcrumbJsonLd, parseIsoDate, SITE_CONFIG } from '@/lib/seoData';
 
 export const instant = false;
 
@@ -13,22 +15,92 @@ export function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const note = await getNoteBySlug(slug);
+
+  if (!note) {
+    return {
+      title: 'Article Not Found',
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const title = note.title;
+  const description = note.abstract;
+  const canonicalUrl = `/notes/${note.slug}`;
+  const publishedTime = parseIsoDate(note.date);
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      type: 'article',
+      locale: SITE_CONFIG.locale,
+      url: `${SITE_CONFIG.url}${canonicalUrl}`,
+      siteName: SITE_CONFIG.name,
+      title: `${note.title} // ${SITE_CONFIG.name}`,
+      description,
+      ...(publishedTime ? { publishedTime } : {}),
+      authors: [SITE_CONFIG.developerName],
+      tags: note.tags,
+      images: [
+        {
+          url: '/images/philozz-cinematic-hero.png',
+          width: 1200,
+          height: 630,
+          alt: `${note.title} — Engineering Note`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${note.title} // ${SITE_CONFIG.name}`,
+      description,
+      images: ['/images/philozz-cinematic-hero.png'],
+    },
+  };
+}
+
 export default async function NoteDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const note = NOTES.find((n) => n.slug === slug);
+  const note = await getNoteBySlug(slug);
 
   if (!note) {
     notFound();
   }
 
+  const noteJsonLd = getNoteJsonLd(note);
+  const breadcrumbJsonLd = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Engineering Journal', url: '/blog' },
+    { name: note.title, url: `/notes/${note.slug}` },
+  ]);
+
   const otherNotes = NOTES.filter((n) => n.slug !== slug).slice(0, 3);
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-obsidian)', color: 'var(--color-ivory)' }}>
+      {/* Schema.org Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(noteJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* Top Header Navigation */}
       <header
         style={{
@@ -72,7 +144,7 @@ export default async function NoteDetailPage({
         </div>
       </header>
 
-      <main className="container-editorial" style={{ padding: 'clamp(2.5rem, 5vw, 5rem) 1.5rem', maxWidth: '860px' }}>
+      <main id="main-content" className="container-editorial" style={{ padding: 'clamp(2.5rem, 5vw, 5rem) 1.5rem', maxWidth: '860px' }}>
         {/* Article Meta Header */}
         <article>
           <header style={{ marginBottom: '3.5rem' }}>

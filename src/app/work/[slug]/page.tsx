@@ -2,8 +2,10 @@ import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowUpRight, CheckCircle2, Layers, Cpu, Sparkles } from 'lucide-react';
+import type { Metadata } from 'next';
 import { PROJECTS, BRAND_INFO } from '@/data/portfolioData';
 import { ProjectSchematicVisual } from '@/components/ProjectSchematicVisual';
+import { getProjectBySlug, getCaseStudyJsonLd, getBreadcrumbJsonLd, SITE_CONFIG } from '@/lib/seoData';
 
 export const instant = false;
 
@@ -13,23 +15,89 @@ export function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await getProjectBySlug(slug);
+
+  if (!project) {
+    return {
+      title: 'Case Study Not Found',
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const title = `${project.title}: ${project.tagline}`;
+  const description = `${project.summary}`;
+  const canonicalUrl = `/work/${project.slug}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      type: 'article',
+      locale: SITE_CONFIG.locale,
+      url: `${SITE_CONFIG.url}${canonicalUrl}`,
+      siteName: SITE_CONFIG.name,
+      title: `${project.title} — Case Study // ${SITE_CONFIG.name}`,
+      description,
+      images: [
+        {
+          url: '/images/philozz-cinematic-hero.png',
+          width: 1200,
+          height: 630,
+          alt: `${project.title} — Engineering Case Study`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${project.title} — Case Study // ${SITE_CONFIG.name}`,
+      description,
+      images: ['/images/philozz-cinematic-hero.png'],
+    },
+  };
+}
+
 export default async function CaseStudyPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = PROJECTS.find((p) => p.slug === slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     notFound();
   }
+
+  const caseStudyJsonLd = getCaseStudyJsonLd(project);
+  const breadcrumbJsonLd = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Projects', url: '/projects' },
+    { name: project.title, url: `/work/${project.slug}` },
+  ]);
 
   // Related projects
   const relatedProjects = PROJECTS.filter((p) => p.slug !== slug).slice(0, 3);
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-obsidian)', color: 'var(--color-ivory)' }}>
+      {/* Schema.org Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(caseStudyJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* Top Header Navigation */}
       <header
         style={{
@@ -73,7 +141,7 @@ export default async function CaseStudyPage({
         </div>
       </header>
 
-      <main className="container-editorial" style={{ padding: 'clamp(2.5rem, 5vw, 5rem) 1.5rem', maxWidth: '1180px' }}>
+      <main id="main-content" className="container-editorial" style={{ padding: 'clamp(2.5rem, 5vw, 5rem) 1.5rem', maxWidth: '1180px' }}>
         {/* Project Hero */}
         <section style={{ marginBottom: '4rem' }}>
           <div className="section-tag" style={{ marginBottom: '1.25rem', fontSize: '0.85rem' }}>

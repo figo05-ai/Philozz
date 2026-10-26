@@ -1,12 +1,39 @@
 import type { Metadata } from 'next';
 import React, { Suspense } from 'react';
 import { BlogArchiveView } from '@/components/BlogArchiveView';
-import { BRAND_INFO } from '@/data/portfolioData';
+import { getBreadcrumbJsonLd, SITE_CONFIG } from '@/lib/seoData';
 
 export const metadata: Metadata = {
-  title: `Engineering Journal // ${BRAND_INFO.name}`,
+  title: 'Engineering Journal & Technical Notes',
   description:
-    'Engineering notes, technical explorations, query plan optimizations, and lessons learned while building real software.',
+    'Engineering notes, architectural postmortems, database query optimizations, and backend best practices written by Felopater Nabil (PHILOZZ).',
+  alternates: {
+    canonical: '/blog',
+  },
+  openGraph: {
+    type: 'website',
+    locale: SITE_CONFIG.locale,
+    url: `${SITE_CONFIG.url}/blog`,
+    siteName: SITE_CONFIG.name,
+    title: `Engineering Journal & Technical Notes // ${SITE_CONFIG.name}`,
+    description:
+      'Engineering notes, architectural postmortems, database query optimizations, and backend best practices.',
+    images: [
+      {
+        url: '/images/philozz-cinematic-hero.png',
+        width: 1200,
+        height: 630,
+        alt: `Engineering Journal // ${SITE_CONFIG.name}`,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `Engineering Journal & Technical Notes // ${SITE_CONFIG.name}`,
+    description:
+      'Engineering notes, architectural postmortems, database query optimizations, and backend best practices.',
+    images: ['/images/philozz-cinematic-hero.png'],
+  },
 };
 
 function BlogArchiveLoadingFallback() {
@@ -30,9 +57,20 @@ function BlogArchiveLoadingFallback() {
 }
 
 export default function BlogArchivePage() {
+  const breadcrumbJsonLd = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Engineering Journal', url: '/blog' },
+  ]);
+
   return (
-    <Suspense fallback={<BlogArchiveLoadingFallback />}>
-      <BlogArchiveView />
-    </Suspense>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <Suspense fallback={<BlogArchiveLoadingFallback />}>
+        <BlogArchiveView />
+      </Suspense>
+    </>
   );
 }

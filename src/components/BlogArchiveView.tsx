@@ -158,7 +158,7 @@ export function BlogArchiveView() {
           <Link
             href="/#blog"
             className="archive-back-link"
-            aria-label="Return to portfolio homepage blog section"
+            aria-label="Back to Portfolio — Return to homepage blog section"
           >
             <ArrowLeft size={16} />
             <span>BACK TO PORTFOLIO</span>
@@ -403,7 +403,7 @@ export function BlogArchiveView() {
                   onClick={() => handlePageChange(validPage - 1)}
                   disabled={validPage <= 1}
                   className="archive-page-btn"
-                  aria-label="Go to previous page"
+                  aria-label="Prev — Previous page"
                 >
                   <ChevronLeft size={16} />
                   <span>Prev</span>
@@ -427,7 +427,7 @@ export function BlogArchiveView() {
                   onClick={() => handlePageChange(validPage + 1)}
                   disabled={validPage >= totalPages}
                   className="archive-page-btn"
-                  aria-label="Go to next page"
+                  aria-label="Next — Next page"
                 >
                   <span>Next</span>
                   <ChevronRight size={16} />

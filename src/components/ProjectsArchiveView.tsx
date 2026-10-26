@@ -163,7 +163,7 @@ export function ProjectsArchiveView() {
           <Link
             href="/#projects"
             className="archive-back-link"
-            aria-label="Return to portfolio homepage projects section"
+            aria-label="Back to Portfolio — Return to homepage projects section"
           >
             <ArrowLeft size={16} />
             <span>BACK TO PORTFOLIO</span>
@@ -339,7 +339,7 @@ export function ProjectsArchiveView() {
                         <Link
                           href={`/work/${project.slug}`}
                           className="btn-gold gallery-explore-btn"
-                          aria-label={`Explore architectural case study for ${project.title}`}
+                          aria-label={`Explore Case Study: ${project.title}`}
                         >
                           <span>Explore Case Study</span>
                           <ArrowUpRight size={16} />
@@ -388,7 +388,7 @@ export function ProjectsArchiveView() {
                   onClick={() => handlePageChange(validPage - 1)}
                   disabled={validPage <= 1}
                   className="archive-page-btn"
-                  aria-label="Go to previous page"
+                  aria-label="Prev — Previous page"
                 >
                   <ChevronLeft size={16} />
                   <span>Prev</span>
@@ -412,7 +412,7 @@ export function ProjectsArchiveView() {
                   onClick={() => handlePageChange(validPage + 1)}
                   disabled={validPage >= totalPages}
                   className="archive-page-btn"
-                  aria-label="Go to next page"
+                  aria-label="Next — Next page"
                 >
                   <span>Next</span>
                   <ChevronRight size={16} />

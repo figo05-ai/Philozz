@@ -1,12 +1,39 @@
 import type { Metadata } from 'next';
 import React, { Suspense } from 'react';
 import { ProjectsArchiveView } from '@/components/ProjectsArchiveView';
-import { BRAND_INFO } from '@/data/portfolioData';
+import { getBreadcrumbJsonLd, SITE_CONFIG } from '@/lib/seoData';
 
 export const metadata: Metadata = {
-  title: `Project Archive // ${BRAND_INFO.name}`,
+  title: 'Selected Engineering Projects',
   description:
-    'A collection of verified software systems, backend architectures, desktop hardware runtimes, and distributed queue systems.',
+    'A collection of verified production software systems, backend architectures, high-concurrency queue platforms, and database designs engineered by Felopater Nabil (PHILOZZ).',
+  alternates: {
+    canonical: '/projects',
+  },
+  openGraph: {
+    type: 'website',
+    locale: SITE_CONFIG.locale,
+    url: `${SITE_CONFIG.url}/projects`,
+    siteName: SITE_CONFIG.name,
+    title: `Selected Engineering Projects // ${SITE_CONFIG.name}`,
+    description:
+      'Verified production software systems, backend architectures, high-concurrency queue platforms, and database designs.',
+    images: [
+      {
+        url: '/images/philozz-cinematic-hero.png',
+        width: 1200,
+        height: 630,
+        alt: `Selected Engineering Projects // ${SITE_CONFIG.name}`,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `Selected Engineering Projects // ${SITE_CONFIG.name}`,
+    description:
+      'Verified production software systems, backend architectures, high-concurrency queue platforms, and database designs.',
+    images: ['/images/philozz-cinematic-hero.png'],
+  },
 };
 
 function ArchiveLoadingFallback() {
@@ -30,9 +57,20 @@ function ArchiveLoadingFallback() {
 }
 
 export default function ProjectsPage() {
+  const breadcrumbJsonLd = getBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Projects', url: '/projects' },
+  ]);
+
   return (
-    <Suspense fallback={<ArchiveLoadingFallback />}>
-      <ProjectsArchiveView />
-    </Suspense>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <Suspense fallback={<ArchiveLoadingFallback />}>
+        <ProjectsArchiveView />
+      </Suspense>
+    </>
   );
 }

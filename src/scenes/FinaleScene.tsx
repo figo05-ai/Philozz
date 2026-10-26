@@ -31,7 +31,7 @@ export function FinaleScene() {
   };
 
   return (
-    <footer id="contact" className="scene-section scene-finale" role="contentinfo">
+    <footer id="contact" className="content-layer-scroll scene-section scene-finale" role="contentinfo">
       {/* Cinematic Transition Bridge: Blog -> Contact ("THE FINAL COMMIT") */}
       <BlogToContactTransition />
 

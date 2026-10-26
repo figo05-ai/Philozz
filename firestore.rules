@@ -1,0 +1,507 @@
+rules_version = '2';
+
+// ============================================================================
+// PHILOZZ Portfolio & CMS — Cloud Firestore Security Rules
+// ============================================================================
+//
+// ARCHITECTURE OVERVIEW:
+// PHILOZZ CMS is built on a server-mediated architecture using Next.js 16 App
+// Router with Server Components, Route Handlers, and Server Actions.
+//
+// 1. Privileged Server Operations:
+//    All database queries and mutations (both public portfolio data presentation
+//    and protected /admin operations) are executed on the server via the Firebase
+//    Admin SDK ('firebase-admin').
+//
+// 2. Service Account Execution:
+//    The Firebase Admin SDK uses Google Cloud service account credentials.
+//    Service accounts automatically bypass client security rules.
+//
+// 3. Complete Client Lockdown (Fail-Closed Default):
+//    Because all client data access is mediated and validated through Next.js
+//    server boundaries (and user authentication is handled via HTTP-only session
+//    cookies verified by Firebase Admin Auth), direct access from client SDKs
+//    (browsers, mobile apps, or curl requests targeting Firestore REST/gRPC endpoints)
+//    is strictly DENIED across all collections.
+//
+// 4. Zero Client Attack Surface:
+//    This fail-closed configuration eliminates client-side attack vectors
+//    including unauthorized reads, enumeration of draft content, arbitrary writes,
+//    DoS through 1MB payload injection, and privilege escalation.
+//
+// ============================================================================
+// Assumed Data Model
+// ============================================================================
+//
+// Collection: projects
+// Document ID: string (e.g., project slug or Firestore auto-ID)
+// Fields:
+//   - slug: string (required, 1..100 chars, regex format) - Unique URL slug
+//   - title: string (required, 1..200 chars) - Project title
+//   - tagline: string (required, 1..300 chars) - Short punchy tagline
+//   - role: string (required, 1..100 chars) - Role played on project
+//   - period: string (required, 1..50 chars) - Timeframe of project
+//   - clientOrContext: string (required, 1..100 chars) - Client or project context
+//   - category: string (required, 1..100 chars) - Category label
+//   - archiveCategory: string (required, enum) - Filter category ('backend' | 'fullstack' | 'architecture' | 'devops')
+//   - categoryLabel: string (required, 1..100 chars) - Display badge label
+//   - technologies: list of strings (required, <= 30 items, each <= 50 chars) - All tech used
+//   - primaryTechs: list of strings (required, <= 10 items, each <= 50 chars) - Highlighted tech
+//   - summary: string (required, 1..2000 chars) - High-level summary
+//   - shortSummary: string (required, 1..500 chars) - Compact overview for cards
+//   - challenge: string (required, 1..5000 chars) - The problem/challenge description
+//   - responsibilities: list of strings (required, <= 30 items, each <= 500 chars) - Key tasks
+//   - architectureSummary: string (required, 1..5000 chars) - Architecture breakdown
+//   - architectureNodes: list of maps (required, <= 20 items) - System nodes (name, description, tech)
+//   - technicalDecisions: list of maps (required, <= 20 items) - Trade-offs (title, rationale)
+//   - demoVisualType: string (required, enum) - Interactive visual variant
+//   - lessonsLearned: list of strings (required, <= 20 items, each <= 500 chars) - Takeaways
+//   - hasLiveDemo: bool (required) - Whether live demo exists
+//   - demoUrl: string (optional, url, <= 500 chars) - External demo URL
+//   - githubUrl: string (optional, url, <= 500 chars) - GitHub repository URL
+//   - status: string (required, enum: 'draft' | 'published' | 'archived')
+//   - featured: bool (required) - Highlighted on homepage
+//   - featuredOrder: number (optional, >= 1) - Featured sorting priority
+//   - displayOrder: number (required, >= 1) - Overall sorting priority
+//   - thumbnailUrl: string (optional, url, <= 500 chars) - Card thumbnail
+//   - ogImageUrl: string (optional, url, <= 500 chars) - OpenGraph social image
+//   - seoTitle: string (optional, <= 200 chars) - SEO title tag
+//   - seoDescription: string (optional, <= 500 chars) - SEO meta description
+//   - createdAt: string (required, ISO 8601, immutable) - Document creation time
+//   - updatedAt: string (required, ISO 8601) - Document last update time
+//   - publishedAt: string (optional, ISO 8601) - Publication time
+//
+// Collection: articles
+// Document ID: string (e.g., article slug or Firestore auto-ID)
+// Fields:
+//   - slug: string (required, 1..100 chars) - Unique URL slug
+//   - title: string (required, 1..200 chars) - Article title
+//   - category: string (required, 1..100 chars) - Primary category
+//   - archiveCategory: string (required, 1..100 chars) - Filter category
+//   - readTime: string (required, 1..50 chars) - Estimated read time (e.g. '5 min read')
+//   - date: string (required, 1..50 chars) - Human-readable display date
+//   - publishedAt: string (optional, ISO 8601) - Machine sortable publication date
+//   - featured: bool (required) - Featured note status
+//   - featuredOrder: number (optional, >= 1) - Featured sorting rank
+//   - tags: list of strings (required, <= 30 items, each <= 50 chars) - Topic tags
+//   - abstract: string (required, 1..2000 chars) - Executive summary / synopsis
+//   - sections: list of maps (required, <= 50 items) - Article content sections
+//   - status: string (required, enum: 'draft' | 'published' | 'archived')
+//   - ogImageUrl: string (optional, url, <= 500 chars) - Social card preview
+//   - seoTitle: string (optional, <= 200 chars) - SEO title override
+//   - seoDescription: string (optional, <= 500 chars) - SEO description override
+//   - displayOrder: number (required, >= 1) - Display ordering priority
+//   - createdAt: string (required, ISO 8601, immutable) - Creation timestamp
+//   - updatedAt: string (required, ISO 8601) - Last modification timestamp
+//
+// Collection: categories
+// Document ID: string (e.g., category slug)
+// Fields:
+//   - label: string (required, 1..100 chars) - Category display name
+//   - displayOrder: number (required, >= 1) - Order in tabs/filters
+//   - description: string (optional, <= 500 chars) - Category purpose
+//
+// Collection: technologies
+// Document ID: string (e.g., 'laravel', 'php', 'mysql')
+// Fields:
+//   - name: string (required, 1..100 chars) - Technology name
+//   - label: string (required, 1..100 chars) - Display badge label
+//   - category: string (required, 1..100 chars) - Architecture category
+//   - role: string (required, 1..500 chars) - Role in stack
+//   - description: string (required, 1..2000 chars) - Deep technical description
+//   - capability: string (required, 1..500 chars) - Key capabilities bullet
+//   - logoKey: string (required, 1..50 chars) - SVG icon key mapping
+//   - logoSize: number (required, > 0) - Render size
+//   - x, y: number (required, 0..100) - 3D orbit percentages
+//   - svgX, svgY: number (required, 0..1000) - 3D orbit canvas coordinates
+//   - isRear: bool (required) - Orbit z-layering flag
+//   - scale: number (required, > 0) - Geometric scale
+//   - floatDelay: string (required, 1..20 chars) - CSS animation delay
+//   - displayOrder: number (required, >= 1) - Sorting rank
+//   - status: string (required, enum: 'draft' | 'published' | 'archived')
+//   - updatedAt: string (required, ISO 8601) - Last update timestamp
+//
+// Collection: expertise_areas
+// Document ID: string (e.g., area slug)
+// Fields:
+//   - name: string (required, 1..100 chars) - Expertise area name
+//   - level: string (required, 1..50 chars) - Proficiency level
+//   - description: string (required, 1..1000 chars) - Area overview
+//   - coreConcepts: list of strings (required, <= 20 items, each <= 100 chars)
+//   - displayOrder: number (required, >= 1) - Display rank
+//   - status: string (required, enum: 'draft' | 'published' | 'archived')
+//   - updatedAt: string (required, ISO 8601) - Last update timestamp
+//
+// Collection: site_config
+// Document IDs: 'brand_info', 'homepage_config', 'current_stack'
+// Fields: Defined per singleton entity (BrandInfoEntity, HomepageConfigEntity, StackDetailsEntity)
+//
+// Collection: media
+// Document ID: string (e.g., media asset ID)
+// Fields:
+//   - filename: string (required, 1..255 chars) - Stored filename
+//   - originalName: string (required, 1..255 chars) - Uploaded filename
+//   - mimeType: string (required, 1..100 chars) - Media MIME type
+//   - sizeBytes: number (required, > 0) - File size in bytes
+//   - dimensions: map (optional) - width and height
+//   - url: string (required, url, <= 1000 chars) - Asset URL
+//   - thumbnailUrl: string (optional, url, <= 1000 chars) - Thumbnail URL
+//   - provider: string (required, enum: 'local' | 'imagedb' | 'firebase-storage' | 'custom')
+//   - providerAssetId: string (optional, <= 200 chars) - Upstream provider identifier
+//   - altText: string (required, 1..500 chars) - Accessibility alternative text
+//   - caption: string (optional, <= 500 chars) - Image caption
+//   - folder: string (required, enum: 'projects' | 'articles' | 'photos' | 'brand' | 'general')
+//   - tags: list of strings (required, <= 20 items, each <= 50 chars) - Asset tags
+//   - uploadedBy: string (required, 1..100 chars) - Admin user identifier
+//   - createdAt: string (required, ISO 8601, immutable) - Upload timestamp
+//   - updatedAt: string (required, ISO 8601) - Metadata modification timestamp
+//
+// Collection: audit_logs
+// Document ID: string (e.g., audit log ID)
+// Fields:
+//   - actorId: string (required, 1..128 chars) - Performing user UID
+//   - actorEmail: string (required, valid email, <= 128 chars) - Performing user email
+//   - action: string (required, enum: 'create' | 'update' | 'delete' | 'publish' | 'unpublish' | 'reorder' | 'upload')
+//   - entityType: string (required, enum: 'project' | 'article' | 'technology' | 'site_content' | 'media' | 'category')
+//   - entityId: string (required, 1..128 chars) - Target entity ID
+//   - summary: string (required, 1..1000 chars) - Human-readable audit description
+//   - diff: map (optional) - Field change details
+//   - ipAddress: string (optional, <= 50 chars) - Origin IP
+//   - userAgent: string (optional, <= 500 chars) - Client user agent
+//   - timestamp: string (required, ISO 8601) - Audit event timestamp
+//
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ========================================================================
+    // ACTIVE ENFORCEMENT: FAIL-CLOSED SECURITY
+    // ========================================================================
+    // All direct reads and writes from client SDKs are denied by default.
+    // The Next.js 16 server boundary using the Firebase Admin SDK executes with
+    // privileged service account credentials that naturally bypass these rules.
+    // ========================================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ========================================================================
+    // REFERENCE SPECIFICATION FOR FUTURE DIRECT-CLIENT PHASES
+    // ========================================================================
+    // If the application is ever refactored to allow direct client SDK queries
+    // or client-side admin subscriptions, the following hardened rules, helper
+    // functions, and domain validators represent the production specification.
+    // To activate, replace the wildcard deny above with the rules below.
+    // ========================================================================
+    /*
+    // ------------------------------------------------------------------------
+    // Helper Functions
+    // ------------------------------------------------------------------------
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Role-based access control derived strictly from verified custom claims
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.admin == true;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    function validStringLength(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+        request.resource.data[field].size() >= minLen &&
+        request.resource.data[field].size() <= maxLen;
+    }
+
+    function isValidOptionalString(field, minLen, maxLen) {
+      return !(field in request.resource.data) ||
+        request.resource.data[field] == null ||
+        (request.resource.data[field] is string &&
+         request.resource.data[field].size() >= minLen &&
+         request.resource.data[field].size() <= maxLen);
+    }
+
+    function isValidUrl(url) {
+      return url is string &&
+        url.size() <= 1000 &&
+        (url.matches('^https://.*') || url.matches('^http://.*'));
+    }
+
+    function isValidOptionalUrl(field) {
+      return !(field in request.resource.data) ||
+        request.resource.data[field] == null ||
+        isValidUrl(request.resource.data[field]);
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+        email.size() <= 128 &&
+        email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string &&
+        dateStr.matches('^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$');
+    }
+
+    function isValidOptionalDateString(field) {
+      return !(field in request.resource.data) ||
+        request.resource.data[field] == null ||
+        isValidDateString(request.resource.data[field]);
+    }
+
+    function isValidStringList(listField, maxItems, maxItemLen) {
+      return request.resource.data[listField] is list &&
+        request.resource.data[listField].size() <= maxItems;
+    }
+
+    function isValidStatus(status) {
+      return status in ['draft', 'published', 'archived'];
+    }
+
+    // ------------------------------------------------------------------------
+    // Domain Validators (Applied to BOTH create and update rules)
+    // ------------------------------------------------------------------------
+
+    function isValidProject(data) {
+      return hasRequiredFields([
+        'slug', 'title', 'tagline', 'role', 'period', 'clientOrContext',
+        'category', 'archiveCategory', 'categoryLabel', 'technologies',
+        'primaryTechs', 'summary', 'shortSummary', 'challenge',
+        'responsibilities', 'architectureSummary', 'architectureNodes',
+        'technicalDecisions', 'demoVisualType', 'lessonsLearned',
+        'hasLiveDemo', 'status', 'featured', 'displayOrder',
+        'createdAt', 'updatedAt'
+      ]) &&
+      validStringLength('slug', 1, 100) &&
+      data.slug.matches('^[a-z0-9-]+$') &&
+      validStringLength('title', 1, 200) &&
+      validStringLength('tagline', 1, 300) &&
+      validStringLength('role', 1, 100) &&
+      validStringLength('period', 1, 50) &&
+      validStringLength('clientOrContext', 1, 100) &&
+      validStringLength('category', 1, 100) &&
+      data.archiveCategory in ['backend', 'fullstack', 'architecture', 'devops'] &&
+      validStringLength('categoryLabel', 1, 100) &&
+      isValidStringList('technologies', 30, 50) &&
+      isValidStringList('primaryTechs', 10, 50) &&
+      validStringLength('summary', 1, 2000) &&
+      validStringLength('shortSummary', 1, 500) &&
+      validStringLength('challenge', 1, 5000) &&
+      isValidStringList('responsibilities', 30, 500) &&
+      validStringLength('architectureSummary', 1, 5000) &&
+      data.architectureNodes is list && data.architectureNodes.size() <= 20 &&
+      data.technicalDecisions is list && data.technicalDecisions.size() <= 20 &&
+      data.demoVisualType in [
+        'task-flow', 'license-matrix', 'security-topology',
+        'skillup-horizon', 'smartpos-hardware', 'tanqia-pipeline'
+      ] &&
+      isValidStringList('lessonsLearned', 20, 500) &&
+      data.hasLiveDemo is bool &&
+      isValidOptionalUrl('demoUrl') &&
+      isValidOptionalUrl('githubUrl') &&
+      isValidStatus(data.status) &&
+      data.featured is bool &&
+      data.displayOrder is number && data.displayOrder >= 1 &&
+      isValidOptionalUrl('thumbnailUrl') &&
+      isValidOptionalUrl('ogImageUrl') &&
+      isValidOptionalString('seoTitle', 1, 200) &&
+      isValidOptionalString('seoDescription', 1, 500) &&
+      isValidDateString(data.createdAt) &&
+      isValidDateString(data.updatedAt) &&
+      isValidOptionalDateString('publishedAt');
+    }
+
+    function isValidArticle(data) {
+      return hasRequiredFields([
+        'slug', 'title', 'category', 'archiveCategory', 'readTime',
+        'date', 'featured', 'tags', 'abstract', 'sections',
+        'status', 'displayOrder', 'createdAt', 'updatedAt'
+      ]) &&
+      validStringLength('slug', 1, 100) &&
+      data.slug.matches('^[a-z0-9-]+$') &&
+      validStringLength('title', 1, 200) &&
+      validStringLength('category', 1, 100) &&
+      validStringLength('archiveCategory', 1, 100) &&
+      validStringLength('readTime', 1, 50) &&
+      validStringLength('date', 1, 50) &&
+      isValidOptionalDateString('publishedAt') &&
+      data.featured is bool &&
+      isValidStringList('tags', 30, 50) &&
+      validStringLength('abstract', 1, 2000) &&
+      data.sections is list && data.sections.size() <= 50 &&
+      isValidStatus(data.status) &&
+      isValidOptionalUrl('ogImageUrl') &&
+      isValidOptionalString('seoTitle', 1, 200) &&
+      isValidOptionalString('seoDescription', 1, 500) &&
+      data.displayOrder is number && data.displayOrder >= 1 &&
+      isValidDateString(data.createdAt) &&
+      isValidDateString(data.updatedAt);
+    }
+
+    function isValidCategory(data) {
+      return hasRequiredFields(['label', 'displayOrder']) &&
+        validStringLength('label', 1, 100) &&
+        data.displayOrder is number && data.displayOrder >= 1 &&
+        isValidOptionalString('description', 1, 500);
+    }
+
+    function isValidTechnology(data) {
+      return hasRequiredFields([
+        'name', 'label', 'category', 'role', 'description', 'capability',
+        'logoKey', 'logoSize', 'x', 'y', 'svgX', 'svgY', 'isRear',
+        'scale', 'floatDelay', 'displayOrder', 'status', 'updatedAt'
+      ]) &&
+      validStringLength('name', 1, 100) &&
+      validStringLength('label', 1, 100) &&
+      validStringLength('category', 1, 100) &&
+      validStringLength('role', 1, 500) &&
+      validStringLength('description', 1, 2000) &&
+      validStringLength('capability', 1, 500) &&
+      validStringLength('logoKey', 1, 50) &&
+      data.logoSize is number && data.logoSize > 0 &&
+      data.x is number && data.x >= 0 && data.x <= 100 &&
+      data.y is number && data.y >= 0 && data.y <= 100 &&
+      data.svgX is number && data.svgX >= 0 && data.svgX <= 1000 &&
+      data.svgY is number && data.svgY >= 0 && data.svgY <= 560 &&
+      data.isRear is bool &&
+      data.scale is number && data.scale > 0 &&
+      validStringLength('floatDelay', 1, 20) &&
+      data.displayOrder is number && data.displayOrder >= 1 &&
+      isValidStatus(data.status) &&
+      isValidDateString(data.updatedAt);
+    }
+
+    function isValidExpertiseArea(data) {
+      return hasRequiredFields([
+        'name', 'level', 'description', 'coreConcepts',
+        'displayOrder', 'status', 'updatedAt'
+      ]) &&
+      validStringLength('name', 1, 100) &&
+      validStringLength('level', 1, 50) &&
+      validStringLength('description', 1, 1000) &&
+      isValidStringList('coreConcepts', 20, 100) &&
+      data.displayOrder is number && data.displayOrder >= 1 &&
+      isValidStatus(data.status) &&
+      isValidDateString(data.updatedAt);
+    }
+
+    function isValidMedia(data) {
+      return hasRequiredFields([
+        'filename', 'originalName', 'mimeType', 'sizeBytes',
+        'url', 'provider', 'altText', 'folder', 'tags',
+        'uploadedBy', 'createdAt', 'updatedAt'
+      ]) &&
+      validStringLength('filename', 1, 255) &&
+      validStringLength('originalName', 1, 255) &&
+      validStringLength('mimeType', 1, 100) &&
+      data.sizeBytes is number && data.sizeBytes > 0 &&
+      isValidUrl(data.url) &&
+      isValidOptionalUrl('thumbnailUrl') &&
+      data.provider in ['local', 'imagedb', 'firebase-storage', 'custom'] &&
+      isValidOptionalString('providerAssetId', 1, 200) &&
+      validStringLength('altText', 1, 500) &&
+      isValidOptionalString('caption', 1, 500) &&
+      data.folder in ['projects', 'articles', 'photos', 'brand', 'general'] &&
+      isValidStringList('tags', 20, 50) &&
+      validStringLength('uploadedBy', 1, 100) &&
+      isValidDateString(data.createdAt) &&
+      isValidDateString(data.updatedAt);
+    }
+
+    function isValidAuditLog(data) {
+      return hasRequiredFields([
+        'actorId', 'actorEmail', 'action', 'entityType',
+        'entityId', 'summary', 'timestamp'
+      ]) &&
+      validStringLength('actorId', 1, 128) &&
+      isValidEmail(data.actorEmail) &&
+      data.action in ['create', 'update', 'delete', 'publish', 'unpublish', 'reorder', 'upload'] &&
+      data.entityType in ['project', 'article', 'technology', 'site_content', 'media', 'category'] &&
+      validStringLength('entityId', 1, 128) &&
+      validStringLength('summary', 1, 1000) &&
+      isValidOptionalString('ipAddress', 1, 50) &&
+      isValidOptionalString('userAgent', 1, 500) &&
+      isValidDateString(data.timestamp);
+    }
+
+    // ------------------------------------------------------------------------
+    // Collection Match Blocks
+    // ------------------------------------------------------------------------
+
+    // Projects: Public read only for published projects; admin has full access
+    match /projects/{projectId} {
+      allow read: if resource.data.status == 'published' || isAdmin();
+      allow create: if isAdmin() && isValidProject(request.resource.data);
+      allow update: if isAdmin() && isValidProject(request.resource.data) &&
+                    areImmutableFieldsUnchanged(['createdAt']);
+      allow delete: if isAdmin();
+    }
+
+    // Articles: Public read only for published notes; admin has full access
+    match /articles/{articleId} {
+      allow read: if resource.data.status == 'published' || isAdmin();
+      allow create: if isAdmin() && isValidArticle(request.resource.data);
+      allow update: if isAdmin() && isValidArticle(request.resource.data) &&
+                    areImmutableFieldsUnchanged(['createdAt']);
+      allow delete: if isAdmin();
+    }
+
+    // Categories: Public read, admin write
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidCategory(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Technologies: Public read for published, admin write
+    match /technologies/{techId} {
+      allow read: if resource.data.status == 'published' || isAdmin();
+      allow create, update: if isAdmin() && isValidTechnology(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Expertise Areas: Public read for published, admin write
+    match /expertise_areas/{areaId} {
+      allow read: if resource.data.status == 'published' || isAdmin();
+      allow create, update: if isAdmin() && isValidExpertiseArea(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Site Configuration Singletons: Public read, admin write
+    match /site_config/{configId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Media Library: Public read, admin write
+    match /media/{mediaId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidMedia(request.resource.data);
+      allow update: if isAdmin() && isValidMedia(request.resource.data) &&
+                    areImmutableFieldsUnchanged(['createdAt']);
+      allow delete: if isAdmin();
+    }
+
+    // Audit Logs: Strictly admin read & append-only creation; immutable
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && isValidAuditLog(request.resource.data);
+      allow update, delete: if false;
+    }
+    */
+  }
+}

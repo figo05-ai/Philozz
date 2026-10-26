@@ -232,7 +232,7 @@ export function ProjectSchematicVisual({
               onClick={handleSimulate}
               disabled={isSimulating}
               className="schematic-action-btn"
-              aria-label="Simulate burst traffic to test queue workers"
+              aria-label={`Simulate Burst #${burstCount} — Test queue workers`}
             >
               <Play size={13} className={isSimulating ? 'animate-spin' : ''} />
               <span>Simulate Burst #{burstCount}</span>
@@ -349,7 +349,7 @@ export function ProjectSchematicVisual({
               onClick={handleSimulate}
               disabled={isSimulating}
               className="schematic-action-btn"
-              aria-label="Simulate barcode scanner burst"
+              aria-label={`Simulate Scan #${burstCount} — Barcode scanner burst`}
             >
               <ScanBarcode size={13} className={isSimulating ? 'animate-pulse' : ''} />
               <span>Simulate Scan #{burstCount}</span>
@@ -459,7 +459,7 @@ export function ProjectSchematicVisual({
               onClick={handleSimulate}
               disabled={isSimulating}
               className="schematic-action-btn"
-              aria-label="Trigger chunked batch data ingest"
+              aria-label={`Trigger Batch #${burstCount} — Chunked batch data ingest`}
             >
               <RefreshCw size={13} className={isSimulating ? 'animate-spin' : ''} />
               <span>Trigger Batch #{burstCount}</span>

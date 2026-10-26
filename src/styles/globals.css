@@ -13,7 +13,7 @@
   --color-gold: #C9A45C;
   --color-gold-light: #E4C88A;
   --color-gold-dark: #A37E36;
-  --color-gold-muted: #8E733B;
+  --color-gold-muted: #967B40;
   --color-gold-glow: rgba(201, 164, 92, 0.22);
   --color-gold-border: rgba(201, 164, 92, 0.22);
   --color-gold-border-strong: rgba(201, 164, 92, 0.45);
@@ -23,7 +23,7 @@
   --color-ivory-light: #FAF8F5;
   --color-ivory-muted: #D2CEC4;
   --color-text-dim: #9A9AA8;
-  --color-text-muted: #747482;
+  --color-text-muted: #808092;
 
   /* Typography Fonts (Self-hosted via next/font/google with fallback stack) */
   --font-serif: var(--font-serif), 'Playfair Display', Georgia, 'Times New Roman', serif;
@@ -1415,7 +1415,9 @@ body {
 }
 
 .tech-pedestal-node:focus-visible {
-  outline: none !important;
+  outline: 2px solid var(--color-gold);
+  outline-offset: 8px;
+  border-radius: 20px;
 }
 
 /* Black Hole Portal Ground Shadow & Amber Orbit Falloff */
@@ -3499,10 +3501,6 @@ body {
   opacity: 1;
   transform: translateX(-50%) scale(1.2);
   background: radial-gradient(ellipse at center, rgba(201, 164, 92, 0.48) 0%, rgba(0, 0, 0, 0.9) 60%, transparent 100%);
-}
-
-.tech-pedestal-node:focus-visible {
-  outline: none !important;
 }
 
 .tech-pedestal-node:focus-visible .portal-front-rim-line {

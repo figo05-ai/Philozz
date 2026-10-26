@@ -546,7 +546,7 @@ export function HeroScene() {
                 <a
                   href="#projects"
                   className="btn-gold hero-btn-primary"
-                  aria-label="View My Selected Engineering Work"
+                  aria-label="View My Work — Selected engineering projects"
                 >
                   <span>View My Work</span>
                   <ArrowRight size={18} />

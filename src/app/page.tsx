@@ -45,8 +45,10 @@ export default function HomePage() {
         <ArchitectureScene />
         <ProjectsScene />
         <NotesScene />
-        <FinaleScene />
       </main>
+
+      {/* Top-Level Contentinfo Landmark Footer */}
+      <FinaleScene />
 
       {/* Fallback & Accessibility Status */}
       <FallbackView isWebGLDisabled={isWebGLDisabled} />

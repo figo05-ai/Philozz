@@ -1,0 +1,316 @@
+{
+  "manifestVersion": "1.0.0",
+  "generatedAt": "2026-10-26T01:01:57.461Z",
+  "mode": "dry-run",
+  "summary": {
+    "totalCollections": 8,
+    "totalDocuments": 45,
+    "featuredHomepageProjects": [
+      "skillup-platform",
+      "smartpos-erp",
+      "tanqia-skills"
+    ],
+    "validationPassed": true
+  },
+  "counts": {
+    "projects": 8,
+    "articles": 7,
+    "categories": 7,
+    "technologies": 9,
+    "expertiseAreas": 6,
+    "mediaAssets": 5,
+    "singletons": 3
+  },
+  "collections": {
+    "projects": [
+      {
+        "id": "skillup-platform",
+        "slug": "skillup-platform",
+        "featured": true,
+        "featuredOrder": 1,
+        "hash": "b51f9ac62e393fb2"
+      },
+      {
+        "id": "smartpos-erp",
+        "slug": "smartpos-erp",
+        "featured": true,
+        "featuredOrder": 2,
+        "hash": "d81e0e01804ed37a"
+      },
+      {
+        "id": "tanqia-skills",
+        "slug": "tanqia-skills",
+        "featured": true,
+        "featuredOrder": 3,
+        "hash": "f2d58fab862b63cf"
+      },
+      {
+        "id": "sip-and-snug",
+        "slug": "sip-and-snug",
+        "featured": false,
+        "hash": "6c13af85b491dd8e"
+      },
+      {
+        "id": "academy-lms",
+        "slug": "academy-lms",
+        "featured": false,
+        "hash": "9d41200606fdce11"
+      },
+      {
+        "id": "clothes-ecommerce",
+        "slug": "clothes-ecommerce",
+        "featured": false,
+        "hash": "c748391aeb616b3f"
+      },
+      {
+        "id": "maxtree-licensing",
+        "slug": "maxtree-licensing",
+        "featured": false,
+        "hash": "e21136c67e9f84c5"
+      },
+      {
+        "id": "zodiak-portfolio",
+        "slug": "zodiak-portfolio",
+        "featured": false,
+        "hash": "9328d4fa0ea2cd01"
+      }
+    ],
+    "articles": [
+      {
+        "id": "building-scalable-apis-with-laravel",
+        "slug": "building-scalable-apis-with-laravel",
+        "featured": true,
+        "category": "Backend Architecture",
+        "hash": "a4dd602cdbfdbf28"
+      },
+      {
+        "id": "my-development-workflow-2026",
+        "slug": "my-development-workflow-2026",
+        "featured": false,
+        "category": "Developer Tooling",
+        "hash": "2659b7ce2622e9dd"
+      },
+      {
+        "id": "what-ive-learned-as-a-developer",
+        "slug": "what-ive-learned-as-a-developer",
+        "featured": false,
+        "category": "Engineering Principles",
+        "hash": "0342bb3b2869dfef"
+      },
+      {
+        "id": "sql-query-optimization",
+        "slug": "sql-query-optimization",
+        "featured": false,
+        "category": "Database Engineering",
+        "hash": "353e20ab700f2250"
+      },
+      {
+        "id": "reliable-background-jobs",
+        "slug": "reliable-background-jobs",
+        "featured": false,
+        "category": "Distributed Systems",
+        "hash": "cf740110b457d157"
+      },
+      {
+        "id": "clean-architecture-in-laravel",
+        "slug": "clean-architecture-in-laravel",
+        "featured": false,
+        "category": "Software Architecture",
+        "hash": "f88b0064938f373d"
+      },
+      {
+        "id": "designing-scalable-systems",
+        "slug": "designing-scalable-systems",
+        "featured": false,
+        "category": "System Design",
+        "hash": "045bb6a2364ea92d"
+      }
+    ],
+    "categories": [
+      {
+        "id": "all",
+        "label": "All Articles",
+        "hash": "9603dcd8a91940eb"
+      },
+      {
+        "id": "backend",
+        "label": "Backend Architecture",
+        "hash": "32ff384e215e6725"
+      },
+      {
+        "id": "database",
+        "label": "Database Engineering",
+        "hash": "f0c9cca1f3d630e3"
+      },
+      {
+        "id": "distributed",
+        "label": "Distributed Systems",
+        "hash": "78c3bbb237b8c6a5"
+      },
+      {
+        "id": "architecture",
+        "label": "Software Architecture",
+        "hash": "04dfbe3e8301d51b"
+      },
+      {
+        "id": "tooling",
+        "label": "Developer Tooling",
+        "hash": "3644028164e7a481"
+      },
+      {
+        "id": "principles",
+        "label": "Engineering Principles",
+        "hash": "a803d3a1114284f5"
+      }
+    ],
+    "technologies": [
+      {
+        "id": "laravel",
+        "name": "Laravel",
+        "isRear": true,
+        "hash": "b800bb676b0e6a22"
+      },
+      {
+        "id": "php",
+        "name": "PHP 8.3",
+        "isRear": true,
+        "hash": "f7ec904f645b6c02"
+      },
+      {
+        "id": "mysql",
+        "name": "MySQL 8.0",
+        "isRear": true,
+        "hash": "18d1cc70e24babef"
+      },
+      {
+        "id": "javascript",
+        "name": "JavaScript",
+        "isRear": true,
+        "hash": "604f2b9f06b21893"
+      },
+      {
+        "id": "react",
+        "name": "React 19",
+        "isRear": false,
+        "hash": "fa014eca9940a378"
+      },
+      {
+        "id": "nextjs",
+        "name": "Next.js 16",
+        "isRear": false,
+        "hash": "fdbf8af744810e4a"
+      },
+      {
+        "id": "redis",
+        "name": "Redis",
+        "isRear": false,
+        "hash": "66688a9f2bf7faed"
+      },
+      {
+        "id": "docker",
+        "name": "Docker",
+        "isRear": false,
+        "hash": "706b806d0e849158"
+      },
+      {
+        "id": "linux",
+        "name": "Linux / SysAdmin",
+        "isRear": false,
+        "hash": "915322626f7dac45"
+      }
+    ],
+    "expertiseAreas": [
+      {
+        "id": "backend",
+        "name": "Backend Engineering",
+        "hash": "547a59a68be165ee"
+      },
+      {
+        "id": "system-design",
+        "name": "System Design",
+        "hash": "dc4dc1f199676dbc"
+      },
+      {
+        "id": "database",
+        "name": "Database Engineering",
+        "hash": "750256a20b5dc503"
+      },
+      {
+        "id": "background-processing",
+        "name": "Background Processing",
+        "hash": "6ad4c2caa1833b95"
+      },
+      {
+        "id": "devops",
+        "name": "DevOps & Infrastructure",
+        "hash": "b940240fe222cd12"
+      },
+      {
+        "id": "fullstack",
+        "name": "Full-Stack Development",
+        "hash": "8b24b9654ee0bd22"
+      }
+    ],
+    "mediaAssets": [
+      {
+        "id": "portrait-thinking",
+        "filename": "felopater-portrait-thinking.jpg",
+        "folder": "photos",
+        "hash": "d67be26c43a4520b"
+      },
+      {
+        "id": "portrait-sitting",
+        "filename": "felopater-portrait-sitting.jpg",
+        "folder": "photos",
+        "hash": "8ae48e684d3395c7"
+      },
+      {
+        "id": "workspace-backdrop",
+        "filename": "studio-workspace-backdrop.jpg",
+        "folder": "brand",
+        "hash": "7b8098364e818626"
+      },
+      {
+        "id": "cinematic-hero",
+        "filename": "philozz-cinematic-hero.png",
+        "folder": "brand",
+        "hash": "5928d96154b19053"
+      },
+      {
+        "id": "cv-pdf",
+        "filename": "felopater-cv.pdf",
+        "folder": "brand",
+        "hash": "aca137a616e795b8"
+      }
+    ],
+    "singletons": [
+      {
+        "id": "brand_info",
+        "collection": "site_config",
+        "hash": "d9704a3e0d615bda"
+      },
+      {
+        "id": "homepage_config",
+        "collection": "site_config",
+        "hash": "e1a7f01892b075b4"
+      },
+      {
+        "id": "stack_details",
+        "collection": "site_config",
+        "hash": "2aae9c0e3827062e"
+      }
+    ]
+  },
+  "collectionHashes": {
+    "projects": "d900983278dd0346",
+    "articles": "a1041fb4b7b1ddfd",
+    "categories": "d6e65814ec8e4e5c",
+    "technologies": "2e747496fcfa173d",
+    "expertiseAreas": "f3acb118ebae9ef1",
+    "mediaAssets": "8de1faae082eb5c2",
+    "brandInfo": "d9704a3e0d615bda",
+    "homepageConfig": "e1a7f01892b075b4",
+    "stackDetails": "2aae9c0e3827062e"
+  },
+  "backupExportPath": "/home/figo/Desktop/Philo/portfolio/verification/migration-backup.json"
+}

@@ -107,7 +107,7 @@ export function ProjectsScene() {
                   <Link
                     href={`/work/${project.slug}`}
                     className="btn-gold gallery-explore-btn"
-                    aria-label={`Explore architectural case study for ${project.title}`}
+                    aria-label={`Explore Case Study: ${project.title}`}
                   >
                     <span>Explore Case Study</span>
                     <ArrowUpRight size={16} />
@@ -124,7 +124,7 @@ export function ProjectsScene() {
           <Link
             href="/projects"
             className="btn-outline-gold projects-toggle-btn"
-            aria-label={`View all ${PROJECTS.length} verified projects in the project archive`}
+            aria-label={`View All Verified Projects (${PROJECTS.length}) — Open full archive`}
           >
             <Sparkles size={16} style={{ color: 'var(--color-gold)' }} />
             <span>View All Verified Projects ({PROJECTS.length})</span>

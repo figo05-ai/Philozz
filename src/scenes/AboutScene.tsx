@@ -14,8 +14,10 @@ export function AboutScene({ isTransitionStage = false }: AboutSceneProps = {}) 
     <section
       id={isTransitionStage ? undefined : 'about'}
       className="scene-section scene-about"
-      aria-labelledby="about-title"
+      aria-labelledby={isTransitionStage ? undefined : 'about-title'}
       data-transition-stage={isTransitionStage ? 'true' : undefined}
+      aria-hidden={isTransitionStage ? 'true' : undefined}
+      inert={isTransitionStage ? true : undefined}
     >
       <div className="container-editorial">
         <div className="about-grid">
@@ -86,7 +88,8 @@ export function AboutScene({ isTransitionStage = false }: AboutSceneProps = {}) 
               <a
                 href="#skills"
                 className="btn-outline-gold about-anim-btn"
-                aria-label="Explore my skills and system architecture"
+                aria-label="More About Me — Skills and system architecture"
+                tabIndex={isTransitionStage ? -1 : undefined}
               >
                 <span>More About Me</span>
                 <ArrowRight size={16} />
