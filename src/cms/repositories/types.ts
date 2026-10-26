@@ -18,6 +18,7 @@ import {
 import {
   BrandInfoEntity,
   HomepageConfigEntity,
+  SiteSeoConfigEntity,
 } from '../models/site';
 import {
   TechnologyEntity,
@@ -116,6 +117,13 @@ export interface ISiteContentRepository {
   restoreExpertiseArea(id: string): Promise<boolean>;
   deleteExpertiseArea(id: string): Promise<boolean>;
   reorderExpertiseAreas(orderedIds: string[]): Promise<boolean>;
+
+  // SEO Management
+  getSeoConfig(options?: { preview?: boolean }): Promise<SiteSeoConfigEntity>;
+  getSeoConfigDraft(): Promise<SiteSeoConfigEntity | null>;
+  saveSeoConfigDraft(data: Partial<SiteSeoConfigEntity>): Promise<SiteSeoConfigEntity>;
+  publishSeoConfig(data?: Partial<SiteSeoConfigEntity>): Promise<SiteSeoConfigEntity>;
+  rollbackSeoConfig(): Promise<SiteSeoConfigEntity>;
 
   getStackDetails(): Promise<StackDetailsEntity>;
 }

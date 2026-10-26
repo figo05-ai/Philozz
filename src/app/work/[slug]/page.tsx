@@ -23,16 +23,17 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
 
-  if (!project) {
+  if (!project || project.status !== 'published') {
     return {
       title: 'Case Study Not Found',
       robots: { index: false, follow: false },
     };
   }
 
-  const title = `${project.title}: ${project.tagline}`;
-  const description = `${project.summary}`;
+  const title = project.seoTitle || `${project.title}: ${project.tagline}`;
+  const description = project.seoDescription || project.summary;
   const canonicalUrl = `/work/${project.slug}`;
+  const ogImage = project.ogImageUrl || '/images/philozz-cinematic-hero.png';
 
   return {
     title,
@@ -49,7 +50,7 @@ export async function generateMetadata({
       description,
       images: [
         {
-          url: '/images/philozz-cinematic-hero.png',
+          url: ogImage,
           width: 1200,
           height: 630,
           alt: `${project.title} — Engineering Case Study`,
@@ -60,7 +61,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: `${project.title} — Case Study // ${SITE_CONFIG.name}`,
       description,
-      images: ['/images/philozz-cinematic-hero.png'],
+      images: [ogImage],
     },
   };
 }

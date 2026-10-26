@@ -38,6 +38,9 @@ export const FIRESTORE_SINGLETON_DOCS = {
   ORBIT_SLOTS_DRAFT: 'orbit_slots_draft',
   ORBIT_SLOTS_PREV: 'orbit_slots_prev',
   STACK_DETAILS: 'stack_details',
+  SEO_CONFIG: 'seo_config',
+  SEO_CONFIG_DRAFT: 'seo_config_draft',
+  SEO_CONFIG_PREV: 'seo_config_prev',
 } as const;
 
 /**

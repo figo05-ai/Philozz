@@ -1,6 +1,9 @@
 import { BRAND_INFO } from '@/data/portfolioData';
 import { ProjectItem, NoteItem } from '@/types';
-import { projectRepository, articleRepository } from '@/cms/repositories';
+import { ProjectEntity } from '@/cms/models/project';
+import { ArticleEntity } from '@/cms/models/article';
+import { projectRepository, articleRepository, siteContentRepository } from '@/cms/repositories';
+import { BrandInfoEntity, SiteSeoConfigEntity } from '@/cms/models/site';
 
 export const SITE_CONFIG = {
   name: BRAND_INFO.name, // 'PHILOZZ'
@@ -19,14 +22,21 @@ export const SITE_CONFIG = {
 } as const;
 
 /**
+ * Technical SEO: Fetch active published (or draft preview) SEO configuration.
+ */
+export async function getDynamicSeoConfig(options?: { preview?: boolean }): Promise<SiteSeoConfigEntity> {
+  return siteContentRepository.getSeoConfig(options);
+}
+
+/**
  * Data abstraction layer for SEO metadata, dynamic routes, and sitemap generation.
  * Wired directly through the CMS repository layer.
  */
-export async function getPublishedProjects(): Promise<ProjectItem[]> {
+export async function getPublishedProjects(): Promise<ProjectEntity[]> {
   return projectRepository.getAll({ status: 'published' });
 }
 
-export async function getProjectBySlug(slug: string): Promise<ProjectItem | undefined> {
+export async function getProjectBySlug(slug: string): Promise<ProjectEntity | undefined> {
   const project = await projectRepository.getBySlug(slug);
   if (!project || project.status !== 'published' || project.isDeleted) {
     return undefined;
@@ -38,11 +48,11 @@ export async function getProjectBySlug(slug: string): Promise<ProjectItem | unde
  * Data abstraction layer for published notes/articles.
  * Wired directly through the CMS repository layer.
  */
-export async function getPublishedNotes(): Promise<NoteItem[]> {
+export async function getPublishedNotes(): Promise<ArticleEntity[]> {
   return articleRepository.getAll({ status: 'published' });
 }
 
-export async function getNoteBySlug(slug: string): Promise<NoteItem | undefined> {
+export async function getNoteBySlug(slug: string): Promise<ArticleEntity | undefined> {
   const note = await articleRepository.getBySlug(slug);
   if (!note || note.status !== 'published' || note.isDeleted) {
     return undefined;
@@ -63,20 +73,31 @@ export function parseIsoDate(dateStr?: string): string | undefined {
 /**
  * Generates Schema.org JSON-LD for the primary person / website.
  */
-export function getPersonAndWebSiteJsonLd() {
+export function getPersonAndWebSiteJsonLd(
+  brandInfo?: BrandInfoEntity,
+  seoConfig?: SiteSeoConfigEntity
+) {
+  const devName = brandInfo?.developerName || SITE_CONFIG.developerName;
+  const brandName = brandInfo?.name || SITE_CONFIG.name;
+  const role = brandInfo?.role || SITE_CONFIG.role;
+  const desc = seoConfig?.defaultDescription || brandInfo?.statement || SITE_CONFIG.description;
+  const github = brandInfo?.github || SITE_CONFIG.github;
+  const linkedin = brandInfo?.linkedin || SITE_CONFIG.linkedin;
+  const locality = brandInfo?.location ? brandInfo.location.split(',')[0].trim() : 'Alexandria';
+
   return {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'Person',
         '@id': `${SITE_CONFIG.url}/#person`,
-        name: SITE_CONFIG.developerName,
-        alternateName: SITE_CONFIG.name,
-        jobTitle: SITE_CONFIG.role,
-        description: SITE_CONFIG.description,
+        name: devName,
+        alternateName: brandName,
+        jobTitle: role,
+        description: desc,
         url: SITE_CONFIG.url,
         image: `${SITE_CONFIG.url}/images/felopater-portrait-thinking.jpg`,
-        sameAs: [SITE_CONFIG.github, SITE_CONFIG.linkedin],
+        sameAs: [github, linkedin],
         knowsAbout: [
           'Backend Engineering',
           'Laravel',
@@ -91,7 +112,7 @@ export function getPersonAndWebSiteJsonLd() {
         ],
         address: {
           '@type': 'PostalAddress',
-          addressLocality: 'Alexandria',
+          addressLocality: locality,
           addressCountry: 'EG',
         },
       },
@@ -99,8 +120,8 @@ export function getPersonAndWebSiteJsonLd() {
         '@type': 'WebSite',
         '@id': `${SITE_CONFIG.url}/#website`,
         url: SITE_CONFIG.url,
-        name: SITE_CONFIG.name,
-        description: SITE_CONFIG.description,
+        name: brandName,
+        description: desc,
         publisher: {
           '@id': `${SITE_CONFIG.url}/#person`,
         },
@@ -113,7 +134,10 @@ export function getPersonAndWebSiteJsonLd() {
 /**
  * Generates Schema.org JSON-LD for an engineering Case Study.
  */
-export function getCaseStudyJsonLd(project: ProjectItem) {
+export function getCaseStudyJsonLd(project: ProjectEntity | ProjectItem, brandInfo?: BrandInfoEntity) {
+  const devName = brandInfo?.developerName || SITE_CONFIG.developerName;
+  const brandName = brandInfo?.name || SITE_CONFIG.name;
+
   return {
     '@context': 'https://schema.org',
     '@type': 'TechArticle',
@@ -124,8 +148,8 @@ export function getCaseStudyJsonLd(project: ProjectItem) {
     inLanguage: 'en-US',
     author: {
       '@type': 'Person',
-      name: SITE_CONFIG.developerName,
-      alternateName: SITE_CONFIG.name,
+      name: devName,
+      alternateName: brandName,
       url: SITE_CONFIG.url,
     },
     about: {
@@ -141,7 +165,9 @@ export function getCaseStudyJsonLd(project: ProjectItem) {
 /**
  * Generates Schema.org JSON-LD for an Engineering Journal / Blog Note.
  */
-export function getNoteJsonLd(note: NoteItem) {
+export function getNoteJsonLd(note: ArticleEntity | NoteItem, brandInfo?: BrandInfoEntity) {
+  const devName = brandInfo?.developerName || SITE_CONFIG.developerName;
+  const brandName = brandInfo?.name || SITE_CONFIG.name;
   const publishedDate = parseIsoDate(note.date);
 
   return {
@@ -154,13 +180,13 @@ export function getNoteJsonLd(note: NoteItem) {
     inLanguage: 'en-US',
     author: {
       '@type': 'Person',
-      name: SITE_CONFIG.developerName,
-      alternateName: SITE_CONFIG.name,
+      name: devName,
+      alternateName: brandName,
       url: SITE_CONFIG.url,
     },
     publisher: {
       '@type': 'Person',
-      name: SITE_CONFIG.developerName,
+      name: devName,
       url: SITE_CONFIG.url,
     },
     ...(publishedDate ? { datePublished: publishedDate } : {}),

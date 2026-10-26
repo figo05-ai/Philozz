@@ -10,6 +10,8 @@ import { BRAND_INFO, EXPERTISE_AREAS, STACK_DETAILS, PHOTO_ASSETS } from '@/data
 import {
   BrandInfoEntity,
   HomepageConfigEntity,
+  SiteSeoConfigEntity,
+  DEFAULT_SEO_CONFIG,
 } from '../../models/site';
 import {
   TechnologyEntity,
@@ -40,8 +42,12 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
   private technologies: TechnologyEntity[];
   private expertiseAreas: ExpertiseAreaEntity[];
   private stackDetails: StackDetailsEntity;
+  private seoConfig: SiteSeoConfigEntity;
+  private seoConfigDraft: SiteSeoConfigEntity | null = null;
+  private previousSeoConfig: SiteSeoConfigEntity | null = null;
 
   constructor() {
+    this.seoConfig = JSON.parse(JSON.stringify(DEFAULT_SEO_CONFIG));
     this.brandInfo = {
       id: 'brand_info',
       name: BRAND_INFO.name,
@@ -757,5 +763,88 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
 
   async getStackDetails(): Promise<StackDetailsEntity> {
     return { ...this.stackDetails };
+  }
+
+  // --- SEO Management ---
+
+  async getSeoConfig(options?: { preview?: boolean }): Promise<SiteSeoConfigEntity> {
+    if (options?.preview && this.seoConfigDraft) {
+      return JSON.parse(JSON.stringify(this.seoConfigDraft));
+    }
+    return JSON.parse(JSON.stringify(this.seoConfig));
+  }
+
+  async getSeoConfigDraft(): Promise<SiteSeoConfigEntity | null> {
+    if (!this.seoConfigDraft) return null;
+    return JSON.parse(JSON.stringify(this.seoConfigDraft));
+  }
+
+  async saveSeoConfigDraft(data: Partial<SiteSeoConfigEntity>): Promise<SiteSeoConfigEntity> {
+    const base = this.seoConfigDraft || this.seoConfig;
+    const now = new Date().toISOString();
+    const updatedDraft: SiteSeoConfigEntity = {
+      ...base,
+      ...data,
+      homepage: data.homepage !== undefined ? { ...(base.homepage || {}), ...data.homepage } : base.homepage,
+      projectsArchive:
+        data.projectsArchive !== undefined
+          ? { ...(base.projectsArchive || {}), ...data.projectsArchive }
+          : base.projectsArchive,
+      blogArchive:
+        data.blogArchive !== undefined ? { ...(base.blogArchive || {}), ...data.blogArchive } : base.blogArchive,
+      id: 'seo_config',
+      status: 'draft',
+      version: (base.version || 1) + 1,
+      updatedAt: now,
+    };
+    this.seoConfigDraft = updatedDraft;
+    return JSON.parse(JSON.stringify(updatedDraft));
+  }
+
+  async publishSeoConfig(data?: Partial<SiteSeoConfigEntity>): Promise<SiteSeoConfigEntity> {
+    const base = this.seoConfigDraft || this.seoConfig;
+    const now = new Date().toISOString();
+    this.previousSeoConfig = JSON.parse(JSON.stringify(this.seoConfig));
+
+    const updated: SiteSeoConfigEntity = {
+      ...base,
+      ...(data || {}),
+      homepage:
+        data?.homepage !== undefined
+          ? { ...(base.homepage || {}), ...data.homepage }
+          : base.homepage,
+      projectsArchive:
+        data?.projectsArchive !== undefined
+          ? { ...(base.projectsArchive || {}), ...data.projectsArchive }
+          : base.projectsArchive,
+      blogArchive:
+        data?.blogArchive !== undefined
+          ? { ...(base.blogArchive || {}), ...data.blogArchive }
+          : base.blogArchive,
+      id: 'seo_config',
+      status: 'published',
+      version: (this.seoConfig.version || 1) + 1,
+      updatedAt: now,
+      publishedAt: now,
+    };
+
+    this.seoConfig = updated;
+    this.seoConfigDraft = null;
+    return JSON.parse(JSON.stringify(updated));
+  }
+
+  async rollbackSeoConfig(): Promise<SiteSeoConfigEntity> {
+    if (!this.previousSeoConfig) {
+      throw new Error('No previous published SEO configuration available to restore.');
+    }
+    const now = new Date().toISOString();
+    const restored: SiteSeoConfigEntity = {
+      ...this.previousSeoConfig,
+      version: (this.seoConfig.version || 1) + 1,
+      updatedAt: now,
+    };
+    this.seoConfig = restored;
+    this.seoConfigDraft = null;
+    return JSON.parse(JSON.stringify(restored));
   }
 }

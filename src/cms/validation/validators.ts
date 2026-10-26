@@ -581,4 +581,200 @@ export function validateExpertiseArea(input: Partial<ExpertiseAreaEntity>): Vali
   };
 }
 
+/**
+ * Validates safe image URLs: either relative (/images/...) or secure https://
+ */
+export function isValidSafeImageUrl(url: string): boolean {
+  if (!url || typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  // Safe relative paths starting with single / (e.g. /images/...)
+  if (trimmed.startsWith('/') && !trimmed.startsWith('//')) {
+    return !/^(javascript|data|vbscript):/i.test(trimmed);
+  }
+  // Safe absolute https: URLs
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === 'https:' && !/^(javascript|data|vbscript):/i.test(trimmed);
+  } catch {
+    return false;
+  }
+}
+
+const ALLOWED_SEO_KEYS = new Set([
+  'id',
+  'status',
+  'version',
+  'siteTitle',
+  'titleTemplate',
+  'defaultDescription',
+  'defaultKeywords',
+  'defaultOgImage',
+  'twitterCard',
+  'twitterCreator',
+  'locale',
+  'homepage',
+  'projectsArchive',
+  'blogArchive',
+  'allowIndexing',
+  'disallowAdminRoutes',
+  'disallowApiRoutes',
+  'updatedAt',
+  'publishedAt',
+]);
+
+const ALLOWED_PAGE_OVERRIDE_KEYS = new Set(['title', 'description', 'ogImageUrl']);
+
+/**
+ * Validates Site SEO Configuration inputs.
+ */
+export function validateSeoConfig(config: unknown): ValidationResult {
+  const errors: Record<string, string> = {};
+
+  if (!config || typeof config !== 'object' || Array.isArray(config)) {
+    return {
+      valid: false,
+      errors: { config: 'SEO configuration must be an object.' },
+    };
+  }
+
+  const record = config as Record<string, unknown>;
+
+  // Reject unsupported keys
+  for (const key of Object.keys(record)) {
+    if (!ALLOWED_SEO_KEYS.has(key)) {
+      errors[key] = `Unsupported configuration key: "${key}".`;
+    }
+  }
+
+  // Validate siteTitle
+  if (record.siteTitle !== undefined) {
+    if (typeof record.siteTitle !== 'string' || record.siteTitle.trim().length === 0) {
+      errors.siteTitle = 'Site title cannot be empty.';
+    } else if (record.siteTitle.trim().length < 2 || record.siteTitle.trim().length > 120) {
+      errors.siteTitle = 'Site title must be between 2 and 120 characters.';
+    }
+  }
+
+  // Validate titleTemplate
+  if (record.titleTemplate !== undefined) {
+    if (typeof record.titleTemplate !== 'string' || record.titleTemplate.trim().length === 0) {
+      errors.titleTemplate = 'Title template cannot be empty.';
+    } else if (!record.titleTemplate.includes('%s')) {
+      errors.titleTemplate = 'Title template must contain the "%s" placeholder.';
+    } else if (record.titleTemplate.length > 60) {
+      errors.titleTemplate = 'Title template must not exceed 60 characters.';
+    }
+  }
+
+  // Validate defaultDescription
+  if (record.defaultDescription !== undefined) {
+    if (typeof record.defaultDescription !== 'string' || record.defaultDescription.trim().length === 0) {
+      errors.defaultDescription = 'Default meta description cannot be empty.';
+    } else if (record.defaultDescription.trim().length < 10 || record.defaultDescription.trim().length > 320) {
+      errors.defaultDescription = 'Default meta description must be between 10 and 320 characters.';
+    }
+  }
+
+  // Validate defaultKeywords
+  if (record.defaultKeywords !== undefined) {
+    if (!Array.isArray(record.defaultKeywords)) {
+      errors.defaultKeywords = 'Keywords must be an array of strings.';
+    } else {
+      if (record.defaultKeywords.length > 40) {
+        errors.defaultKeywords = 'Keywords array cannot exceed 40 items.';
+      }
+      record.defaultKeywords.forEach((kw, idx) => {
+        if (typeof kw !== 'string' || kw.trim().length === 0) {
+          errors[`defaultKeywords.${idx}`] = 'Keyword cannot be empty.';
+        } else if (kw.length > 60) {
+          errors[`defaultKeywords.${idx}`] = 'Keyword must not exceed 60 characters.';
+        }
+      });
+    }
+  }
+
+  // Validate defaultOgImage
+  if (record.defaultOgImage !== undefined) {
+    if (typeof record.defaultOgImage !== 'string' || !isValidSafeImageUrl(record.defaultOgImage)) {
+      errors.defaultOgImage = 'Open Graph image must be a valid relative path (/...) or secure https:// URL.';
+    }
+  }
+
+  // Validate twitterCard
+  if (record.twitterCard !== undefined) {
+    if (record.twitterCard !== 'summary_large_image' && record.twitterCard !== 'summary') {
+      errors.twitterCard = 'Twitter card must be "summary_large_image" or "summary".';
+    }
+  }
+
+  // Validate twitterCreator
+  if (record.twitterCreator !== undefined) {
+    if (typeof record.twitterCreator !== 'string') {
+      errors.twitterCreator = 'Twitter creator handle must be a string.';
+    } else if (record.twitterCreator.length > 40) {
+      errors.twitterCreator = 'Twitter creator handle must not exceed 40 characters.';
+    }
+  }
+
+  // Validate locale
+  if (record.locale !== undefined) {
+    if (typeof record.locale !== 'string' || !/^[a-z]{2}(_[A-Z]{2})?$/.test(record.locale)) {
+      errors.locale = 'Locale must follow standard format (e.g., "en_US").';
+    }
+  }
+
+  // Validate page-specific overrides
+  const pageSections = ['homepage', 'projectsArchive', 'blogArchive'] as const;
+  for (const sec of pageSections) {
+    const pageVal = record[sec];
+    if (pageVal !== undefined && pageVal !== null) {
+      if (typeof pageVal !== 'object' || Array.isArray(pageVal)) {
+        errors[sec] = `${sec} settings must be an object.`;
+      } else {
+        const pageRec = pageVal as Record<string, unknown>;
+        for (const pk of Object.keys(pageRec)) {
+          if (!ALLOWED_PAGE_OVERRIDE_KEYS.has(pk)) {
+            errors[`${sec}.${pk}`] = `Unsupported page override key: "${pk}".`;
+          }
+        }
+        if (pageRec.title !== undefined) {
+          if (typeof pageRec.title !== 'string' || pageRec.title.trim().length === 0) {
+            errors[`${sec}.title`] = 'Page title cannot be empty.';
+          } else if (pageRec.title.length > 120) {
+            errors[`${sec}.title`] = 'Page title must not exceed 120 characters.';
+          }
+        }
+        if (pageRec.description !== undefined) {
+          if (typeof pageRec.description !== 'string' || pageRec.description.trim().length === 0) {
+            errors[`${sec}.description`] = 'Page description cannot be empty.';
+          } else if (pageRec.description.length > 320) {
+            errors[`${sec}.description`] = 'Page description must not exceed 320 characters.';
+          }
+        }
+        if (pageRec.ogImageUrl !== undefined && pageRec.ogImageUrl !== '') {
+          if (typeof pageRec.ogImageUrl !== 'string' || !isValidSafeImageUrl(pageRec.ogImageUrl)) {
+            errors[`${sec}.ogImageUrl`] = 'Page Open Graph image must be a valid relative path (/...) or secure https:// URL.';
+          }
+        }
+      }
+    }
+  }
+
+  // Validate indexing booleans
+  if (record.allowIndexing !== undefined && typeof record.allowIndexing !== 'boolean') {
+    errors.allowIndexing = 'allowIndexing must be a boolean.';
+  }
+  if (record.disallowAdminRoutes !== undefined && typeof record.disallowAdminRoutes !== 'boolean') {
+    errors.disallowAdminRoutes = 'disallowAdminRoutes must be a boolean.';
+  }
+  if (record.disallowApiRoutes !== undefined && typeof record.disallowApiRoutes !== 'boolean') {
+    errors.disallowApiRoutes = 'disallowApiRoutes must be a boolean.';
+  }
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors,
+  };
+}
+
 

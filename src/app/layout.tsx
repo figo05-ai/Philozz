@@ -32,6 +32,7 @@ const caveat = Caveat({
 });
 
 import { getPersonAndWebSiteJsonLd, SITE_CONFIG } from '@/lib/seoData';
+import { siteContentRepository } from '@/cms/repositories';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -39,74 +40,94 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_CONFIG.url),
-  title: {
-    default: `${SITE_CONFIG.name} // ${SITE_CONFIG.role}`,
-    template: `%s // ${SITE_CONFIG.name}`,
-  },
-  description: SITE_CONFIG.description,
-  keywords: [
-    'Backend Engineer',
-    'System Design',
-    'Software Architecture',
-    'Laravel',
-    'PostgreSQL',
-    'MySQL',
-    'Redis Queues',
-    'React',
-    'TypeScript',
-    'Docker',
-    'PHP 8.3',
-  ],
-  authors: [{ name: SITE_CONFIG.developerName, url: SITE_CONFIG.url }],
-  creator: SITE_CONFIG.name,
-  publisher: SITE_CONFIG.name,
-  alternates: {
-    canonical: '/',
-  },
-  openGraph: {
-    type: 'website',
-    locale: SITE_CONFIG.locale,
-    url: SITE_CONFIG.url,
-    siteName: SITE_CONFIG.name,
-    title: `${SITE_CONFIG.name} // ${SITE_CONFIG.role}`,
-    description: SITE_CONFIG.description,
-    images: [
-      {
-        url: '/images/philozz-cinematic-hero.png',
-        width: 1200,
-        height: 630,
-        alt: `${SITE_CONFIG.developerName} (${SITE_CONFIG.name}) — ${SITE_CONFIG.role}`,
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `${SITE_CONFIG.name} // ${SITE_CONFIG.role}`,
-    description: SITE_CONFIG.description,
-    images: ['/images/philozz-cinematic-hero.png'],
-    creator: '@philozz',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [seoConfig, brandInfo] = await Promise.all([
+    siteContentRepository.getSeoConfig(),
+    siteContentRepository.getBrandInfo(),
+  ]);
 
-export default function RootLayout({
+  const siteTitle = seoConfig.siteTitle || `${brandInfo.name || SITE_CONFIG.name} // ${brandInfo.role || SITE_CONFIG.role}`;
+  const titleTemplate = seoConfig.titleTemplate || `%s // ${brandInfo.name || SITE_CONFIG.name}`;
+  const description = seoConfig.defaultDescription || SITE_CONFIG.description;
+  const ogImage = seoConfig.defaultOgImage || '/images/philozz-cinematic-hero.png';
+  const authorName = brandInfo.developerName || SITE_CONFIG.developerName;
+  const brandName = brandInfo.name || SITE_CONFIG.name;
+  const roleName = brandInfo.role || SITE_CONFIG.role;
+
+  return {
+    metadataBase: new URL(SITE_CONFIG.url),
+    title: {
+      default: siteTitle,
+      template: titleTemplate,
+    },
+    description,
+    keywords: seoConfig.defaultKeywords || [
+      'Backend Engineer',
+      'System Design',
+      'Software Architecture',
+      'Laravel',
+      'PostgreSQL',
+      'MySQL',
+      'Redis Queues',
+      'React',
+      'TypeScript',
+      'Docker',
+      'PHP 8.3',
+    ],
+    authors: [{ name: authorName, url: SITE_CONFIG.url }],
+    creator: brandName,
+    publisher: brandName,
+    alternates: {
+      canonical: '/',
+    },
+    openGraph: {
+      type: 'website',
+      locale: seoConfig.locale || SITE_CONFIG.locale,
+      url: SITE_CONFIG.url,
+      siteName: brandName,
+      title: siteTitle,
+      description,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${authorName} (${brandName}) — ${roleName}`,
+        },
+      ],
+    },
+    twitter: {
+      card: seoConfig.twitterCard || 'summary_large_image',
+      title: siteTitle,
+      description,
+      images: [ogImage],
+      creator: seoConfig.twitterCreator || '@philozz',
+    },
+    robots: {
+      index: seoConfig.allowIndexing,
+      follow: true,
+      googleBot: {
+        index: seoConfig.allowIndexing,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const jsonLd = getPersonAndWebSiteJsonLd();
+  const [seoConfig, brandInfo] = await Promise.all([
+    siteContentRepository.getSeoConfig(),
+    siteContentRepository.getBrandInfo(),
+  ]);
+
+  const jsonLd = getPersonAndWebSiteJsonLd(brandInfo, seoConfig);
 
   return (
     <html

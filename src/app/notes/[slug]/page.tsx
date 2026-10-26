@@ -23,16 +23,17 @@ export async function generateMetadata({
   const { slug } = await params;
   const note = await getNoteBySlug(slug);
 
-  if (!note) {
+  if (!note || note.status !== 'published') {
     return {
       title: 'Article Not Found',
       robots: { index: false, follow: false },
     };
   }
 
-  const title = note.title;
-  const description = note.abstract;
+  const title = note.seoTitle || note.title;
+  const description = note.seoDescription || note.abstract;
   const canonicalUrl = `/notes/${note.slug}`;
+  const ogImage = note.ogImageUrl || '/images/philozz-cinematic-hero.png';
   const publishedTime = parseIsoDate(note.date);
 
   return {
@@ -46,25 +47,25 @@ export async function generateMetadata({
       locale: SITE_CONFIG.locale,
       url: `${SITE_CONFIG.url}${canonicalUrl}`,
       siteName: SITE_CONFIG.name,
-      title: `${note.title} // ${SITE_CONFIG.name}`,
+      title: `${title} // ${SITE_CONFIG.name}`,
       description,
       ...(publishedTime ? { publishedTime } : {}),
       authors: [SITE_CONFIG.developerName],
       tags: note.tags,
       images: [
         {
-          url: '/images/philozz-cinematic-hero.png',
+          url: ogImage,
           width: 1200,
           height: 630,
-          alt: `${note.title} — Engineering Note`,
+          alt: `${title} — Engineering Note`,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${note.title} // ${SITE_CONFIG.name}`,
+      title: `${title} // ${SITE_CONFIG.name}`,
       description,
-      images: ['/images/philozz-cinematic-hero.png'],
+      images: [ogImage],
     },
   };
 }

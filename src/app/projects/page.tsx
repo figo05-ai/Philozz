@@ -3,38 +3,48 @@ import React, { Suspense } from 'react';
 import { ProjectsArchiveView } from '@/components/ProjectsArchiveView';
 import { getBreadcrumbJsonLd, SITE_CONFIG } from '@/lib/seoData';
 
-export const metadata: Metadata = {
-  title: 'Selected Engineering Projects',
-  description:
-    'A collection of verified production software systems, backend architectures, high-concurrency queue platforms, and database designs engineered by Felopater Nabil (PHILOZZ).',
-  alternates: {
-    canonical: '/projects',
-  },
-  openGraph: {
-    type: 'website',
-    locale: SITE_CONFIG.locale,
-    url: `${SITE_CONFIG.url}/projects`,
-    siteName: SITE_CONFIG.name,
-    title: `Selected Engineering Projects // ${SITE_CONFIG.name}`,
-    description:
-      'Verified production software systems, backend architectures, high-concurrency queue platforms, and database designs.',
-    images: [
-      {
-        url: '/images/philozz-cinematic-hero.png',
-        width: 1200,
-        height: 630,
-        alt: `Selected Engineering Projects // ${SITE_CONFIG.name}`,
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `Selected Engineering Projects // ${SITE_CONFIG.name}`,
-    description:
-      'Verified production software systems, backend architectures, high-concurrency queue platforms, and database designs.',
-    images: ['/images/philozz-cinematic-hero.png'],
-  },
-};
+import { siteContentRepository } from '@/cms/repositories';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const seoConfig = await siteContentRepository.getSeoConfig();
+  const proj = seoConfig.projectsArchive;
+
+  const title = proj?.title || 'Selected Engineering Projects';
+  const description =
+    proj?.description ||
+    'A collection of verified production software systems, backend architectures, high-concurrency queue platforms, and database designs engineered by Felopater Nabil (PHILOZZ).';
+  const ogImage = proj?.ogImageUrl || seoConfig.defaultOgImage || '/images/philozz-cinematic-hero.png';
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: '/projects',
+    },
+    openGraph: {
+      type: 'website',
+      locale: seoConfig.locale || SITE_CONFIG.locale,
+      url: `${SITE_CONFIG.url}/projects`,
+      siteName: SITE_CONFIG.name,
+      title: `${title} // ${SITE_CONFIG.name}`,
+      description,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${title} // ${SITE_CONFIG.name}`,
+        },
+      ],
+    },
+    twitter: {
+      card: seoConfig.twitterCard || 'summary_large_image',
+      title: `${title} // ${SITE_CONFIG.name}`,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 
 function ArchiveLoadingFallback() {
   return (

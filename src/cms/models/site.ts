@@ -117,3 +117,85 @@ export interface HomepageConfigEntity {
 }
 
 export type UpdateHomepageConfigInput = Partial<HomepageConfigEntity>;
+
+export interface PageSeoOverride {
+  title?: string;
+  description?: string;
+  ogImageUrl?: string;
+}
+
+export interface SiteSeoConfigEntity {
+  id: 'seo_config';
+  status: 'draft' | 'published';
+  version: number;
+  siteTitle: string;
+  titleTemplate: string;
+  defaultDescription: string;
+  defaultKeywords: string[];
+  defaultOgImage: string;
+  twitterCard: 'summary_large_image' | 'summary';
+  twitterCreator: string;
+  locale: string;
+  homepage?: PageSeoOverride;
+  projectsArchive?: PageSeoOverride;
+  blogArchive?: PageSeoOverride;
+  allowIndexing: boolean;
+  disallowAdminRoutes: boolean;
+  disallowApiRoutes: boolean;
+  updatedAt: string;
+  publishedAt?: string;
+}
+
+export type UpdateSiteSeoConfigInput = Partial<
+  Omit<SiteSeoConfigEntity, 'id' | 'version' | 'updatedAt' | 'publishedAt'>
+>;
+
+export const DEFAULT_SEO_CONFIG: SiteSeoConfigEntity = {
+  id: 'seo_config',
+  status: 'published',
+  version: 1,
+  siteTitle: 'PHILOZZ // Full-Stack Software Engineer',
+  titleTemplate: '%s // PHILOZZ',
+  defaultDescription:
+    'Portfolio and Engineering Journal of Felopater Nabil (PHILOZZ), a Backend-focused Full-Stack Software Engineer specializing in Laravel, system architecture, database optimization, and high-concurrency queue topologies.',
+  defaultKeywords: [
+    'Backend Engineer',
+    'System Design',
+    'Software Architecture',
+    'Laravel',
+    'PostgreSQL',
+    'MySQL',
+    'Redis Queues',
+    'React',
+    'TypeScript',
+    'Docker',
+    'PHP 8.3',
+  ],
+  defaultOgImage: '/images/philozz-cinematic-hero.png',
+  twitterCard: 'summary_large_image',
+  twitterCreator: '@philozz',
+  locale: 'en_US',
+  homepage: {
+    title: 'PHILOZZ // Full-Stack Software Engineer',
+    description:
+      'Portfolio and Engineering Journal of Felopater Nabil (PHILOZZ), a Backend-focused Full-Stack Software Engineer specializing in Laravel, system architecture, database optimization, and high-concurrency queue topologies.',
+    ogImageUrl: '/images/philozz-cinematic-hero.png',
+  },
+  projectsArchive: {
+    title: 'Selected Engineering Projects',
+    description:
+      'A collection of verified production software systems, backend architectures, high-concurrency queue platforms, and database designs engineered by Felopater Nabil (PHILOZZ).',
+    ogImageUrl: '/images/philozz-cinematic-hero.png',
+  },
+  blogArchive: {
+    title: 'Engineering Journal & Technical Notes',
+    description:
+      'Engineering notes, architectural postmortems, database query optimizations, and backend best practices written by Felopater Nabil (PHILOZZ).',
+    ogImageUrl: '/images/philozz-cinematic-hero.png',
+  },
+  allowIndexing: true,
+  disallowAdminRoutes: true,
+  disallowApiRoutes: true,
+  updatedAt: '2026-04-15T00:00:00.000Z',
+  publishedAt: '2026-04-15T00:00:00.000Z',
+};

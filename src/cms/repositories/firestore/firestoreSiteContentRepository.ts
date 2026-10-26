@@ -12,6 +12,8 @@ import { getFirebaseFirestore } from '@/lib/auth/firebaseAdmin';
 import {
   BrandInfoEntity,
   HomepageConfigEntity,
+  SiteSeoConfigEntity,
+  DEFAULT_SEO_CONFIG,
 } from '../../models/site';
 import {
   TechnologyEntity,
@@ -637,6 +639,139 @@ export class FirestoreSiteContentRepository implements ISiteContentRepository {
       infrastructure: Array.isArray(data.infrastructure) ? data.infrastructure : [],
       updatedAt: (data.updatedAt as string) || new Date().toISOString(),
     };
+  }
+
+  // --- SEO Management ---
+
+  async getSeoConfig(options?: { preview?: boolean }): Promise<SiteSeoConfigEntity> {
+    if (options?.preview) {
+      const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.SEO_CONFIG_DRAFT);
+      const draftSnap = await draftRef.get();
+      if (draftSnap.exists) {
+        return {
+          ...(draftSnap.data()! as SiteSeoConfigEntity),
+          id: 'seo_config',
+        };
+      }
+    }
+
+    const docRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.SEO_CONFIG);
+    const snap = await docRef.get();
+
+    if (!snap.exists) {
+      return { ...DEFAULT_SEO_CONFIG };
+    }
+
+    const data = snap.data()!;
+    return {
+      ...(data as SiteSeoConfigEntity),
+      id: 'seo_config',
+    };
+  }
+
+  async getSeoConfigDraft(): Promise<SiteSeoConfigEntity | null> {
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.SEO_CONFIG_DRAFT);
+    const snap = await draftRef.get();
+    if (!snap.exists) return null;
+    return {
+      ...(snap.data()! as SiteSeoConfigEntity),
+      id: 'seo_config',
+    };
+  }
+
+  async saveSeoConfigDraft(data: Partial<SiteSeoConfigEntity>): Promise<SiteSeoConfigEntity> {
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.SEO_CONFIG_DRAFT);
+    const published = await this.getSeoConfig();
+    const existingDraft = await this.getSeoConfigDraft();
+    const base = existingDraft || published;
+    const now = new Date().toISOString();
+
+    const updatedDraft: SiteSeoConfigEntity = {
+      ...base,
+      ...data,
+      homepage:
+        data.homepage !== undefined ? { ...(base.homepage || {}), ...data.homepage } : base.homepage,
+      projectsArchive:
+        data.projectsArchive !== undefined
+          ? { ...(base.projectsArchive || {}), ...data.projectsArchive }
+          : base.projectsArchive,
+      blogArchive:
+        data.blogArchive !== undefined
+          ? { ...(base.blogArchive || {}), ...data.blogArchive }
+          : base.blogArchive,
+      id: 'seo_config',
+      status: 'draft',
+      version: (base.version || 1) + 1,
+      updatedAt: now,
+    };
+
+    await draftRef.set(updatedDraft);
+    return updatedDraft;
+  }
+
+  async publishSeoConfig(data?: Partial<SiteSeoConfigEntity>): Promise<SiteSeoConfigEntity> {
+    const firestore = getFirebaseFirestore();
+    const publishedRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.SEO_CONFIG);
+    const prevRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.SEO_CONFIG_PREV);
+    const draftRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.SEO_CONFIG_DRAFT);
+
+    const published = await this.getSeoConfig();
+    const existingDraft = await this.getSeoConfigDraft();
+    const base = existingDraft || published;
+    const now = new Date().toISOString();
+
+    const newPublished: SiteSeoConfigEntity = {
+      ...base,
+      ...(data || {}),
+      homepage:
+        data?.homepage !== undefined
+          ? { ...(base.homepage || {}), ...data.homepage }
+          : base.homepage,
+      projectsArchive:
+        data?.projectsArchive !== undefined
+          ? { ...(base.projectsArchive || {}), ...data.projectsArchive }
+          : base.projectsArchive,
+      blogArchive:
+        data?.blogArchive !== undefined
+          ? { ...(base.blogArchive || {}), ...data.blogArchive }
+          : base.blogArchive,
+      id: 'seo_config',
+      status: 'published',
+      version: (published.version || 1) + 1,
+      updatedAt: now,
+      publishedAt: now,
+    };
+
+    const batch = firestore.batch();
+    batch.set(prevRef, published);
+    batch.set(publishedRef, newPublished);
+    batch.delete(draftRef);
+
+    await batch.commit();
+    return newPublished;
+  }
+
+  async rollbackSeoConfig(): Promise<SiteSeoConfigEntity> {
+    const publishedRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.SEO_CONFIG);
+    const prevRef = this.siteConfigCollection.doc(FIRESTORE_SINGLETON_DOCS.SEO_CONFIG_PREV);
+
+    const prevSnap = await prevRef.get();
+    if (!prevSnap.exists) {
+      throw new Error('No previous published SEO configuration available to restore.');
+    }
+
+    const current = await this.getSeoConfig();
+    const prevData = prevSnap.data()! as SiteSeoConfigEntity;
+    const now = new Date().toISOString();
+
+    const restored: SiteSeoConfigEntity = {
+      ...prevData,
+      version: (current.version || 1) + 1,
+      updatedAt: now,
+    };
+
+    await publishedRef.set(restored);
+    return restored;
   }
 }
 

@@ -3,38 +3,48 @@ import React, { Suspense } from 'react';
 import { BlogArchiveView } from '@/components/BlogArchiveView';
 import { getBreadcrumbJsonLd, SITE_CONFIG } from '@/lib/seoData';
 
-export const metadata: Metadata = {
-  title: 'Engineering Journal & Technical Notes',
-  description:
-    'Engineering notes, architectural postmortems, database query optimizations, and backend best practices written by Felopater Nabil (PHILOZZ).',
-  alternates: {
-    canonical: '/blog',
-  },
-  openGraph: {
-    type: 'website',
-    locale: SITE_CONFIG.locale,
-    url: `${SITE_CONFIG.url}/blog`,
-    siteName: SITE_CONFIG.name,
-    title: `Engineering Journal & Technical Notes // ${SITE_CONFIG.name}`,
-    description:
-      'Engineering notes, architectural postmortems, database query optimizations, and backend best practices.',
-    images: [
-      {
-        url: '/images/philozz-cinematic-hero.png',
-        width: 1200,
-        height: 630,
-        alt: `Engineering Journal // ${SITE_CONFIG.name}`,
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `Engineering Journal & Technical Notes // ${SITE_CONFIG.name}`,
-    description:
-      'Engineering notes, architectural postmortems, database query optimizations, and backend best practices.',
-    images: ['/images/philozz-cinematic-hero.png'],
-  },
-};
+import { siteContentRepository } from '@/cms/repositories';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const seoConfig = await siteContentRepository.getSeoConfig();
+  const blog = seoConfig.blogArchive;
+
+  const title = blog?.title || 'Engineering Journal & Technical Notes';
+  const description =
+    blog?.description ||
+    'Engineering notes, architectural postmortems, database query optimizations, and backend best practices written by Felopater Nabil (PHILOZZ).';
+  const ogImage = blog?.ogImageUrl || seoConfig.defaultOgImage || '/images/philozz-cinematic-hero.png';
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: '/blog',
+    },
+    openGraph: {
+      type: 'website',
+      locale: seoConfig.locale || SITE_CONFIG.locale,
+      url: `${SITE_CONFIG.url}/blog`,
+      siteName: SITE_CONFIG.name,
+      title: `${title} // ${SITE_CONFIG.name}`,
+      description,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `Engineering Journal // ${SITE_CONFIG.name}`,
+        },
+      ],
+    },
+    twitter: {
+      card: seoConfig.twitterCard || 'summary_large_image',
+      title: `${title} // ${SITE_CONFIG.name}`,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 
 function BlogArchiveLoadingFallback() {
   return (
