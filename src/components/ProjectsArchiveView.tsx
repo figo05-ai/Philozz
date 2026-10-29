@@ -20,9 +20,17 @@ import {
   ARCHIVE_CATEGORIES,
   BRAND_INFO,
 } from '@/data/portfolioData';
+import { ProjectEntity } from '@/cms/models/project';
 import { ProjectSchematicVisual } from '@/components/ProjectSchematicVisual';
 
-export function ProjectsArchiveView() {
+export interface ProjectsArchiveViewProps {
+  initialProjects?: ProjectEntity[];
+  initialCategories?: Array<{ id: string; label: string }>;
+}
+
+export function ProjectsArchiveView({ initialProjects, initialCategories }: ProjectsArchiveViewProps = {}) {
+  const allProjects = initialProjects && initialProjects.length > 0 ? initialProjects : PROJECTS;
+  const categories = initialCategories && initialCategories.length > 0 ? initialCategories : ARCHIVE_CATEGORIES;
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
@@ -67,20 +75,20 @@ export function ProjectsArchiveView() {
 
   // Category counts based on total verified projects
   const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: PROJECTS.length };
-    ARCHIVE_CATEGORIES.forEach((cat) => {
+    const counts: Record<string, number> = { all: allProjects.length };
+    categories.forEach((cat) => {
       if (cat.id !== 'all') {
-        counts[cat.id] = PROJECTS.filter(
+        counts[cat.id] = allProjects.filter(
           (p) => COMPACT_PROJECT_META[p.slug]?.archiveCategory === cat.id
         ).length;
       }
     });
     return counts;
-  }, []);
+  }, [allProjects, categories]);
 
   // Filtered projects
   const filteredProjects = useMemo(() => {
-    return PROJECTS.filter((project) => {
+    return allProjects.filter((project) => {
       const meta = COMPACT_PROJECT_META[project.slug];
 
       // Category filter check
@@ -110,7 +118,7 @@ export function ProjectsArchiveView() {
 
       return true;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [allProjects, selectedCategory, searchQuery]);
 
   // Pagination calculation
   const totalPages = Math.max(1, Math.ceil(filteredProjects.length / pageSize));
@@ -228,7 +236,7 @@ export function ProjectsArchiveView() {
                 role="tablist"
                 aria-label="Filter projects by category"
               >
-                {ARCHIVE_CATEGORIES.map((cat) => {
+                {categories.map((cat) => {
                   const count = categoryCounts[cat.id] || 0;
                   const isActive = selectedCategory === cat.id;
 
@@ -258,7 +266,7 @@ export function ProjectsArchiveView() {
                   {Math.min(validPage * pageSize, filteredProjects.length)} of{' '}
                   {filteredProjects.length} verified{' '}
                   {filteredProjects.length === 1 ? 'project' : 'projects'}
-                  {isFiltered && ` (Filtered from ${PROJECTS.length} total)`}
+                  {isFiltered && ` (Filtered from ${allProjects.length} total)`}
                 </span>
               </div>
 
@@ -360,7 +368,7 @@ export function ProjectsArchiveView() {
                   No verified projects matched your criteria{' '}
                   {searchQuery ? `"${searchQuery}"` : ''} in the{' '}
                   {selectedCategory !== 'all'
-                    ? ARCHIVE_CATEGORIES.find((c) => c.id === selectedCategory)?.label
+                    ? categories.find((c) => c.id === selectedCategory)?.label
                     : ''}{' '}
                   category.
                 </p>

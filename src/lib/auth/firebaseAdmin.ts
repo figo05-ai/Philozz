@@ -72,6 +72,11 @@ export function getFirebaseFirestore(): Firestore {
 
   const app = getFirebaseAdminApp();
   adminDb = getFirestore(app);
+  try {
+    adminDb.settings({ ignoreUndefinedProperties: true });
+  } catch {
+    // Settings already applied or environment-locked
+  }
   return adminDb;
 }
 

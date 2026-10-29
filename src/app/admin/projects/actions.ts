@@ -22,6 +22,7 @@ import {
   validateSlug,
 } from '@/cms/validation/validators';
 import { revalidateProjectCache } from '@/cms/cache/revalidate';
+import { MediaReferenceCoordinator } from '@/cms/media/mediaReferenceCoordinator';
 
 export interface ActionResult<T = unknown> {
   success: boolean;
@@ -46,6 +47,18 @@ export async function createProjectAction(
         success: false,
         error: 'Validation failed. Please correct highlighted fields.',
         fieldErrors: validation.errors,
+      };
+    }
+
+    // 1.5 Coordinate media references: Ensure referenced assets are not deleting or deleted
+    const mediaCheck = await MediaReferenceCoordinator.validateReferencesAvailable([
+      input.thumbnailUrl,
+      input.ogImageUrl,
+    ]);
+    if (!mediaCheck.allowed) {
+      return {
+        success: false,
+        error: mediaCheck.error || 'Referenced media asset cannot be linked.',
       };
     }
 
@@ -126,6 +139,18 @@ export async function updateProjectAction(
         success: false,
         error: 'Validation failed. Please correct highlighted fields.',
         fieldErrors: validation.errors,
+      };
+    }
+
+    // 1.5 Coordinate media references: Ensure referenced assets are not deleting or deleted
+    const mediaCheck = await MediaReferenceCoordinator.validateReferencesAvailable([
+      input.thumbnailUrl,
+      input.ogImageUrl,
+    ]);
+    if (!mediaCheck.allowed) {
+      return {
+        success: false,
+        error: mediaCheck.error || 'Referenced media asset cannot be linked.',
       };
     }
 

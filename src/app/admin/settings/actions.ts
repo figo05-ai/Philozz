@@ -16,6 +16,7 @@ import {
   validateBrandInfo,
   sanitizeRichText,
 } from '@/cms/validation/validators';
+import { MediaReferenceCoordinator } from '@/cms/media/mediaReferenceCoordinator';
 
 export type ActionResponse<T = unknown> = {
   success: boolean;
@@ -62,6 +63,17 @@ export async function saveSiteSettingsDraftAction(
       error: 'Validation failed. Please correct the highlighted errors.',
       fieldErrors: validation.errors,
     };
+  }
+
+  // Coordinate media references: Ensure cvUrl is not deleting or deleted
+  if (payload.cvUrl) {
+    const mediaCheck = await MediaReferenceCoordinator.validateReferencesAvailable([payload.cvUrl]);
+    if (!mediaCheck.allowed) {
+      return {
+        success: false,
+        error: mediaCheck.error || 'Referenced CV media asset cannot be linked.',
+      };
+    }
   }
 
   // Check optimistic concurrency if expectedVersion provided
@@ -117,6 +129,16 @@ export async function publishSiteSettingsAction(
         error: 'Validation failed. Cannot publish invalid settings.',
         fieldErrors: validation.errors,
       };
+    }
+
+    if (payload.cvUrl) {
+      const mediaCheck = await MediaReferenceCoordinator.validateReferencesAvailable([payload.cvUrl]);
+      if (!mediaCheck.allowed) {
+        return {
+          success: false,
+          error: mediaCheck.error || 'Referenced CV media asset cannot be linked.',
+        };
+      }
     }
   }
 

@@ -26,6 +26,7 @@ import {
   sanitizeRichText,
 } from '@/cms/validation/validators';
 import { revalidateArticleCache } from '@/cms/cache/revalidate';
+import { MediaReferenceCoordinator } from '@/cms/media/mediaReferenceCoordinator';
 
 export interface ActionResult<T = unknown> {
   success: boolean;
@@ -75,6 +76,18 @@ export async function createArticleAction(
         success: false,
         error: 'Validation failed. Please correct the highlighted fields.',
         fieldErrors: validation.errors,
+      };
+    }
+
+    // 2.5 Coordinate media references: Ensure referenced assets are not deleting or deleted
+    const mediaCheck = await MediaReferenceCoordinator.validateReferencesAvailable([
+      input.coverImageUrl,
+      input.ogImageUrl,
+    ]);
+    if (!mediaCheck.allowed) {
+      return {
+        success: false,
+        error: mediaCheck.error || 'Referenced media asset cannot be linked.',
       };
     }
 
@@ -183,6 +196,18 @@ export async function updateArticleAction(
         success: false,
         error: 'Validation failed. Please correct highlighted fields.',
         fieldErrors: validation.errors,
+      };
+    }
+
+    // 3.5 Coordinate media references: Ensure referenced assets are not deleting or deleted
+    const mediaCheck = await MediaReferenceCoordinator.validateReferencesAvailable([
+      sanitizedInput.coverImageUrl,
+      sanitizedInput.ogImageUrl,
+    ]);
+    if (!mediaCheck.allowed) {
+      return {
+        success: false,
+        error: mediaCheck.error || 'Referenced media asset cannot be linked.',
       };
     }
 

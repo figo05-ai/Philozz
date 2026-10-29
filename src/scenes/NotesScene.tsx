@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight, BookOpen, Clock, Calendar, Sparkles } from 'lucide-react';
 import { NOTES, BRAND_INFO, PHOTO_ASSETS } from '@/data/portfolioData';
+import { ArticleEntity } from '@/cms/models/article';
 import { ProjectsToBlogTransition } from '@/components/ProjectsToBlogTransition';
 import {
   ApiArchitectureVisual,
@@ -13,12 +14,17 @@ import {
   SqlOptimizationVisual,
 } from '@/components/JournalVisuals';
 
-export function NotesScene() {
+export interface NotesSceneProps {
+  featuredArticles?: ArticleEntity[];
+}
+
+export function NotesScene({ featuredArticles: propsArticles }: NotesSceneProps = {}) {
+  const articles = propsArticles && propsArticles.length > 0 ? propsArticles : NOTES;
   // Dominant Featured Article (Row 2)
-  const featuredArticle = NOTES[0]; // Building Scalable APIs with Laravel
+  const featuredArticle = articles[0] || NOTES[0];
 
   // Three Secondary Articles (Row 3)
-  const secondaryArticles = NOTES.slice(1, 4);
+  const secondaryArticles = articles.length > 1 ? articles.slice(1, 4) : NOTES.slice(1, 4);
 
   return (
     <section id="blog" className="scene-section scene-notes" aria-labelledby="notes-title">

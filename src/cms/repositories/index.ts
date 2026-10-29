@@ -83,12 +83,18 @@ export function createRepositories(source?: RepositoryDataSource): CMSRepositori
     };
   }
 
+  const isCloudMedia = process.env.MEDIA_STORAGE_PROVIDER?.toLowerCase().trim() === 'imagekit';
+  const hasFirebase = Boolean(
+    process.env.FIRESTORE_EMULATOR_HOST ||
+      (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY)
+  );
+
   return {
     projects: new LocalProjectRepository(),
     articles: new LocalArticleRepository(),
     siteContent: new LocalSiteContentRepository(),
-    media: new LocalMediaRepository(),
-    auditLogs: new LocalAuditLogRepository(),
+    media: isCloudMedia && hasFirebase ? new FirestoreMediaRepository() : new LocalMediaRepository(),
+    auditLogs: isCloudMedia && hasFirebase ? new FirestoreAuditLogRepository() : new LocalAuditLogRepository(),
   };
 }
 

@@ -35,6 +35,7 @@ import {
 } from '@/app/admin/sections/actions';
 import { SkillsStudioPanel } from '@/components/admin/SkillsStudioPanel';
 import { ExpertiseStudioPanel } from '@/components/admin/ExpertiseStudioPanel';
+import { MediaField } from './MediaField';
 
 export interface SectionsStudioViewProps {
   initialConfig: HomepageConfigEntity;
@@ -510,16 +511,14 @@ export function SectionsStudioView({
               {fieldErrors['hero.eyebrow'] && <div className="admin-form-error">{fieldErrors['hero.eyebrow']}</div>}
             </div>
 
-            <div>
-              <label className="admin-form-label">Hero Background Image URL</label>
-              <input
-                type="text"
-                className="admin-form-input"
-                value={config.hero.heroImageUrl}
-                onChange={(e) => updateHero('heroImageUrl', e.target.value)}
-                placeholder="/images/philozz-cinematic-hero.png"
-              />
-            </div>
+            <MediaField
+              id="hero-image-url"
+              label="Hero Background Image URL"
+              value={config.hero.heroImageUrl}
+              onChange={(val) => updateHero('heroImageUrl', val)}
+              placeholder="/images/philozz-cinematic-hero.png"
+              folder="brand"
+            />
           </div>
 
           {/* Three-Line Headline Stack */}
@@ -1107,15 +1106,14 @@ export function SectionsStudioView({
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
-            <div>
-              <label className="admin-form-label">Finale Portrait Image URL</label>
-              <input
-                type="text"
-                className="admin-form-input"
-                value={config.contact.portraitImageUrl || '/images/felopater-portrait-thinking.jpg'}
-                onChange={(e) => updateContact('portraitImageUrl', e.target.value)}
-              />
-            </div>
+            <MediaField
+              id="contact-portrait-url"
+              label="Finale Portrait Image URL"
+              value={config.contact.portraitImageUrl || '/images/felopater-portrait-thinking.jpg'}
+              onChange={(val) => updateContact('portraitImageUrl', val)}
+              placeholder="/images/felopater-portrait-thinking.jpg"
+              folder="photos"
+            />
             <div>
               <label className="admin-form-label">Gold Script Signature Text (Newline Separated)</label>
               <textarea

@@ -9,7 +9,7 @@ import {
   MediaAssetEntity,
   MediaFilterOptions,
 } from '../../models/media';
-import { IMediaRepository } from '../types';
+import { IMediaRepository, CreateMediaResult, CreateMediaOptions } from '../types';
 
 export class LocalMediaRepository implements IMediaRepository {
   private assets: MediaAssetEntity[];
@@ -30,6 +30,8 @@ export class LocalMediaRepository implements IMediaRepository {
         folder: 'photos',
         tags: ['portrait', 'about', 'editorial'],
         uploadedBy: 'system',
+        status: 'ready',
+        isDeleted: false,
         createdAt: '2026-01-01T00:00:00.000Z',
         updatedAt: '2026-04-15T00:00:00.000Z',
       },
@@ -46,6 +48,8 @@ export class LocalMediaRepository implements IMediaRepository {
         folder: 'photos',
         tags: ['portrait', 'studio'],
         uploadedBy: 'system',
+        status: 'ready',
+        isDeleted: false,
         createdAt: '2026-01-01T00:00:00.000Z',
         updatedAt: '2026-04-15T00:00:00.000Z',
       },
@@ -62,6 +66,8 @@ export class LocalMediaRepository implements IMediaRepository {
         folder: 'brand',
         tags: ['backdrop', 'studio'],
         uploadedBy: 'system',
+        status: 'ready',
+        isDeleted: false,
         createdAt: '2026-01-01T00:00:00.000Z',
         updatedAt: '2026-04-15T00:00:00.000Z',
       },
@@ -78,6 +84,8 @@ export class LocalMediaRepository implements IMediaRepository {
         folder: 'brand',
         tags: ['hero', 'cinematic'],
         uploadedBy: 'system',
+        status: 'ready',
+        isDeleted: false,
         createdAt: '2026-01-01T00:00:00.000Z',
         updatedAt: '2026-04-15T00:00:00.000Z',
       },
@@ -93,6 +101,8 @@ export class LocalMediaRepository implements IMediaRepository {
         folder: 'brand',
         tags: ['resume', 'cv', 'pdf'],
         uploadedBy: 'system',
+        status: 'ready',
+        isDeleted: false,
         createdAt: '2026-01-01T00:00:00.000Z',
         updatedAt: '2026-04-15T00:00:00.000Z',
       },
@@ -101,6 +111,12 @@ export class LocalMediaRepository implements IMediaRepository {
 
   async getAll(options?: MediaFilterOptions): Promise<MediaAssetEntity[]> {
     let result = [...this.assets];
+
+    // Filter soft-deleted assets unless explicitly requested
+    if (!options?.includeDeleted) {
+      result = result.filter((a) => !a.isDeleted);
+    }
+
     if (options?.folder) {
       result = result.filter((a) => a.folder === options.folder);
     }
@@ -126,11 +142,39 @@ export class LocalMediaRepository implements IMediaRepository {
     return found ? { ...found } : null;
   }
 
+  async getByProviderAssetId(providerAssetId: string): Promise<MediaAssetEntity | null> {
+    if (!providerAssetId) return null;
+    const found = this.assets.find((a) => a.providerAssetId === providerAssetId);
+    return found ? { ...found } : null;
+  }
+
+  async createIdempotent(
+    asset: Omit<MediaAssetEntity, 'id' | 'createdAt' | 'updatedAt'>,
+    _options?: CreateMediaOptions
+  ): Promise<CreateMediaResult> {
+    if (asset.providerAssetId) {
+      const existing = this.assets.find((a) => a.providerAssetId === asset.providerAssetId);
+      if (existing) {
+        return { asset: { ...existing }, isNew: false };
+      }
+    }
+    const created = await this.create(asset);
+    return { asset: created, isNew: true };
+  }
+
   async create(asset: Omit<MediaAssetEntity, 'id' | 'createdAt' | 'updatedAt'>): Promise<MediaAssetEntity> {
     const now = new Date().toISOString();
+    const isCloud = Boolean(asset.provider && asset.provider !== 'local' && asset.providerAssetId);
+    const sanitizedId = isCloud ? asset.providerAssetId!.replace(/[^a-zA-Z0-9_-]/g, '_') : null;
+    const id = isCloud
+      ? `media_${asset.provider}_${sanitizedId}`
+      : `media_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+
     const newAsset: MediaAssetEntity = {
       ...asset,
-      id: `media_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      id,
+      status: asset.status || 'ready',
+      isDeleted: false,
       createdAt: now,
       updatedAt: now,
     };
@@ -150,6 +194,34 @@ export class LocalMediaRepository implements IMediaRepository {
     };
     this.assets[idx] = updated;
     return { ...updated };
+  }
+
+  async softDelete(id: string): Promise<boolean> {
+    const idx = this.assets.findIndex((a) => a.id === id);
+    if (idx === -1) return false;
+    const now = new Date().toISOString();
+    this.assets[idx] = {
+      ...this.assets[idx],
+      status: 'archived',
+      isDeleted: true,
+      deletedAt: now,
+      updatedAt: now,
+    };
+    return true;
+  }
+
+  async restore(id: string): Promise<boolean> {
+    const idx = this.assets.findIndex((a) => a.id === id);
+    if (idx === -1) return false;
+    const now = new Date().toISOString();
+    this.assets[idx] = {
+      ...this.assets[idx],
+      status: 'ready',
+      isDeleted: false,
+      deletedAt: undefined,
+      updatedAt: now,
+    };
+    return true;
   }
 
   async delete(id: string): Promise<boolean> {

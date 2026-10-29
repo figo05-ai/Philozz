@@ -6,15 +6,21 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { PROJECTS, COMPACT_PROJECT_META } from '@/data/portfolioData';
+import { ProjectEntity } from '@/cms/models/project';
 import { ProjectSchematicVisual } from '@/components/ProjectSchematicVisual';
 import { SkillsToProjectsTransition } from '@/components/SkillsToProjectsTransition';
 
-export function ProjectsScene() {
+export interface ProjectsSceneProps {
+  featuredProjects?: ProjectEntity[];
+}
+
+export function ProjectsScene({ featuredProjects: propsProjects }: ProjectsSceneProps = {}) {
   const containerRef = useRef<HTMLElement>(null);
   const galleryGridRef = useRef<HTMLDivElement>(null);
 
-  // Exactly 3 approved featured projects for the primary horizontal row
-  const featuredProjects = PROJECTS.slice(0, 3);
+  // Exactly 3 approved featured projects: use CMS projects if provided, otherwise fallback to PROJECTS.slice(0, 3)
+  const featuredProjects =
+    propsProjects && propsProjects.length > 0 ? propsProjects.slice(0, 3) : PROJECTS.slice(0, 3);
 
   return (
     <section

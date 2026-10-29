@@ -14,6 +14,7 @@ import { assertAdminSession } from '@/lib/auth/requireAdminSession';
 import { siteContentRepository, auditLogRepository } from '@/cms/repositories';
 import { SiteSeoConfigEntity } from '@/cms/models/site';
 import { validateSeoConfig, sanitizeRichText } from '@/cms/validation/validators';
+import { MediaReferenceCoordinator } from '@/cms/media/mediaReferenceCoordinator';
 
 export type ActionResponse<T = unknown> = {
   success: boolean;
@@ -59,6 +60,21 @@ export async function saveSeoConfigDraftAction(
       success: false,
       error: 'Validation failed. Please correct the highlighted errors.',
       fieldErrors: validation.errors,
+    };
+  }
+
+  // Coordinate media references: Ensure OG images are not deleting or deleted
+  const candidateMedia = [
+    payload.defaultOgImage,
+    payload.homepage?.ogImageUrl,
+    payload.projectsArchive?.ogImageUrl,
+    payload.blogArchive?.ogImageUrl,
+  ];
+  const mediaCheck = await MediaReferenceCoordinator.validateReferencesAvailable(candidateMedia);
+  if (!mediaCheck.allowed) {
+    return {
+      success: false,
+      error: mediaCheck.error || 'Referenced media asset cannot be linked.',
     };
   }
 
@@ -116,6 +132,20 @@ export async function publishSeoConfigAction(
         success: false,
         error: 'Validation failed. Please correct the highlighted errors.',
         fieldErrors: validation.errors,
+      };
+    }
+
+    const candidateMedia = [
+      payload.defaultOgImage,
+      payload.homepage?.ogImageUrl,
+      payload.projectsArchive?.ogImageUrl,
+      payload.blogArchive?.ogImageUrl,
+    ];
+    const mediaCheck = await MediaReferenceCoordinator.validateReferencesAvailable(candidateMedia);
+    if (!mediaCheck.allowed) {
+      return {
+        success: false,
+        error: mediaCheck.error || 'Referenced media asset cannot be linked.',
       };
     }
   }

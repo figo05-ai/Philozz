@@ -3,7 +3,7 @@ import React, { Suspense } from 'react';
 import { ProjectsArchiveView } from '@/components/ProjectsArchiveView';
 import { getBreadcrumbJsonLd, SITE_CONFIG } from '@/lib/seoData';
 
-import { siteContentRepository } from '@/cms/repositories';
+import { siteContentRepository, projectRepository } from '@/cms/repositories';
 
 export async function generateMetadata(): Promise<Metadata> {
   const seoConfig = await siteContentRepository.getSeoConfig();
@@ -66,7 +66,9 @@ function ArchiveLoadingFallback() {
   );
 }
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const publishedProjects = await projectRepository.getAll({ status: 'published' });
+
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: 'Home', url: '/' },
     { name: 'Projects', url: '/projects' },
@@ -79,7 +81,7 @@ export default function ProjectsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <Suspense fallback={<ArchiveLoadingFallback />}>
-        <ProjectsArchiveView />
+        <ProjectsArchiveView initialProjects={publishedProjects} />
       </Suspense>
     </>
   );

@@ -1,13 +1,13 @@
 {
   "version": "1.0.0",
-  "exportedAt": "2026-10-26T18:38:53.356Z",
+  "exportedAt": "2026-10-28T20:04:17.830Z",
   "counts": {
     "projects": 8,
     "articles": 7,
     "categories": 7,
     "technologies": 9,
     "expertiseAreas": 6,
-    "mediaAssets": 5
+    "mediaAssets": 8
   },
   "collections": {
     "projects": [
@@ -1280,11 +1280,153 @@
     ],
     "mediaAssets": [
       {
+        "id": "cinematic-hero",
+        "filename": "philozz-cinematic-hero.png",
+        "originalName": "philozz-cinematic-hero.png",
+        "mimeType": "image/png",
+        "sizeBytes": 4223360,
+        "dimensions": {
+          "width": 1920,
+          "height": 1080
+        },
+        "url": "/images/philozz-cinematic-hero.png",
+        "provider": "local",
+        "altText": "Felopater Nabil — Full-Stack Software Engineer seated at executive desk",
+        "folder": "brand",
+        "tags": [
+          "hero",
+          "cinematic"
+        ],
+        "uploadedBy": "system",
+        "status": "ready",
+        "isDeleted": false,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-10-26T21:13:08.789Z"
+      },
+      {
+        "id": "cv-pdf",
+        "filename": "felopater-cv.pdf",
+        "originalName": "felopater-cv.pdf",
+        "mimeType": "application/pdf",
+        "sizeBytes": 125781,
+        "url": "/images/felopater-cv.pdf",
+        "provider": "local",
+        "altText": "Curriculum Vitae of Felopater Nabil",
+        "folder": "brand",
+        "tags": [
+          "resume",
+          "cv",
+          "pdf"
+        ],
+        "uploadedBy": "system",
+        "status": "ready",
+        "isDeleted": false,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-10-26T21:13:08.789Z"
+      },
+      {
+        "id": "hero-cinematic-character",
+        "filename": "hero-cinematic-character.png",
+        "originalName": "hero-cinematic-character.png",
+        "mimeType": "image/png",
+        "sizeBytes": 611104,
+        "dimensions": {
+          "width": 1920,
+          "height": 1080
+        },
+        "url": "/images/hero-cinematic-character.png",
+        "provider": "local",
+        "altText": "Hero Cinematic Character Lighting",
+        "folder": "brand",
+        "tags": [
+          "hero",
+          "character"
+        ],
+        "uploadedBy": "system",
+        "status": "ready",
+        "isDeleted": false,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-10-26T21:13:08.789Z"
+      },
+      {
+        "id": "north-star-concept",
+        "filename": "north-star-concept.jpg",
+        "originalName": "north-star-concept.jpg",
+        "mimeType": "image/jpeg",
+        "sizeBytes": 339827,
+        "dimensions": {
+          "width": 1200,
+          "height": 800
+        },
+        "url": "/images/north-star-concept.jpg",
+        "provider": "local",
+        "altText": "North Star Creative Architectural Concept",
+        "folder": "brand",
+        "tags": [
+          "concept",
+          "editorial"
+        ],
+        "uploadedBy": "system",
+        "status": "ready",
+        "isDeleted": false,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-10-26T21:13:08.789Z"
+      },
+      {
+        "id": "philozz-hero-subject",
+        "filename": "philozz-hero-subject.png",
+        "originalName": "philozz-hero-subject.png",
+        "mimeType": "image/png",
+        "sizeBytes": 810567,
+        "dimensions": {
+          "width": 1920,
+          "height": 1080
+        },
+        "url": "/images/philozz-hero-subject.png",
+        "provider": "local",
+        "altText": "Philozz Hero Subject Cutout",
+        "folder": "brand",
+        "tags": [
+          "hero",
+          "character",
+          "3d"
+        ],
+        "uploadedBy": "system",
+        "status": "ready",
+        "isDeleted": false,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-10-26T21:13:08.789Z"
+      },
+      {
+        "id": "portrait-sitting",
+        "filename": "felopater-portrait-sitting.jpg",
+        "originalName": "felopater-portrait-sitting.jpg",
+        "mimeType": "image/jpeg",
+        "sizeBytes": 152949,
+        "dimensions": {
+          "width": 800,
+          "height": 1000
+        },
+        "url": "/images/felopater-portrait-sitting.jpg",
+        "provider": "local",
+        "altText": "Felopater Nabil seated in studio workspace",
+        "folder": "photos",
+        "tags": [
+          "portrait",
+          "studio"
+        ],
+        "uploadedBy": "system",
+        "status": "ready",
+        "isDeleted": false,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-10-26T21:13:08.789Z"
+      },
+      {
         "id": "portrait-thinking",
         "filename": "felopater-portrait-thinking.jpg",
         "originalName": "felopater-portrait-thinking.jpg",
         "mimeType": "image/jpeg",
-        "sizeBytes": 154000,
+        "sizeBytes": 272891,
         "dimensions": {
           "width": 800,
           "height": 1000
@@ -1300,37 +1442,17 @@
           "editorial"
         ],
         "uploadedBy": "system",
+        "status": "ready",
+        "isDeleted": false,
         "createdAt": "2026-01-01T00:00:00.000Z",
-        "updatedAt": "2026-04-15T00:00:00.000Z"
-      },
-      {
-        "id": "portrait-sitting",
-        "filename": "felopater-portrait-sitting.jpg",
-        "originalName": "felopater-portrait-sitting.jpg",
-        "mimeType": "image/jpeg",
-        "sizeBytes": 168000,
-        "dimensions": {
-          "width": 800,
-          "height": 1000
-        },
-        "url": "/images/felopater-portrait-sitting.jpg",
-        "provider": "local",
-        "altText": "Felopater Nabil seated in studio workspace",
-        "folder": "photos",
-        "tags": [
-          "portrait",
-          "studio"
-        ],
-        "uploadedBy": "system",
-        "createdAt": "2026-01-01T00:00:00.000Z",
-        "updatedAt": "2026-04-15T00:00:00.000Z"
+        "updatedAt": "2026-10-26T21:13:08.789Z"
       },
       {
         "id": "workspace-backdrop",
         "filename": "studio-workspace-backdrop.jpg",
         "originalName": "studio-workspace-backdrop.jpg",
         "mimeType": "image/jpeg",
-        "sizeBytes": 245000,
+        "sizeBytes": 580584,
         "dimensions": {
           "width": 1920,
           "height": 1080
@@ -1344,49 +1466,10 @@
           "studio"
         ],
         "uploadedBy": "system",
+        "status": "ready",
+        "isDeleted": false,
         "createdAt": "2026-01-01T00:00:00.000Z",
-        "updatedAt": "2026-04-15T00:00:00.000Z"
-      },
-      {
-        "id": "cinematic-hero",
-        "filename": "philozz-cinematic-hero.png",
-        "originalName": "philozz-cinematic-hero.png",
-        "mimeType": "image/png",
-        "sizeBytes": 890000,
-        "dimensions": {
-          "width": 1920,
-          "height": 1080
-        },
-        "url": "/images/philozz-cinematic-hero.png",
-        "provider": "local",
-        "altText": "Felopater Nabil — Full-Stack Software Engineer seated at executive desk",
-        "folder": "brand",
-        "tags": [
-          "hero",
-          "cinematic"
-        ],
-        "uploadedBy": "system",
-        "createdAt": "2026-01-01T00:00:00.000Z",
-        "updatedAt": "2026-04-15T00:00:00.000Z"
-      },
-      {
-        "id": "cv-pdf",
-        "filename": "felopater-cv.pdf",
-        "originalName": "felopater-cv.pdf",
-        "mimeType": "application/pdf",
-        "sizeBytes": 320000,
-        "url": "/images/felopater-cv.pdf",
-        "provider": "local",
-        "altText": "Curriculum Vitae of Felopater Nabil",
-        "folder": "brand",
-        "tags": [
-          "resume",
-          "cv",
-          "pdf"
-        ],
-        "uploadedBy": "system",
-        "createdAt": "2026-01-01T00:00:00.000Z",
-        "updatedAt": "2026-04-15T00:00:00.000Z"
+        "updatedAt": "2026-10-26T21:13:08.789Z"
       }
     ],
     "brandInfo": {
@@ -1557,6 +1640,62 @@
         "Laravel Horizon"
       ],
       "updatedAt": "2026-04-15T00:00:00.000Z"
+    },
+    "orbitSlots": [
+      "laravel",
+      "php",
+      "mysql",
+      "javascript",
+      "react",
+      "nextjs",
+      "redis",
+      "docker",
+      "linux"
+    ],
+    "seoConfig": {
+      "id": "seo_config",
+      "status": "published",
+      "version": 1,
+      "siteTitle": "PHILOZZ // Full-Stack Software Engineer",
+      "titleTemplate": "%s // PHILOZZ",
+      "defaultDescription": "Portfolio and Engineering Journal of Felopater Nabil (PHILOZZ), a Backend-focused Full-Stack Software Engineer specializing in Laravel, system architecture, database optimization, and high-concurrency queue topologies.",
+      "defaultKeywords": [
+        "Backend Engineer",
+        "System Design",
+        "Software Architecture",
+        "Laravel",
+        "PostgreSQL",
+        "MySQL",
+        "Redis Queues",
+        "React",
+        "TypeScript",
+        "Docker",
+        "PHP 8.3"
+      ],
+      "defaultOgImage": "/images/philozz-cinematic-hero.png",
+      "twitterCard": "summary_large_image",
+      "twitterCreator": "@philozz",
+      "locale": "en_US",
+      "homepage": {
+        "title": "PHILOZZ // Full-Stack Software Engineer",
+        "description": "Portfolio and Engineering Journal of Felopater Nabil (PHILOZZ), a Backend-focused Full-Stack Software Engineer specializing in Laravel, system architecture, database optimization, and high-concurrency queue topologies.",
+        "ogImageUrl": "/images/philozz-cinematic-hero.png"
+      },
+      "projectsArchive": {
+        "title": "Selected Engineering Projects",
+        "description": "A collection of verified production software systems, backend architectures, high-concurrency queue platforms, and database designs engineered by Felopater Nabil (PHILOZZ).",
+        "ogImageUrl": "/images/philozz-cinematic-hero.png"
+      },
+      "blogArchive": {
+        "title": "Engineering Journal & Technical Notes",
+        "description": "Engineering notes, architectural postmortems, database query optimizations, and backend best practices written by Felopater Nabil (PHILOZZ).",
+        "ogImageUrl": "/images/philozz-cinematic-hero.png"
+      },
+      "allowIndexing": true,
+      "disallowAdminRoutes": true,
+      "disallowApiRoutes": true,
+      "updatedAt": "2026-04-15T00:00:00.000Z",
+      "publishedAt": "2026-04-15T00:00:00.000Z"
     }
   },
   "validationSummary": {

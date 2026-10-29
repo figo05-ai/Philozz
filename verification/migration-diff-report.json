@@ -1,0 +1,113 @@
+{
+  "timestamp": "2026-10-28T19:43:56.701Z",
+  "summary": {
+    "toCreate": 42,
+    "toUpdate": 0,
+    "unchanged": 8,
+    "preservedUntouched": 1,
+    "totalAfterMigration": 51
+  },
+  "collections": {
+    "projects": {
+      "create": [
+        "skillup-platform",
+        "smartpos-erp",
+        "tanqia-skills",
+        "sip-and-snug",
+        "academy-lms",
+        "clothes-ecommerce",
+        "maxtree-licensing",
+        "zodiak-portfolio"
+      ],
+      "update": [],
+      "unchanged": [],
+      "preservedUntouched": []
+    },
+    "articles": {
+      "create": [
+        "building-scalable-apis-with-laravel",
+        "my-development-workflow-2026",
+        "what-ive-learned-as-a-developer",
+        "sql-query-optimization",
+        "reliable-background-jobs",
+        "clean-architecture-in-laravel",
+        "designing-scalable-systems"
+      ],
+      "update": [],
+      "unchanged": [],
+      "preservedUntouched": []
+    },
+    "categories": {
+      "create": [
+        "all",
+        "backend",
+        "database",
+        "distributed",
+        "architecture",
+        "tooling",
+        "principles"
+      ],
+      "update": [],
+      "unchanged": [],
+      "preservedUntouched": []
+    },
+    "technologies": {
+      "create": [
+        "laravel",
+        "php",
+        "mysql",
+        "javascript",
+        "react",
+        "nextjs",
+        "redis",
+        "docker",
+        "linux"
+      ],
+      "update": [],
+      "unchanged": [],
+      "preservedUntouched": []
+    },
+    "expertise_areas": {
+      "create": [
+        "backend",
+        "system-design",
+        "database",
+        "background-processing",
+        "devops",
+        "fullstack"
+      ],
+      "update": [],
+      "unchanged": [],
+      "preservedUntouched": []
+    },
+    "media": {
+      "create": [],
+      "update": [],
+      "unchanged": [
+        "cinematic-hero",
+        "cv-pdf",
+        "hero-cinematic-character",
+        "north-star-concept",
+        "philozz-hero-subject",
+        "portrait-sitting",
+        "portrait-thinking",
+        "workspace-backdrop"
+      ],
+      "preservedUntouched": [
+        "media_imagekit_6adfc14eead997d09a634a78"
+      ]
+    },
+    "site_config": {
+      "create": [
+        "brand_info",
+        "homepage_config",
+        "stack_details",
+        "orbit_slots",
+        "seo_config"
+      ],
+      "update": [],
+      "unchanged": [],
+      "preservedUntouched": []
+    }
+  }
+}

@@ -14,8 +14,8 @@ import {
 } from '../repositories';
 import { ProjectEntity } from '../models/project';
 import { ArticleEntity, BlogCategoryEntity } from '../models/article';
-import { BrandInfoEntity, HomepageConfigEntity } from '../models/site';
-import { TechnologyEntity, ExpertiseAreaEntity, StackDetailsEntity } from '../models/technology';
+import { BrandInfoEntity, HomepageConfigEntity, SiteSeoConfigEntity } from '../models/site';
+import { TechnologyEntity, ExpertiseAreaEntity, StackDetailsEntity, OrbitSlotsTuple } from '../models/technology';
 import { MediaAssetEntity } from '../models/media';
 import { validateProject, validateArticle } from '../validation/validators';
 
@@ -40,6 +40,8 @@ export interface MigrationSeedBundle {
     brandInfo: BrandInfoEntity;
     homepageConfig: HomepageConfigEntity;
     stackDetails: StackDetailsEntity;
+    orbitSlots: OrbitSlotsTuple;
+    seoConfig: SiteSeoConfigEntity;
   };
   validationSummary: {
     passed: boolean;
@@ -68,6 +70,8 @@ export class MigrationTransformer {
     const technologies = await siteContentRepository.getTechnologies();
     const expertiseAreas = await siteContentRepository.getExpertiseAreas();
     const stackDetails = await siteContentRepository.getStackDetails();
+    const orbitSlots = await siteContentRepository.getOrbitSlots();
+    const seoConfig = await siteContentRepository.getSeoConfig();
     const mediaAssets = await mediaRepository.getAll();
 
     const validationErrors: Array<{ entity: string; id: string; error: string }> = [];
@@ -121,6 +125,8 @@ export class MigrationTransformer {
         brandInfo,
         homepageConfig,
         stackDetails,
+        orbitSlots,
+        seoConfig,
       },
       validationSummary: {
         passed: validationErrors.length === 0,

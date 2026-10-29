@@ -21,6 +21,8 @@ export const FIRESTORE_COLLECTIONS = {
   SITE_CONFIG: 'site_config',
   MEDIA: 'media',
   AUDIT_LOGS: 'audit_logs',
+  UPLOAD_INTENTS: 'upload_intents',
+  RATE_LIMITS: 'upload_rate_limits',
 } as const;
 
 export type FirestoreCollectionName =

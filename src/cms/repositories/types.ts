@@ -142,12 +142,29 @@ export interface ISiteContentRepository {
   getStackDetails(): Promise<StackDetailsEntity>;
 }
 
+export interface CreateMediaResult {
+  asset: MediaAssetEntity;
+  isNew: boolean;
+}
+
+export interface CreateMediaOptions {
+  intentToken?: string;
+  ownerUid?: string;
+}
+
 export interface IMediaRepository {
   getAll(options?: MediaFilterOptions): Promise<MediaAssetEntity[]>;
   getById(id: string): Promise<MediaAssetEntity | null>;
+  getByProviderAssetId?(providerAssetId: string): Promise<MediaAssetEntity | null>;
   create(asset: Omit<MediaAssetEntity, 'id' | 'createdAt' | 'updatedAt'>): Promise<MediaAssetEntity>;
+  createIdempotent?(
+    asset: Omit<MediaAssetEntity, 'id' | 'createdAt' | 'updatedAt'>,
+    options?: CreateMediaOptions
+  ): Promise<CreateMediaResult>;
   update(id: string, data: Partial<MediaAssetEntity>): Promise<MediaAssetEntity>;
   delete(id: string): Promise<boolean>;
+  softDelete(id: string): Promise<boolean>;
+  restore(id: string): Promise<boolean>;
 }
 
 export interface IAuditLogRepository {

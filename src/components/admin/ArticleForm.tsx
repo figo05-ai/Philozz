@@ -44,6 +44,7 @@ import {
   restoreArticleAction,
 } from '@/app/admin/articles/actions';
 import { generateSlug, calculateReadTime } from '@/cms/validation/validators';
+import { MediaField } from './MediaField';
 
 interface ArticleFormProps {
   mode: 'create' | 'edit';
@@ -817,35 +818,25 @@ export function ArticleForm({
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
-          {/* Cover Image URL */}
-          <div className="admin-form-group">
-            <label htmlFor="article-cover" className="admin-form-label">
-              Cover Image Reference Path / URL
-            </label>
-            <input
-              id="article-cover"
-              type="text"
-              className="admin-form-input"
-              value={coverImageUrl}
-              onChange={(e) => setCoverImageUrl(e.target.value)}
-              placeholder="/images/blog/cover-streams.jpg"
-            />
-          </div>
+          {/* Cover Image URL with Media Library Picker */}
+          <MediaField
+            id="article-cover"
+            label="Cover Image Reference Path / URL"
+            value={coverImageUrl}
+            onChange={setCoverImageUrl}
+            placeholder="/images/blog/cover-streams.jpg"
+            folder="articles"
+          />
 
-          {/* OG Image URL */}
-          <div className="admin-form-group">
-            <label htmlFor="article-og" className="admin-form-label">
-              OpenGraph Card Image Path / URL
-            </label>
-            <input
-              id="article-og"
-              type="text"
-              className="admin-form-input"
-              value={ogImageUrl}
-              onChange={(e) => setOgImageUrl(e.target.value)}
-              placeholder="/images/blog/og-streams.png"
-            />
-          </div>
+          {/* OG Image URL with Media Library Picker */}
+          <MediaField
+            id="article-og"
+            label="OpenGraph Card Image Path / URL"
+            value={ogImageUrl}
+            onChange={setOgImageUrl}
+            placeholder="/images/blog/og-streams.png"
+            folder="articles"
+          />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>

@@ -18,6 +18,9 @@ import {
   ExpertiseAreaEntity,
 } from '@/cms/models/technology';
 
+import { ProjectEntity } from '@/cms/models/project';
+import { ArticleEntity } from '@/cms/models/article';
+
 // Dynamically import Three.js Canvas to split WebGL from initial critical bundle
 const PortfolioCanvas = dynamic(
   () => import('@/three/PortfolioCanvas').then((mod) => mod.PortfolioCanvas),
@@ -30,6 +33,8 @@ export interface HomePageClientProps {
   technologies?: TechnologyEntity[];
   orbitSlots?: OrbitSlotsTuple;
   expertiseAreas?: ExpertiseAreaEntity[];
+  featuredProjects?: ProjectEntity[];
+  featuredArticles?: ArticleEntity[];
 }
 
 export function HomePageClient({
@@ -38,6 +43,8 @@ export function HomePageClient({
   technologies,
   orbitSlots,
   expertiseAreas,
+  featuredProjects,
+  featuredArticles,
 }: HomePageClientProps = {}) {
   const isMounted = useSyncExternalStore(
     () => () => {},
@@ -72,8 +79,8 @@ export function HomePageClient({
           orbitSlots={orbitSlots}
           expertiseAreas={expertiseAreas}
         />
-        <ProjectsScene />
-        <NotesScene />
+        <ProjectsScene featuredProjects={featuredProjects} />
+        <NotesScene featuredArticles={featuredArticles} />
       </main>
 
       {/* Top-Level Contentinfo Landmark Footer */}

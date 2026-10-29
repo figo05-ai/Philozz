@@ -21,9 +21,17 @@ import {
   BLOG_CATEGORIES,
   BRAND_INFO,
 } from '@/data/portfolioData';
+import { ArticleEntity, BlogCategoryEntity } from '@/cms/models/article';
 import { BlogCardVisual } from '@/components/JournalVisuals';
 
-export function BlogArchiveView() {
+export interface BlogArchiveViewProps {
+  initialNotes?: ArticleEntity[];
+  initialCategories?: BlogCategoryEntity[];
+}
+
+export function BlogArchiveView({ initialNotes, initialCategories }: BlogArchiveViewProps = {}) {
+  const allNotes = initialNotes && initialNotes.length > 0 ? initialNotes : NOTES;
+  const categories = initialCategories && initialCategories.length > 0 ? initialCategories : BLOG_CATEGORIES;
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
@@ -68,20 +76,20 @@ export function BlogArchiveView() {
 
   // Category counts based on total verified articles
   const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: NOTES.length };
-    BLOG_CATEGORIES.forEach((cat) => {
+    const counts: Record<string, number> = { all: allNotes.length };
+    categories.forEach((cat) => {
       if (cat.id !== 'all') {
-        counts[cat.id] = NOTES.filter(
-          (note) => note.archiveCategory === cat.id
+        counts[cat.id] = allNotes.filter(
+          (note) => (note as { archiveCategory?: string }).archiveCategory === cat.id
         ).length;
       }
     });
     return counts;
-  }, []);
+  }, [allNotes, categories]);
 
   // Filtered notes
   const filteredNotes = useMemo(() => {
-    return NOTES.filter((note) => {
+    return allNotes.filter((note) => {
       // Category filter check
       if (selectedCategory !== 'all') {
         if (note.archiveCategory !== selectedCategory) {
@@ -105,7 +113,7 @@ export function BlogArchiveView() {
 
       return true;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [allNotes, selectedCategory, searchQuery]);
 
   // Pagination calculation
   const totalPages = Math.max(1, Math.ceil(filteredNotes.length / pageSize));
@@ -223,7 +231,7 @@ export function BlogArchiveView() {
                 role="tablist"
                 aria-label="Filter articles by category"
               >
-                {BLOG_CATEGORIES.map((cat) => {
+                {categories.map((cat) => {
                   const count = categoryCounts[cat.id] || 0;
                   const isActive = selectedCategory === cat.id;
 
@@ -253,7 +261,7 @@ export function BlogArchiveView() {
                   {Math.min(validPage * pageSize, filteredNotes.length)} of{' '}
                   {filteredNotes.length} published{' '}
                   {filteredNotes.length === 1 ? 'article' : 'articles'}
-                  {isFiltered && ` (Filtered from ${NOTES.length} total)`}
+                  {isFiltered && ` (Filtered from ${allNotes.length} total)`}
                 </span>
               </div>
 
@@ -375,7 +383,7 @@ export function BlogArchiveView() {
                   No verified engineering articles matched your criteria{' '}
                   {searchQuery ? `"${searchQuery}"` : ''} in the{' '}
                   {selectedCategory !== 'all'
-                    ? BLOG_CATEGORIES.find((c) => c.id === selectedCategory)?.label
+                    ? categories.find((c) => c.id === selectedCategory)?.label
                     : ''}{' '}
                   category.
                 </p>

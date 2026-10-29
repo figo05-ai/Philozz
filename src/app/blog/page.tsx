@@ -3,7 +3,7 @@ import React, { Suspense } from 'react';
 import { BlogArchiveView } from '@/components/BlogArchiveView';
 import { getBreadcrumbJsonLd, SITE_CONFIG } from '@/lib/seoData';
 
-import { siteContentRepository } from '@/cms/repositories';
+import { siteContentRepository, articleRepository } from '@/cms/repositories';
 
 export async function generateMetadata(): Promise<Metadata> {
   const seoConfig = await siteContentRepository.getSeoConfig();
@@ -66,7 +66,12 @@ function BlogArchiveLoadingFallback() {
   );
 }
 
-export default function BlogArchivePage() {
+export default async function BlogArchivePage() {
+  const [publishedArticles, categories] = await Promise.all([
+    articleRepository.getAll({ status: 'published' }),
+    articleRepository.getCategories(),
+  ]);
+
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: 'Home', url: '/' },
     { name: 'Engineering Journal', url: '/blog' },
@@ -79,7 +84,7 @@ export default function BlogArchivePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <Suspense fallback={<BlogArchiveLoadingFallback />}>
-        <BlogArchiveView />
+        <BlogArchiveView initialNotes={publishedArticles} initialCategories={categories} />
       </Suspense>
     </>
   );

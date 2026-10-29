@@ -16,6 +16,9 @@ import {
 import { validateMediaUpload } from '../validation/validators';
 import { IMediaRepository } from '../repositories/types';
 
+export * from './mediaStorageProvider';
+export * from './mediaUsageResolver';
+
 export interface StorageUploadResult {
   url: string;
   providerAssetId?: string;

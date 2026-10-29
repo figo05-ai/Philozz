@@ -29,6 +29,7 @@ import {
   publishSiteSettingsAction,
   rollbackSiteSettingsAction,
 } from '@/app/admin/settings/actions';
+import { MediaField } from './MediaField';
 
 export interface SettingsStudioViewProps {
   initialConfig: BrandInfoEntity;
@@ -718,21 +719,19 @@ export function SettingsStudioView({
             </p>
           </div>
 
-          <div>
-            <label className="admin-form-label">Resume / CV Document Path</label>
-            <input
-              type="text"
-              className="admin-form-input"
-              value={config.cvUrl}
-              onChange={(e) => updateField('cvUrl', e.target.value)}
-            />
-            {fieldErrors.cvUrl && (
-              <div style={{ color: '#EF4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>{fieldErrors.cvUrl}</div>
-            )}
-            <div style={{ fontSize: '0.72rem', color: 'var(--color-text-dim, #9A9AA8)', marginTop: '0.25rem' }}>
-              Must be a valid relative asset path (e.g. /images/felopater-cv.pdf) or secure HTTPS document URL.
-            </div>
-          </div>
+          <MediaField
+            id="settings-cv-url"
+            label="Resume / CV Document Path"
+            value={config.cvUrl}
+            onChange={(val) => updateField('cvUrl', val)}
+            placeholder="/images/felopater-cv.pdf"
+            description="Must be a valid relative asset path (e.g. /images/felopater-cv.pdf) or secure HTTPS document URL."
+            folder="brand"
+            mimePrefix="application/pdf"
+          />
+          {fieldErrors.cvUrl && (
+            <div style={{ color: '#EF4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>{fieldErrors.cvUrl}</div>
+          )}
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
             <div>

@@ -55,8 +55,8 @@ function mapToProjectEntity(slug: string, index: number): ProjectEntity {
     demoUrl: p.demoUrl,
     githubUrl: p.githubUrl,
     status: 'published' as ContentStatus,
-    featured: true, // Dev seed keeps 8 as featured for initial dev inventory tests
-    featuredOrder: index + 1,
+    featured: index < 3,
+    featuredOrder: index < 3 ? index + 1 : undefined,
     displayOrder: index + 1,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-04-15T00:00:00.000Z',

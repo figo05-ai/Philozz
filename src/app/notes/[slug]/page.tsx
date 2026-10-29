@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowUpRight, Clock, Calendar, Sparkles } from 'lucide-react';
 import type { Metadata } from 'next';
 import { NOTES, BRAND_INFO, PHOTO_ASSETS } from '@/data/portfolioData';
-import { getNoteBySlug, getNoteJsonLd, getBreadcrumbJsonLd, parseIsoDate, SITE_CONFIG } from '@/lib/seoData';
+import { getNoteBySlug, getPublishedNotes, getNoteJsonLd, getBreadcrumbJsonLd, parseIsoDate, SITE_CONFIG } from '@/lib/seoData';
 
 export const instant = false;
 
@@ -89,7 +89,9 @@ export default async function NoteDetailPage({
     { name: note.title, url: `/notes/${note.slug}` },
   ]);
 
-  const otherNotes = NOTES.filter((n) => n.slug !== slug).slice(0, 3);
+  const publishedNotes = await getPublishedNotes();
+  const notesPool = publishedNotes.length > 0 ? publishedNotes : NOTES;
+  const otherNotes = notesPool.filter((n) => n.slug !== slug).slice(0, 3);
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-obsidian)', color: 'var(--color-ivory)' }}>

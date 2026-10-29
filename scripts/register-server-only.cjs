@@ -30,6 +30,36 @@ Module._load = function (request, parent, isMain) {
       unstable_cache: (fn) => fn,
     };
   }
+  if (request === 'firebase-admin/auth') {
+    const realAuthModule = orig.call(this, request, parent, isMain);
+    return {
+      ...realAuthModule,
+      getAuth: (app) => {
+        const realAuth = typeof realAuthModule.getAuth === 'function' ? realAuthModule.getAuth(app) : {};
+        return new Proxy(realAuth, {
+          get(target, prop) {
+            if (prop === 'verifySessionCookie') {
+              return async (cookieString, checkRevoked) => {
+                if (globalThis.__mockAdminUser && cookieString === 'mock-valid-session-token') {
+                  return {
+                    uid: globalThis.__mockAdminUser.uid,
+                    email: globalThis.__mockAdminUser.email,
+                    admin: globalThis.__mockAdminUser.admin,
+                    auth_time: Math.floor(Date.now() / 1000),
+                  };
+                }
+                if (typeof target.verifySessionCookie === 'function') {
+                  return target.verifySessionCookie(cookieString, checkRevoked);
+                }
+                throw new Error('Session verification failed in test harness');
+              };
+            }
+            return target[prop];
+          },
+        });
+      },
+    };
+  }
   return orig.call(this, request, parent, isMain);
 };
 

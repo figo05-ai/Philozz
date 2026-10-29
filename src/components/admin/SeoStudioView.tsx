@@ -32,6 +32,7 @@ import {
   publishSeoConfigAction,
   rollbackSeoConfigAction,
 } from '@/app/admin/seo/actions';
+import { MediaField } from './MediaField';
 
 const CANONICAL_ORIGIN = 'https://philozz.com';
 
@@ -542,21 +543,15 @@ export function SeoStudioView({
             </h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
-              <div className="admin-form-group">
-                <label className="admin-form-label">
-                  Default OG Image URL / Reference
-                </label>
-                <input
-                  type="text"
-                  className="admin-form-input"
-                  value={config.defaultOgImage}
-                  onChange={(e) => updateField('defaultOgImage', e.target.value)}
-                  placeholder="/images/philozz-cinematic-hero.png"
-                />
-                <div className="admin-form-help">
-                  Relative asset path (e.g. <code>/images/...</code>) or secure <code>https://</code> image.
-                </div>
-              </div>
+              <MediaField
+                id="seo-default-og"
+                label="Default OG Image URL / Reference"
+                value={config.defaultOgImage}
+                onChange={(val) => updateField('defaultOgImage', val)}
+                placeholder="/images/philozz-cinematic-hero.png"
+                description="Relative asset path (e.g. /images/...) or secure https:// image."
+                folder="brand"
+              />
 
               <div className="admin-form-group">
                 <label className="admin-form-label">

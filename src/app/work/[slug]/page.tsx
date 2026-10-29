@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowUpRight, CheckCircle2, Layers, Cpu, Sparkles } from 'lu
 import type { Metadata } from 'next';
 import { PROJECTS, BRAND_INFO } from '@/data/portfolioData';
 import { ProjectSchematicVisual } from '@/components/ProjectSchematicVisual';
-import { getProjectBySlug, getCaseStudyJsonLd, getBreadcrumbJsonLd, SITE_CONFIG } from '@/lib/seoData';
+import { getProjectBySlug, getPublishedProjects, getCaseStudyJsonLd, getBreadcrumbJsonLd, SITE_CONFIG } from '@/lib/seoData';
 
 export const instant = false;
 
@@ -86,7 +86,9 @@ export default async function CaseStudyPage({
   ]);
 
   // Related projects
-  const relatedProjects = PROJECTS.filter((p) => p.slug !== slug).slice(0, 3);
+  const publishedProjects = await getPublishedProjects();
+  const projectPool = publishedProjects.length > 0 ? publishedProjects : PROJECTS;
+  const relatedProjects = projectPool.filter((p) => p.slug !== slug).slice(0, 3);
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-obsidian)', color: 'var(--color-ivory)' }}>

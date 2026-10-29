@@ -12,6 +12,7 @@
  * 4. Generates a signed cryptographic migration manifest and JSON backup.
  */
 
+import './register-server-only.cjs';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -90,13 +91,13 @@ export async function runMigration(mode: 'dry-run' | 'live' = 'dry-run'): Promis
         bundle.counts.technologies +
         bundle.counts.expertiseAreas +
         bundle.counts.mediaAssets +
-        3, // brandInfo, homepageConfig, stackDetails
+        5, // brandInfo, homepageConfig, stackDetails, orbitSlots, seoConfig
       featuredHomepageProjects: featuredProjects.map((p) => p.slug),
       validationPassed: true,
     },
     counts: {
       ...bundle.counts,
-      singletons: 3,
+      singletons: 5,
     },
     collections: {
       projects: bundle.collections.projects.map((p) => ({
@@ -151,6 +152,16 @@ export async function runMigration(mode: 'dry-run' | 'live' = 'dry-run'): Promis
           collection: FIRESTORE_COLLECTIONS.SITE_CONFIG,
           hash: computeSha256(bundle.collections.stackDetails),
         },
+        {
+          id: FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS,
+          collection: FIRESTORE_COLLECTIONS.SITE_CONFIG,
+          hash: computeSha256(bundle.collections.orbitSlots),
+        },
+        {
+          id: FIRESTORE_SINGLETON_DOCS.SEO_CONFIG,
+          collection: FIRESTORE_COLLECTIONS.SITE_CONFIG,
+          hash: computeSha256(bundle.collections.seoConfig),
+        },
       ],
     },
     collectionHashes: {
@@ -163,6 +174,8 @@ export async function runMigration(mode: 'dry-run' | 'live' = 'dry-run'): Promis
       brandInfo: computeSha256(bundle.collections.brandInfo),
       homepageConfig: computeSha256(bundle.collections.homepageConfig),
       stackDetails: computeSha256(bundle.collections.stackDetails),
+      orbitSlots: computeSha256(bundle.collections.orbitSlots),
+      seoConfig: computeSha256(bundle.collections.seoConfig),
     },
   };
 
@@ -186,8 +199,8 @@ export async function runMigration(mode: 'dry-run' | 'live' = 'dry-run'): Promis
   console.log(`  [OK] Categories count:    ${bundle.counts.categories} (Expected: 7)`);
   console.log(`  [OK] Technologies count:  ${bundle.counts.technologies} (Expected: 9)`);
   console.log(`  [OK] Expertise areas:     ${bundle.counts.expertiseAreas} (Expected: 6)`);
-  console.log(`  [OK] Media assets count:  ${bundle.counts.mediaAssets} (Expected: 5)`);
-  console.log(`  [OK] Singletons count:    3 (brand_info, homepage_config, stack_details)`);
+  console.log(`  [OK] Media assets count:  ${bundle.counts.mediaAssets}`);
+  console.log(`  [OK] Singletons count:    5 (brand_info, homepage_config, stack_details, orbit_slots, seo_config)`);
   console.log(`  [OK] Total documents:     ${manifest.summary.totalDocuments}`);
 
   console.log(`\n--- Invariant Checks ---`);
@@ -265,6 +278,12 @@ export async function runMigration(mode: 'dry-run' | 'live' = 'dry-run'): Promis
 
     const stackRef = db.collection(FIRESTORE_COLLECTIONS.SITE_CONFIG).doc(FIRESTORE_SINGLETON_DOCS.STACK_DETAILS);
     batch.set(stackRef, bundle.collections.stackDetails, { merge: true });
+
+    const orbitRef = db.collection(FIRESTORE_COLLECTIONS.SITE_CONFIG).doc(FIRESTORE_SINGLETON_DOCS.ORBIT_SLOTS);
+    batch.set(orbitRef, { slotTechnologyIds: bundle.collections.orbitSlots, updatedAt: new Date().toISOString() }, { merge: true });
+
+    const seoRef = db.collection(FIRESTORE_COLLECTIONS.SITE_CONFIG).doc(FIRESTORE_SINGLETON_DOCS.SEO_CONFIG);
+    batch.set(seoRef, bundle.collections.seoConfig, { merge: true });
 
     await batch.commit();
     console.log(`  [OK] Batch write committed successfully.`);

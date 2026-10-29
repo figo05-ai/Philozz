@@ -1,10 +1,10 @@
 {
   "manifestVersion": "1.0.0",
-  "generatedAt": "2026-10-26T18:38:53.356Z",
-  "mode": "dry-run",
+  "generatedAt": "2026-10-28T20:04:17.830Z",
+  "mode": "live",
   "summary": {
     "totalCollections": 8,
-    "totalDocuments": 45,
+    "totalDocuments": 50,
     "featuredHomepageProjects": [
       "skillup-platform",
       "smartpos-erp",
@@ -18,8 +18,8 @@
     "categories": 7,
     "technologies": 9,
     "expertiseAreas": 6,
-    "mediaAssets": 5,
-    "singletons": 3
+    "mediaAssets": 8,
+    "singletons": 5
   },
   "collections": {
     "projects": [
@@ -253,34 +253,52 @@
     ],
     "mediaAssets": [
       {
-        "id": "portrait-thinking",
-        "filename": "felopater-portrait-thinking.jpg",
-        "folder": "photos",
-        "hash": "d67be26c43a4520b"
-      },
-      {
-        "id": "portrait-sitting",
-        "filename": "felopater-portrait-sitting.jpg",
-        "folder": "photos",
-        "hash": "8ae48e684d3395c7"
-      },
-      {
-        "id": "workspace-backdrop",
-        "filename": "studio-workspace-backdrop.jpg",
-        "folder": "brand",
-        "hash": "7b8098364e818626"
-      },
-      {
         "id": "cinematic-hero",
         "filename": "philozz-cinematic-hero.png",
         "folder": "brand",
-        "hash": "5928d96154b19053"
+        "hash": "8cfecb80bcde6149"
       },
       {
         "id": "cv-pdf",
         "filename": "felopater-cv.pdf",
         "folder": "brand",
-        "hash": "aca137a616e795b8"
+        "hash": "c4d1f9a3b972fb8f"
+      },
+      {
+        "id": "hero-cinematic-character",
+        "filename": "hero-cinematic-character.png",
+        "folder": "brand",
+        "hash": "99e7aff25a70ce72"
+      },
+      {
+        "id": "north-star-concept",
+        "filename": "north-star-concept.jpg",
+        "folder": "brand",
+        "hash": "2d8322823f3fdd27"
+      },
+      {
+        "id": "philozz-hero-subject",
+        "filename": "philozz-hero-subject.png",
+        "folder": "brand",
+        "hash": "4783455138a6d720"
+      },
+      {
+        "id": "portrait-sitting",
+        "filename": "felopater-portrait-sitting.jpg",
+        "folder": "photos",
+        "hash": "f70208ee8c35108e"
+      },
+      {
+        "id": "portrait-thinking",
+        "filename": "felopater-portrait-thinking.jpg",
+        "folder": "photos",
+        "hash": "1f168e1d3c13efd6"
+      },
+      {
+        "id": "workspace-backdrop",
+        "filename": "studio-workspace-backdrop.jpg",
+        "folder": "brand",
+        "hash": "9be1872fb971a412"
       }
     ],
     "singletons": [
@@ -298,6 +316,16 @@
         "id": "stack_details",
         "collection": "site_config",
         "hash": "2aae9c0e3827062e"
+      },
+      {
+        "id": "orbit_slots",
+        "collection": "site_config",
+        "hash": "32fb1aefcab98139"
+      },
+      {
+        "id": "seo_config",
+        "collection": "site_config",
+        "hash": "52d179a7849ad863"
       }
     ]
   },
@@ -307,10 +335,12 @@
     "categories": "d6e65814ec8e4e5c",
     "technologies": "2e747496fcfa173d",
     "expertiseAreas": "f3acb118ebae9ef1",
-    "mediaAssets": "8de1faae082eb5c2",
+    "mediaAssets": "744309405afc6812",
     "brandInfo": "ccc0126e91f6e80e",
     "homepageConfig": "aeaf5c7d022a270c",
-    "stackDetails": "2aae9c0e3827062e"
+    "stackDetails": "2aae9c0e3827062e",
+    "orbitSlots": "32fb1aefcab98139",
+    "seoConfig": "52d179a7849ad863"
   },
   "backupExportPath": "/home/figo/Desktop/Philo/portfolio/verification/migration-backup.json"
 }

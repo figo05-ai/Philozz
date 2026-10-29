@@ -42,6 +42,7 @@ import {
   restoreProjectAction,
 } from '@/app/admin/projects/actions';
 import { generateSlug } from '@/cms/validation/validators';
+import { MediaField } from './MediaField';
 
 interface ProjectFormProps {
   mode: 'create' | 'edit';
@@ -1277,35 +1278,25 @@ export function ProjectForm({ mode, initialProject }: ProjectFormProps) {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
-          {/* Thumbnail URL */}
-          <div className="admin-form-group">
-            <label htmlFor="field-thumbnail-url" className="admin-form-label">
-              Thumbnail Image Path / URL
-            </label>
-            <input
-              id="field-thumbnail-url"
-              type="text"
-              className="admin-form-input"
-              value={thumbnailUrl}
-              onChange={(e) => setThumbnailUrl(e.target.value)}
-              placeholder="/images/projects/orchestrator-thumb.png"
-            />
-          </div>
+          {/* Thumbnail URL with Media Library Picker */}
+          <MediaField
+            id="field-thumbnail-url"
+            label="Thumbnail Image Path / URL"
+            value={thumbnailUrl}
+            onChange={setThumbnailUrl}
+            placeholder="/images/projects/orchestrator-thumb.png"
+            folder="projects"
+          />
 
-          {/* OG Image URL */}
-          <div className="admin-form-group">
-            <label htmlFor="field-og-url" className="admin-form-label">
-              OpenGraph Card Image Path / URL
-            </label>
-            <input
-              id="field-og-url"
-              type="text"
-              className="admin-form-input"
-              value={ogImageUrl}
-              onChange={(e) => setOgImageUrl(e.target.value)}
-              placeholder="/images/projects/orchestrator-og.png"
-            />
-          </div>
+          {/* OG Image URL with Media Library Picker */}
+          <MediaField
+            id="field-og-url"
+            label="OpenGraph Card Image Path / URL"
+            value={ogImageUrl}
+            onChange={setOgImageUrl}
+            placeholder="/images/projects/orchestrator-og.png"
+            folder="projects"
+          />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
