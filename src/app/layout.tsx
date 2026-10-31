@@ -114,6 +114,18 @@ export async function generateMetadata(): Promise<Metadata> {
         'max-snippet': -1,
       },
     },
+    icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: 'any' },
+        { url: '/icons/philozz-favicon-32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/icons/philozz-favicon-16.png', sizes: '16x16', type: 'image/png' },
+        { url: '/icon.svg', type: 'image/svg+xml' },
+      ],
+      shortcut: '/favicon.ico',
+      apple: [
+        { url: '/apple-icon.png', sizes: '128x128', type: 'image/png' },
+      ],
+    },
   };
 }
 
@@ -141,6 +153,38 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* Anti-Flicker & Session Check for Golden Gateway V3 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var params = new URLSearchParams(window.location.search);
+                  var force = params.get('gateway') === 'force';
+                  var off = params.get('gateway') === 'off' || params.get('gateway') === 'false';
+                  var motionOff = params.get('motion') === 'off' || params.get('motion') === 'false';
+                  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                  var seen = false;
+                  try {
+                    seen = sessionStorage.getItem('philozz_golden_gateway_v3_seen') === 'true';
+                  } catch (e) {}
+                  if ((seen || off || motionOff || reduced) && !force) {
+                    document.documentElement.classList.add('gateway-dismissed');
+                  } else {
+                    document.documentElement.classList.add('gateway-active');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+        <noscript>
+          <style>{`
+            .golden-gateway-v3-overlay {
+              display: none !important;
+            }
+          `}</style>
+        </noscript>
       </head>
       <body suppressHydrationWarning>
         <a href="#main-content" className="skip-link">

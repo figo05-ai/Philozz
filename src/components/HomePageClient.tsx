@@ -9,6 +9,7 @@ import { ProjectsScene } from '@/scenes/ProjectsScene';
 import { NotesScene } from '@/scenes/NotesScene';
 import { FinaleScene } from '@/scenes/FinaleScene';
 import { FallbackView } from '@/components/FallbackView';
+import { GoldenGatewayV3 } from '@/components/GoldenGatewayV3';
 import { useTestOverrides } from '@/lib/useTestOverrides';
 import { HomepageConfigEntity, BrandInfoEntity } from '@/cms/models/site';
 
@@ -55,6 +56,9 @@ export function HomePageClient({
 
   return (
     <>
+      {/* Golden Gateway V3: Clean Crossbar Opening */}
+      <GoldenGatewayV3 isMotionDisabled={isMotionDisabled} />
+
       {/* 3D Luxury Background Cosmos */}
       {isMounted && (
         <PortfolioCanvas

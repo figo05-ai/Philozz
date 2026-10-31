@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowUpRight, CheckCircle2, Layers, Cpu, Sparkles } from 'lu
 import type { Metadata } from 'next';
 import { PROJECTS, BRAND_INFO } from '@/data/portfolioData';
 import { ProjectSchematicVisual } from '@/components/ProjectSchematicVisual';
+import { ProjectGallery } from '@/components/ProjectGallery';
 import { getProjectBySlug, getPublishedProjects, getCaseStudyJsonLd, getBreadcrumbJsonLd, SITE_CONFIG } from '@/lib/seoData';
 
 export const instant = false;
@@ -132,7 +133,35 @@ export default async function CaseStudyPage({
             <span>BACK TO PROJECTS</span>
           </Link>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {(project.productionUrl || project.demoUrl) && (
+              <a
+                href={project.productionUrl || project.demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '0.4rem 0.85rem',
+                  borderRadius: '9999px',
+                  background: 'rgba(201, 164, 92, 0.15)',
+                  border: '1px solid rgba(201, 164, 92, 0.4)',
+                  color: 'var(--color-gold-light)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                }}
+                className="gallery-live-link"
+              >
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#55E58C' }} />
+                <span>LIVE SITE</span>
+                <ArrowUpRight size={14} />
+              </a>
+            )}
+
             <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 800, letterSpacing: '0.08em', color: 'var(--color-ivory)' }}>
               {BRAND_INFO.name}
             </span>
@@ -188,7 +217,7 @@ export default async function CaseStudyPage({
               background: 'var(--color-charcoal)',
               border: '1px solid var(--color-border-dark)',
               boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
-              marginBottom: '3rem',
+              marginBottom: '2.5rem',
             }}
           >
             <div>
@@ -216,6 +245,79 @@ export default async function CaseStudyPage({
               </div>
             </div>
           </div>
+
+          {/* Action CTAs: Live Production Link & Source Code */}
+          {(project.productionUrl || project.demoUrl || project.githubUrl) && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '1.25rem',
+                marginBottom: '3.5rem',
+              }}
+            >
+              {(project.productionUrl || project.demoUrl) && (
+                <a
+                  href={project.productionUrl || project.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-gold"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '0.9rem 1.75rem',
+                    fontSize: '0.92rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    textDecoration: 'none',
+                    boxShadow: '0 4px 22px rgba(201, 164, 92, 0.4)',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: '#55E58C',
+                      boxShadow: '0 0 10px #55E58C',
+                    }}
+                  />
+                  <span>VIEW LIVE PRODUCTION PROJECT</span>
+                  <ArrowUpRight size={18} />
+                </a>
+              )}
+
+              {project.githubUrl && (
+                <a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '0.9rem 1.6rem',
+                    borderRadius: '8px',
+                    background: 'var(--color-charcoal)',
+                    border: '1px solid var(--color-border-dark)',
+                    color: 'var(--color-ivory)',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    fontFamily: 'var(--font-mono)',
+                    textDecoration: 'none',
+                    letterSpacing: '0.04em',
+                    transition: 'all 0.25s ease',
+                  }}
+                >
+                  <span>SOURCE REPOSITORY</span>
+                  <ArrowUpRight size={15} />
+                </a>
+              )}
+            </div>
+          )}
         </section>
 
         {/* Live Interactive / Demo Schematic Visual */}
@@ -226,6 +328,15 @@ export default async function CaseStudyPage({
           </div>
           <ProjectSchematicVisual type={project.demoVisualType} />
         </section>
+
+        {/* Project Image Showcase Gallery */}
+        <div style={{ marginBottom: '5rem' }}>
+          <ProjectGallery
+            images={project.galleryImages || []}
+            projectTitle={project.title}
+            coverImage={project.coverImageUrl || project.thumbnailUrl}
+          />
+        </div>
 
         {/* Overview & Engineering Challenge */}
         <section style={{ marginBottom: '5rem' }}>
@@ -500,11 +611,36 @@ export default async function CaseStudyPage({
             ))}
           </div>
 
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <Link href="/#projects" className="btn-gold" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
               <ArrowLeft size={16} />
               <span>Back to Projects Overview</span>
             </Link>
+
+            {(project.productionUrl || project.demoUrl) && (
+              <a
+                href={project.productionUrl || project.demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '0.85rem 1.6rem',
+                  borderRadius: '8px',
+                  background: 'rgba(201, 164, 92, 0.15)',
+                  border: '1px solid rgba(201, 164, 92, 0.4)',
+                  color: 'var(--color-gold-light)',
+                  fontWeight: 700,
+                  fontSize: '0.92rem',
+                  textDecoration: 'none',
+                  letterSpacing: '0.04em',
+                }}
+              >
+                <span>Launch Live Production App</span>
+                <ArrowUpRight size={16} />
+              </a>
+            )}
           </div>
         </section>
       </main>

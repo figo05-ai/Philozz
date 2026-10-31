@@ -175,7 +175,7 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
       updatedAt: '2026-04-15T00:00:00.000Z',
     };
 
-    // 9 Technologies with orbit coordinates strictly preserved
+    // 9 Technologies with orbit coordinates strictly preserved and enriched Atlas metadata
     this.technologies = [
       {
         id: 'laravel',
@@ -197,6 +197,31 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
         displayOrder: 1,
         status: 'published',
         updatedAt: '2026-04-15T00:00:00.000Z',
+        disciplineId: 'backend',
+        learningStatus: 'actively_using',
+        capabilitiesList: [
+          'REST API Design',
+          'Service-Oriented Architecture',
+          'Asynchronous Queue Workflows',
+          'Database Query Optimization',
+          'Authentication & Authorization',
+        ],
+        coreConcepts: [
+          'Eloquent ORM',
+          'Sanctum & Passport',
+          'Horizon Queues',
+          'Service Layers',
+          'FormRequests',
+          'Events & Listeners',
+          'Rate Limiting',
+        ],
+        practicalExpertise:
+          'Architects enterprise-grade backend APIs, service layers, and background job processing pipelines with sub-50ms latency profiles, strict FormRequest validation, and zero-loss queue workers.',
+        relatedTechIds: ['php', 'mysql', 'redis', 'docker'],
+        relatedProjectSlugs: ['skillup-platform', 'smartpos-erp', 'tanqia-skills'],
+        learningNotes:
+          'Exploring Laravel 11/13 concurrency primitives, contextual attributes, and streamlined configuration pipelines.',
+        associatedArticleSlugs: ['building-scalable-apis-with-laravel'],
       },
       {
         id: 'php',
@@ -218,6 +243,29 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
         displayOrder: 2,
         status: 'published',
         updatedAt: '2026-04-15T00:00:00.000Z',
+        disciplineId: 'backend',
+        learningStatus: 'actively_using',
+        capabilitiesList: [
+          'Strict Typing & Static Analysis',
+          'Memory Profiling & Optimization',
+          'Object-Oriented Architecture',
+          'Fibers & Asynchronous Execution',
+        ],
+        coreConcepts: [
+          'Strict Typing',
+          'Readonly Classes',
+          'Attributes',
+          'Enums',
+          'Fibers',
+          'OPcache',
+          'PHPStan Level 8+',
+        ],
+        practicalExpertise:
+          'Leverages modern PHP 8.3 features for bulletproof type safety, high execution speed, low memory overhead, and maintainable domain-driven design.',
+        relatedTechIds: ['laravel', 'mysql', 'docker', 'linux'],
+        relatedProjectSlugs: ['skillup-platform', 'smartpos-erp', 'tanqia-skills'],
+        learningNotes:
+          'Tracking PHP 8.4 property hooks, asymmetric visibility, and JIT compiler performance enhancements.',
       },
       {
         id: 'mysql',
@@ -239,6 +287,29 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
         displayOrder: 3,
         status: 'published',
         updatedAt: '2026-04-15T00:00:00.000Z',
+        disciplineId: 'database',
+        learningStatus: 'actively_using',
+        capabilitiesList: [
+          'Relational Schema Design',
+          'Composite Index Strategy',
+          'EXPLAIN Query Plan Tuning',
+          'ACID Transactional Locking',
+          'Zero-Downtime Migrations',
+        ],
+        coreConcepts: [
+          'B-Tree Indexing',
+          'Lock Contention Mitigation',
+          'Composite Keys',
+          'ACID Transactions',
+          'Foreign Key Cascades',
+          'Query Execution Plans',
+        ],
+        practicalExpertise:
+          'Designs normalized and denormalized relational schemas, tunes slow queries via EXPLAIN plans, and prevents lock contention under high concurrent write loads.',
+        relatedTechIds: ['laravel', 'php', 'redis'],
+        relatedProjectSlugs: ['skillup-platform', 'smartpos-erp', 'tanqia-skills'],
+        learningNotes:
+          'Deepening study of generated columns, JSON functional indexes, and read-replica replication lag mitigation.',
       },
       {
         id: 'javascript',
@@ -260,6 +331,28 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
         displayOrder: 4,
         status: 'published',
         updatedAt: '2026-04-15T00:00:00.000Z',
+        disciplineId: 'fullstack',
+        learningStatus: 'actively_using',
+        capabilitiesList: [
+          'Asynchronous Flow & Event Loop',
+          'Native DOM & Browser APIs',
+          'Modern ES2024 Patterns',
+          'Performance & Memory Optimization',
+        ],
+        coreConcepts: [
+          'ES2024',
+          'Async/Await & Promises',
+          'Event Loop & Microtasks',
+          'Closures & Scope',
+          'Native DOM APIs',
+          'Web Workers',
+        ],
+        practicalExpertise:
+          'Builds responsive client-side state interactions, custom Web APIs, and high-performance animation pipelines with strict memory leak prevention.',
+        relatedTechIds: ['react', 'nextjs'],
+        relatedProjectSlugs: ['skillup-platform', 'smartpos-erp', 'tanqia-skills'],
+        learningNotes:
+          'Investigating Temporal API proposals, decorator metadata, and baseline widely available modern web platform primitives.',
       },
       {
         id: 'react',
@@ -281,6 +374,28 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
         displayOrder: 5,
         status: 'published',
         updatedAt: '2026-04-15T00:00:00.000Z',
+        disciplineId: 'fullstack',
+        learningStatus: 'actively_using',
+        capabilitiesList: [
+          'Component Architecture & State',
+          'Server Components & Actions',
+          'Concurrent Rendering',
+          'Accessible Design Systems (ARIA)',
+        ],
+        coreConcepts: [
+          'Server Components',
+          'useActionState & useOptimistic',
+          'Concurrent Mode',
+          'Custom Hooks',
+          'Strict Mode Hydration',
+          'Keyboard Navigation',
+        ],
+        practicalExpertise:
+          'Engineers luxury component architectures, accessible keyboard interfaces, and zero-hydration-mismatch layouts powered by React 19 paradigms.',
+        relatedTechIds: ['javascript', 'nextjs'],
+        relatedProjectSlugs: ['tanqia-skills'],
+        learningNotes:
+          'Studying React Compiler optimizations and fine-grained memoization elimination.',
       },
       {
         id: 'nextjs',
@@ -302,6 +417,29 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
         displayOrder: 6,
         status: 'published',
         updatedAt: '2026-04-15T00:00:00.000Z',
+        disciplineId: 'fullstack',
+        learningStatus: 'actively_using',
+        capabilitiesList: [
+          'App Router & Route Handlers',
+          'Streaming SSR & Suspense Boundaries',
+          'Static Generation (SSG/ISR)',
+          'SEO Architecture & Metadata',
+        ],
+        coreConcepts: [
+          'App Router',
+          'Streaming SSR',
+          'Server Actions',
+          'Turbopack',
+          'Dynamic Route Segments',
+          'Metadata API',
+          'Parallel Routes',
+        ],
+        practicalExpertise:
+          'Delivers full-stack production platforms with instant page transitions, streaming server-rendered views, automated SEO sitemaps, and optimized asset pipelines.',
+        relatedTechIds: ['react', 'javascript', 'docker'],
+        relatedProjectSlugs: ['tanqia-skills'],
+        learningNotes:
+          'Mastering Next.js 16 cache life directives, PPR (Partial Prerendering), and edge middleware boundaries.',
       },
       {
         id: 'redis',
@@ -323,6 +461,29 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
         displayOrder: 7,
         status: 'published',
         updatedAt: '2026-04-15T00:00:00.000Z',
+        disciplineId: 'background-processing',
+        learningStatus: 'actively_using',
+        capabilitiesList: [
+          'Distributed In-Memory Caching',
+          'Asynchronous Job Queues',
+          'Atomic Rate Limiting',
+          'Pub/Sub & Distributed Locks',
+        ],
+        coreConcepts: [
+          'Distributed Locks (Redlock)',
+          'Redis Hashes & Sorted Sets',
+          'Cache Tag Invalidation',
+          'Queue Worker Horizons',
+          'Pub/Sub Channels',
+          'Memory Eviction Policies',
+        ],
+        practicalExpertise:
+          'Implements microsecond-speed cache layers, atomic token-bucket rate limiting, and reliable queue brokers via Redis Cluster to insulate relational databases from traffic surges.',
+        relatedTechIds: ['laravel', 'php', 'mysql', 'docker'],
+        relatedProjectSlugs: ['skillup-platform', 'smartpos-erp'],
+        learningNotes:
+          'Exploring Redis Streams consumer groups and real-time event-sourcing architectures.',
+        associatedArticleSlugs: ['building-scalable-apis-with-laravel'],
       },
       {
         id: 'docker',
@@ -344,6 +505,28 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
         displayOrder: 8,
         status: 'published',
         updatedAt: '2026-04-15T00:00:00.000Z',
+        disciplineId: 'devops',
+        learningStatus: 'actively_using',
+        capabilitiesList: [
+          'Multi-Stage Production Builds',
+          'Compose Multi-Service Networks',
+          'Container Security & Rootless Mode',
+          'Consistent Local & Staging Parity',
+        ],
+        coreConcepts: [
+          'Multi-Stage Dockerfiles',
+          'Docker Compose',
+          'Bridge Networks',
+          'Volume Mounts & Permissions',
+          'Alpine Minimization',
+          'Layer Caching',
+        ],
+        practicalExpertise:
+          'Creates containerized stacks with slim multi-stage builds, isolated network topologies, persistent database volumes, and instant developer onboarding.',
+        relatedTechIds: ['linux', 'laravel', 'php', 'mysql', 'redis'],
+        relatedProjectSlugs: ['skillup-platform', 'smartpos-erp', 'tanqia-skills'],
+        learningNotes:
+          'Investigating buildx multi-architecture targets and rootless container daemon hardening.',
       },
       {
         id: 'linux',
@@ -365,19 +548,155 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
         displayOrder: 9,
         status: 'published',
         updatedAt: '2026-04-15T00:00:00.000Z',
+        disciplineId: 'devops',
+        learningStatus: 'actively_using',
+        capabilitiesList: [
+          'Nginx Reverse Proxy Topologies',
+          'systemd Daemon Supervisors',
+          'SSL/TLS Automation (Certbot)',
+          'Shell Scripting & Server Hardening',
+        ],
+        coreConcepts: [
+          'Nginx Virtual Hosts & Upstreams',
+          'systemd Service Daemons',
+          'UFW Firewall & SSH Hardening',
+          'Cron Automations',
+          'Bash Scripting',
+          'Logrotate',
+        ],
+        practicalExpertise:
+          'Provisions and secures production Linux VPS instances, writes systemd service units for queue workers, configures Nginx reverse proxies with SSL/TLS, and monitors system resources.',
+        relatedTechIds: ['docker', 'php', 'redis'],
+        relatedProjectSlugs: ['skillup-platform', 'smartpos-erp'],
+        learningNotes:
+          'Exploring automated infrastructure scripting with Ansible and systemd socket activation.',
       },
     ];
 
-    this.expertiseAreas = EXPERTISE_AREAS.map((ea, idx) => ({
-      id: ea.id,
-      name: ea.name,
-      level: ea.level,
-      description: ea.description,
-      coreConcepts: [...ea.coreConcepts],
-      displayOrder: idx + 1,
-      status: 'published',
-      updatedAt: '2026-04-15T00:00:00.000Z',
-    }));
+    const DISCIPLINE_EXTENSIONS: Record<
+      string,
+      {
+        associatedTechIds: string[];
+        associatedCapabilities: string[];
+        relatedProjectSlugs: string[];
+        learningTopics: string[];
+      }
+    > = {
+      backend: {
+        associatedTechIds: ['laravel', 'php'],
+        associatedCapabilities: [
+          'RESTful API Design',
+          'Service-Oriented Architecture',
+          'Domain-Driven Design',
+          'Strict Typing',
+          'Idempotent Mutations',
+        ],
+        relatedProjectSlugs: ['skillup-platform', 'smartpos-erp', 'tanqia-skills'],
+        learningTopics: [
+          'Advanced Domain-Driven Design (DDD)',
+          'Event Sourcing & CQRS Patterns',
+          'PHP Fibers & Asynchronous Concurrency',
+        ],
+      },
+      'system-design': {
+        associatedTechIds: ['laravel', 'redis', 'mysql', 'docker'],
+        associatedCapabilities: [
+          'Decoupled Distributed Topologies',
+          'Microservices & Modular Monoliths',
+          'Fault Isolation & Blast Radius Control',
+          'Rate Limiting & Load Shedding',
+        ],
+        relatedProjectSlugs: ['skillup-platform', 'smartpos-erp'],
+        learningTopics: [
+          'Distributed Consensus Algorithms',
+          'Saga Pattern for Distributed Transactions',
+          'Event-Driven Architectures with Kafka/Redis',
+        ],
+      },
+      database: {
+        associatedTechIds: ['mysql', 'redis'],
+        associatedCapabilities: [
+          'Relational Data Modeling',
+          'B-Tree Composite Indexing',
+          'Lock Contention Mitigation',
+          'Zero-Downtime Schema Migrations',
+        ],
+        relatedProjectSlugs: ['skillup-platform', 'smartpos-erp', 'tanqia-skills'],
+        learningTopics: [
+          'Database Partitioning & Sharding',
+          'Multi-Master Replication Topologies',
+          'Write-Ahead Log Internals & Tuning',
+        ],
+      },
+      'background-processing': {
+        associatedTechIds: ['redis', 'laravel'],
+        associatedCapabilities: [
+          'Asynchronous Queue Orchestration',
+          'Exponential Backoff Retries',
+          'Dead Letter Queue Pipelines',
+          'Distributed Worker Management',
+        ],
+        relatedProjectSlugs: ['skillup-platform', 'smartpos-erp'],
+        learningTopics: [
+          'Redis Streams Consumer Groups',
+          'Dynamic Worker Autoscaling under Spikes',
+          'Priority Queue Schedulers',
+        ],
+      },
+      devops: {
+        associatedTechIds: ['docker', 'linux'],
+        associatedCapabilities: [
+          'Containerized Multi-Stage Builds',
+          'Automated CI/CD Workflows',
+          'Reverse Proxy & TLS Topologies',
+          'Linux SysAdmin & Security Hardening',
+        ],
+        relatedProjectSlugs: ['skillup-platform', 'smartpos-erp'],
+        learningTopics: [
+          'Infrastructure as Code (Terraform / Ansible)',
+          'Kubernetes Pod & Ingress Topologies',
+          'eBPF System Performance Tracing',
+        ],
+      },
+      fullstack: {
+        associatedTechIds: ['react', 'nextjs', 'javascript'],
+        associatedCapabilities: [
+          'Server-Side Rendering & Hydration',
+          'Accessible DOM Patterns (WCAG)',
+          'Client-Server API Contracts',
+          'High-Performance State Orchestration',
+        ],
+        relatedProjectSlugs: ['skillup-platform', 'tanqia-skills'],
+        learningTopics: [
+          'Partial Prerendering (PPR) Workflows',
+          'WebAssembly Browser Primitives',
+          'Progressive Web Platform Standards',
+        ],
+      },
+    };
+
+    this.expertiseAreas = EXPERTISE_AREAS.map((ea, idx) => {
+      const ext = DISCIPLINE_EXTENSIONS[ea.id] || {
+        associatedTechIds: [],
+        associatedCapabilities: [],
+        relatedProjectSlugs: [],
+        learningTopics: [],
+      };
+      return {
+        id: ea.id,
+        name: ea.name,
+        level: ea.level,
+        description: ea.description,
+        coreConcepts: [...ea.coreConcepts],
+        displayOrder: idx + 1,
+        status: 'published',
+        updatedAt: '2026-04-15T00:00:00.000Z',
+        associatedTechIds: ext.associatedTechIds,
+        associatedCapabilities: ext.associatedCapabilities,
+        relatedProjectSlugs: ext.relatedProjectSlugs,
+        learningTopics: ext.learningTopics,
+      };
+    });
 
     this.stackDetails = {
       id: 'current_stack',

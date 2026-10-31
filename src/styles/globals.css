@@ -40,6 +40,11 @@
   /* Default Page Tokens */
   --bg-page: var(--color-obsidian);
   --text-page: var(--color-ivory);
+
+  /* Scrollbar Theme Tokens (Luxury Champagne Gold) */
+  --scrollbar-thumb: var(--color-gold);
+  --scrollbar-thumb-hover: var(--color-gold-light);
+  --scrollbar-track: var(--color-obsidian);
 }
 
 /* Base resets */
@@ -60,6 +65,8 @@ html {
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
   overflow-x: clip;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
 }
 
 body {
@@ -68,6 +75,39 @@ body {
   position: relative;
   background-color: var(--color-obsidian);
   color: var(--color-ivory);
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
+}
+
+/* Apply golden scrollbar to all scrollable elements across the app */
+* {
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Fallback for WebKit/Blink browsers without scrollbar-color support */
+@supports not (scrollbar-color: auto) {
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 5px;
+    border: 2px solid var(--scrollbar-track);
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
+
+  *::-webkit-scrollbar-corner {
+    background: var(--scrollbar-track);
+  }
 }
 
 /* Accessibility: Skip Link */
@@ -1758,6 +1798,56 @@ body {
 .gallery-card-visual {
   border-bottom: 1px solid rgba(201, 164, 92, 0.16);
   background: #08080C;
+  overflow: hidden;
+}
+
+/* Cover Image Preview inside Project Card */
+.gallery-card-cover-wrap {
+  position: relative;
+  width: 100%;
+  height: 168px;
+  overflow: hidden;
+  background: #09090E;
+}
+
+.gallery-card-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-project-card:hover .gallery-card-cover-img {
+  transform: scale(1.05);
+}
+
+.gallery-card-cover-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  background: rgba(10, 10, 13, 0.88);
+  border: 1px solid rgba(201, 164, 92, 0.35);
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-gold-light);
+  backdrop-filter: blur(8px);
+  z-index: 2;
+}
+
+.gallery-live-btn:hover {
+  background: rgba(201, 164, 92, 0.25) !important;
+  border-color: var(--color-gold-light) !important;
+  color: #FFFDF8 !important;
+  transform: translateY(-1px);
 }
 
 /* Compact Schematic Inside Gallery Card */
@@ -4955,6 +5045,804 @@ body {
 
   .final-commit-sub {
     font-size: 0.95rem;
+  }
+}
+
+/* ========================================================
+   GOLDEN GATEWAY V3: SSR ANTI-FLICKER & SCROLL-LOCK CONTROL
+   ======================================================== */
+html.gateway-active,
+html.gateway-active body {
+  overflow: hidden !important;
+}
+
+html.gateway-dismissed .golden-gateway-v3-overlay {
+  display: none !important;
+}
+
+/* ========================================================
+   PHILOZZ — ENGINEERING ATLAS DESIGN SYSTEM
+   Editorial Knowledge Architecture & Interactive Atlas
+   ======================================================== */
+
+.atlas-page-wrap {
+  min-height: 100vh;
+  background-color: var(--color-obsidian);
+  color: var(--color-ivory);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero Section */
+.atlas-hero-section {
+  padding: 6rem 0 4rem;
+  border-bottom: 1px solid rgba(201, 164, 92, 0.15);
+  position: relative;
+  background: radial-gradient(circle at 50% 0%, rgba(201, 164, 92, 0.06) 0%, transparent 70%);
+}
+
+.atlas-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin-bottom: 1.5rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(201, 164, 92, 0.08);
+  border: 1px solid rgba(201, 164, 92, 0.25);
+  border-radius: 9999px;
+}
+
+.atlas-hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 6vw, 4.25rem);
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--color-ivory);
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.atlas-hero-subtitle {
+  font-family: var(--font-sans);
+  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+  color: var(--color-ivory-muted);
+  max-width: 680px;
+  line-height: 1.6;
+  margin-bottom: 3.5rem;
+}
+
+/* Statistics Grid */
+.atlas-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.atlas-stat-card {
+  background: var(--color-charcoal-card);
+  border: 1px solid rgba(201, 164, 92, 0.18);
+  border-radius: 8px;
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: var(--transition-smooth);
+}
+
+.atlas-stat-card:hover {
+  border-color: var(--color-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 15px var(--color-gold-glow);
+}
+
+.atlas-stat-value {
+  font-family: var(--font-mono);
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--color-gold-light);
+  line-height: 1;
+}
+
+.atlas-stat-label {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--color-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Navigation Jump Bar */
+.atlas-jump-nav {
+  position: sticky;
+  top: 60px;
+  z-index: 40;
+  background: rgba(10, 10, 13, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(201, 164, 92, 0.15);
+  padding: 0.75rem 0;
+}
+
+.atlas-jump-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  white-space: nowrap;
+}
+
+.atlas-jump-links::-webkit-scrollbar {
+  display: none;
+}
+
+.atlas-jump-link {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  color: var(--color-ivory-muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  transition: var(--transition-smooth);
+}
+
+.atlas-jump-link:hover,
+.atlas-jump-link.active {
+  color: var(--color-gold-light);
+  background: rgba(201, 164, 92, 0.1);
+}
+
+/* Section Common Headers */
+.atlas-section {
+  padding: 5rem 0;
+  border-bottom: 1px solid rgba(201, 164, 92, 0.12);
+}
+
+.atlas-section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: var(--color-gold);
+  text-transform: uppercase;
+  margin-bottom: 0.85rem;
+}
+
+.atlas-section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  color: var(--color-ivory);
+  margin-bottom: 0.75rem;
+  line-height: 1.15;
+}
+
+.atlas-section-desc {
+  font-size: 1.05rem;
+  color: var(--color-ivory-muted);
+  max-width: 680px;
+  line-height: 1.6;
+  margin-bottom: 3rem;
+}
+
+/* Section 2: Disciplines Cards */
+.atlas-disciplines-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.atlas-discipline-card {
+  background: var(--color-charcoal-card);
+  border: 1px solid rgba(201, 164, 92, 0.18);
+  border-radius: 8px;
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.atlas-discipline-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.atlas-discipline-card:hover {
+  border-color: var(--color-gold-border-strong);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+.atlas-discipline-card:hover::before {
+  opacity: 1;
+}
+
+.atlas-discipline-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.atlas-discipline-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  background: rgba(201, 164, 92, 0.1);
+  border: 1px solid rgba(201, 164, 92, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gold-light);
+}
+
+.atlas-discipline-level {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  background: rgba(201, 164, 92, 0.08);
+  border: 1px solid rgba(201, 164, 92, 0.2);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.atlas-discipline-name {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-ivory);
+  margin-bottom: 0.75rem;
+}
+
+.atlas-discipline-desc {
+  font-size: 0.925rem;
+  color: var(--color-ivory-muted);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.atlas-discipline-meta-group {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.atlas-discipline-meta-title {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  margin-bottom: 0.5rem;
+}
+
+.atlas-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.atlas-chip {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-ivory-muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.atlas-chip:hover {
+  background: rgba(201, 164, 92, 0.12);
+  border-color: rgba(201, 164, 92, 0.35);
+  color: var(--color-gold-light);
+}
+
+/* Section 3: Technology Explorer */
+.atlas-controls-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+  background: var(--color-charcoal-card);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 164, 92, 0.16);
+}
+
+.atlas-search-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.atlas-search-input-wrap {
+  position: relative;
+  flex: 1;
+}
+
+.atlas-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-dim);
+  pointer-events: none;
+}
+
+.atlas-search-input {
+  width: 100%;
+  background: var(--color-obsidian);
+  border: 1px solid rgba(201, 164, 92, 0.25);
+  border-radius: 6px;
+  padding: 0.85rem 1rem 0.85rem 2.75rem;
+  color: var(--color-ivory);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.atlas-search-input:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 10px rgba(201, 164, 92, 0.2);
+}
+
+.atlas-filters-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.atlas-filter-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-dim);
+}
+
+.atlas-filter-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.atlas-filter-btn {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  background: var(--color-obsidian);
+  color: var(--color-ivory-muted);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.atlas-filter-btn:hover {
+  border-color: rgba(201, 164, 92, 0.4);
+  color: var(--color-ivory);
+}
+
+.atlas-filter-btn.active {
+  background: rgba(201, 164, 92, 0.16);
+  border-color: var(--color-gold);
+  color: var(--color-gold-light);
+  font-weight: 600;
+}
+
+/* Technology Cards Grid */
+.atlas-tech-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.atlas-tech-card {
+  background: var(--color-charcoal-card);
+  border: 1px solid rgba(201, 164, 92, 0.18);
+  border-radius: 8px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: var(--transition-smooth);
+  position: relative;
+}
+
+.atlas-tech-card:hover {
+  border-color: var(--color-gold);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+}
+
+.atlas-tech-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.atlas-tech-logo-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  background: var(--color-obsidian);
+  border: 1px solid rgba(201, 164, 92, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 6px;
+}
+
+.atlas-tech-identity {
+  flex: 1;
+  min-width: 0;
+}
+
+.atlas-tech-name {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-ivory);
+  margin-bottom: 0.2rem;
+  line-height: 1.2;
+}
+
+.atlas-tech-category {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.atlas-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.atlas-status-badge.actively_using {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.atlas-status-badge.learning {
+  background: rgba(201, 164, 92, 0.15);
+  color: var(--color-gold-light);
+  border: 1px solid rgba(201, 164, 92, 0.35);
+}
+
+.atlas-status-badge.exploring {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.atlas-status-badge.previously_used {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.atlas-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.atlas-tech-desc {
+  font-size: 0.925rem;
+  color: var(--color-ivory-muted);
+  line-height: 1.55;
+  margin-bottom: 1.25rem;
+}
+
+.atlas-tech-caps-title {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-dim);
+  margin-bottom: 0.5rem;
+}
+
+.atlas-tech-caps-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 1.5rem;
+}
+
+.atlas-tech-cap-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-ivory-muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+
+.atlas-tech-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.atlas-tech-projects-indicator {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-dim);
+}
+
+.atlas-tech-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-gold-light);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition-smooth);
+}
+
+.atlas-tech-cta-btn:hover {
+  color: #FFFFFF;
+  transform: translateX(3px);
+}
+
+/* Section 4: Connected Knowledge Graph */
+.atlas-knowledge-container {
+  background: var(--color-charcoal-card);
+  border: 1px solid rgba(201, 164, 92, 0.2);
+  border-radius: 10px;
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.atlas-graph-svg-wrap {
+  width: 100%;
+  height: 520px;
+  position: relative;
+}
+
+.atlas-graph-interactive-node {
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.atlas-graph-interactive-node:hover,
+.atlas-graph-interactive-node:focus-visible {
+  filter: drop-shadow(0 0 10px rgba(201, 164, 92, 0.8));
+  outline: none;
+}
+
+.atlas-graph-details-overlay {
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--color-obsidian);
+  border: 1px solid rgba(201, 164, 92, 0.25);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* Section 5: Continuous Learning */
+.atlas-learning-legend {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.atlas-legend-card {
+  background: var(--color-charcoal-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 1.25rem;
+}
+
+.atlas-legend-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.atlas-legend-desc {
+  font-size: 0.8125rem;
+  color: var(--color-text-dim);
+  line-height: 1.5;
+}
+
+.atlas-topics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.atlas-topic-card {
+  background: var(--color-charcoal-card);
+  border: 1px solid rgba(201, 164, 92, 0.18);
+  border-radius: 8px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: var(--transition-smooth);
+}
+
+.atlas-topic-card:hover {
+  border-color: var(--color-gold);
+  transform: translateY(-2px);
+}
+
+/* Detail Page (/skills/[slug]) */
+.atlas-detail-hero {
+  padding: 5rem 0 3.5rem;
+  border-bottom: 1px solid rgba(201, 164, 92, 0.16);
+  background: radial-gradient(circle at 50% 0%, rgba(201, 164, 92, 0.08) 0%, transparent 65%);
+}
+
+.atlas-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-text-dim);
+  margin-bottom: 2rem;
+}
+
+.atlas-breadcrumb a {
+  color: var(--color-gold);
+  text-decoration: none;
+}
+
+.atlas-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.atlas-detail-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 3rem;
+  padding: 4rem 0;
+}
+
+.atlas-detail-card {
+  background: var(--color-charcoal-card);
+  border: 1px solid rgba(201, 164, 92, 0.18);
+  border-radius: 8px;
+  padding: 2.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.atlas-detail-card-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-ivory);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 1200px) {
+  .atlas-disciplines-grid,
+  .atlas-tech-grid,
+  .atlas-topics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .atlas-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .atlas-learning-legend {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .atlas-disciplines-grid,
+  .atlas-tech-grid,
+  .atlas-topics-grid,
+  .atlas-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .atlas-stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .atlas-hero-title {
+    font-size: 2.25rem;
+  }
+
+  .atlas-hero-section {
+    padding: 4rem 0 3rem;
+  }
+
+  .atlas-learning-legend {
+    grid-template-columns: 1fr;
+  }
+
+  .atlas-controls-bar {
+    padding: 1rem;
+  }
+
+  .atlas-graph-svg-wrap {
+    height: 380px;
+  }
+}
+
+@media (max-width: 480px) {
+  .atlas-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-stat-card,
+  .atlas-discipline-card,
+  .atlas-tech-card,
+  .atlas-topic-card,
+  .atlas-chip,
+  .atlas-tech-cta-btn {
+    transition: none !important;
+    transform: none !important;
   }
 }
 

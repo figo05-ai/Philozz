@@ -48,12 +48,15 @@ export interface ProjectEntity {
   lessonsLearned: string[];
   hasLiveDemo: boolean;
   demoUrl?: string;
+  productionUrl?: string;
   githubUrl?: string;
   status: ContentStatus;
   featured: boolean;
   featuredOrder?: number;
   displayOrder: number;
+  coverImageUrl?: string;
   thumbnailUrl?: string;
+  galleryImages?: string[];
   ogImageUrl?: string;
   seoTitle?: string;
   seoDescription?: string;

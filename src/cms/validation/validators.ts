@@ -134,6 +134,10 @@ export function validateProject(input: Partial<CreateProjectInput>): ValidationR
     errors.demoUrl = 'Demo URL must be a valid HTTP or HTTPS URL.';
   }
 
+  if (input.productionUrl && !isValidUrl(input.productionUrl)) {
+    errors.productionUrl = 'Production URL must be a valid HTTP or HTTPS URL.';
+  }
+
   if (input.githubUrl && !isValidUrl(input.githubUrl)) {
     errors.githubUrl = 'GitHub URL must be a valid HTTP or HTTPS URL.';
   }
@@ -560,6 +564,13 @@ export function validateTechnology(input: Partial<TechnologyEntity>): Validation
 
   if (input.status && !['draft', 'published', 'archived'].includes(input.status)) {
     errors.status = 'Status must be one of: draft, published, archived.';
+  }
+
+  if (
+    input.learningStatus &&
+    !['actively_using', 'learning', 'exploring', 'previously_used'].includes(input.learningStatus)
+  ) {
+    errors.learningStatus = 'Learning status must be one of: actively_using, learning, exploring, previously_used.';
   }
 
   return {

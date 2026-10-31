@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import {
   Layers,
   Cpu,
@@ -122,10 +123,10 @@ export function ArchitectureScene({
               web applications.
             </p>
 
-            <a href="#projects" className="btn-outline-gold" style={{ alignSelf: 'flex-start' }}>
+            <Link href="/skills" className="btn-outline-gold" style={{ alignSelf: 'flex-start' }}>
               <span>Explore My Skills</span>
               <ArrowRight size={16} />
-            </a>
+            </Link>
           </div>
 
           {/* Column 2 (Center): 3D Technology Orbit Ecosystem */}

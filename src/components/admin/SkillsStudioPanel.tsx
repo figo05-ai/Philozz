@@ -1442,6 +1442,90 @@ export function SkillsStudioPanel({
                   <span style={{ fontSize: '0.72rem', color: '#EF4444' }}>{techFormErrors.capability}</span>
                 )}
               </div>
+
+              {/* Engineering Atlas: Discipline & Learning Status */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label className="admin-label">Associated Discipline</label>
+                  <select
+                    value={editingTech.disciplineId || 'backend'}
+                    onChange={(e) => setEditingTech({ ...editingTech, disciplineId: e.target.value })}
+                    className="admin-input"
+                    style={{ width: '100%' }}
+                  >
+                    <option value="backend">Backend Engineering</option>
+                    <option value="database">Database Engineering</option>
+                    <option value="system-design">System Design</option>
+                    <option value="background-processing">Background Processing</option>
+                    <option value="devops">DevOps & Infrastructure</option>
+                    <option value="fullstack">Full-Stack Development</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="admin-label">Usage Status</label>
+                  <select
+                    value={editingTech.learningStatus || 'actively_using'}
+                    onChange={(e) =>
+                      setEditingTech({
+                        ...editingTech,
+                        learningStatus: e.target.value as TechnologyEntity['learningStatus'],
+                      })
+                    }
+                    className="admin-input"
+                    style={{ width: '100%' }}
+                  >
+                    <option value="actively_using">Actively Using (Production)</option>
+                    <option value="learning">Learning & Deepening</option>
+                    <option value="exploring">Exploring Emerging Patterns</option>
+                    <option value="previously_used">Previously Used</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Engineering Atlas: Capabilities List */}
+              <div>
+                <label className="admin-label">Documented Capabilities (Comma Separated)</label>
+                <input
+                  type="text"
+                  value={editingTech.capabilitiesList ? editingTech.capabilitiesList.join(', ') : ''}
+                  onChange={(e) =>
+                    setEditingTech({
+                      ...editingTech,
+                      capabilitiesList: e.target.value
+                        .split(',')
+                        .map((s) => s.trim())
+                        .filter(Boolean),
+                    })
+                  }
+                  className="admin-input"
+                  placeholder="REST API Design, Service Layers, Queue Workflows..."
+                />
+              </div>
+
+              {/* Engineering Atlas: Practical Expertise */}
+              <div>
+                <label className="admin-label">Practical Engineering Capabilities (What Philopater Builds)</label>
+                <textarea
+                  value={editingTech.practicalExpertise || ''}
+                  onChange={(e) => setEditingTech({ ...editingTech, practicalExpertise: e.target.value })}
+                  className="admin-input"
+                  rows={2}
+                  placeholder="Architects enterprise-grade backend APIs, service layers, and background job processing pipelines..."
+                />
+              </div>
+
+              {/* Engineering Atlas: Learning Notes */}
+              <div>
+                <label className="admin-label">Continuous Learning & Exploration Notes</label>
+                <textarea
+                  value={editingTech.learningNotes || ''}
+                  onChange={(e) => setEditingTech({ ...editingTech, learningNotes: e.target.value })}
+                  className="admin-input"
+                  rows={2}
+                  placeholder="Current research, RFC tracking, benchmarking, and internal prototyping..."
+                />
+              </div>
             </div>
 
             {/* Modal Actions */}

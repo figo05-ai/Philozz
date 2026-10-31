@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100%" height="100%">
+  <defs>
+    <!-- Favicon Background Gradient -->
+    <radialGradient id="favBg" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#181824" />
+      <stop offset="60%" stop-color="#0A0A0D" />
+      <stop offset="100%" stop-color="#050507" />
+    </radialGradient>
+
+    <!-- High-Impact Micro Gold Gradient -->
+    <linearGradient id="favGoldP" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFDF7" />
+      <stop offset="30%" stop-color="#F5E4B8" />
+      <stop offset="100%" stop-color="#C9A45C" />
+    </linearGradient>
+
+    <linearGradient id="favGoldZ" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5E4B8" />
+      <stop offset="60%" stop-color="#C9A45C" />
+      <stop offset="100%" stop-color="#8C6826" />
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Rounded Container with Metallic Gold Border -->
+  <rect width="64" height="64" rx="14" fill="url(#favBg)" />
+  <rect x="1" y="1" width="62" height="62" rx="13" fill="none" stroke="#C9A45C" stroke-width="1.2" stroke-opacity="0.6" />
+
+  <!-- ========================================================
+       OPTICALLY BALANCED & CENTERED PZ MONOGRAM FOR FAVICON
+       ======================================================== -->
+  <g transform="translate(31, 26) scale(0.132)">
+    <!-- 1. The P Vertical Foundation Pillar (Reinforced width) -->
+    <rect x="-82" y="-125" width="44" height="235" fill="url(#favGoldP)" rx="3" />
+
+    <!-- Top Architectural Serif Bracket (Upper-left) -->
+    <path d="M -102,-125 L -82,-125 L -82,-95 C -82,-115 -88,-125 -102,-125 Z" fill="url(#favGoldP)" />
+
+    <!-- Bottom Foot Base Bracket (Lower-left) -->
+    <path d="M -102,110 L -22,110 L -22,96 C -34,96 -40,102 -50,102 L -70,102 C -80,102 -86,96 -102,96 Z" fill="url(#favGoldP)" />
+
+    <!-- 2. The Upper Bowl of P (Generous Optical Counter) -->
+    <path d="M -38,-125 
+             L 34,-125 
+             C 92,-125 128,-94 128,-36 
+             C 128,22 92,48 34,48 
+             L -38,48 
+             L -38,16 
+             L 26,16 
+             C 62,16 84,-2 84,-36 
+             C 84,-70 62,-93 26,-93 
+             L -38,-93 
+             Z" 
+          fill="url(#favGoldP)" />
+
+    <!-- 3. The Interlocking Z Element (Clear Optical Corridor) -->
+    <!-- Upper horizontal bar of Z -->
+    <path d="M -10,50 L 105,50 L 105,78 L 26,78 L -10,50 Z" fill="url(#favGoldZ)" />
+
+    <!-- Dynamic Diagonal Spine of Z -->
+    <path d="M 105,50 L 126,50 L -12,204 L -38,204 L 64,78 L 105,50 Z" fill="url(#favGoldZ)" />
+
+    <!-- Grounding Base Bar of Z -->
+    <path d="M -38,176 L -38,204 L 128,204 L 128,176 Z" fill="url(#favGoldZ)" />
+
+    <!-- 4. Luminous Celestial Beacon -->
+    <circle cx="120" cy="50" r="14" fill="#FFFFFF" />
+    <circle cx="120" cy="50" r="7" fill="#C9A45C" />
+  </g>
+</svg>

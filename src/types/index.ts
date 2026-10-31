@@ -30,7 +30,11 @@ export interface ProjectItem {
   lessonsLearned: string[];
   hasLiveDemo: boolean;
   demoUrl?: string;
+  productionUrl?: string;
   githubUrl?: string;
+  coverImageUrl?: string;
+  thumbnailUrl?: string;
+  galleryImages?: string[];
 }
 
 export interface CompactProjectMeta {

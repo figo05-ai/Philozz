@@ -188,6 +188,8 @@ export interface OrbitSlotsConfigEntity {
   publishedAt?: string;
 }
 
+export type LearningStatus = 'actively_using' | 'learning' | 'exploring' | 'previously_used';
+
 export interface TechnologyEntity {
   id: string; // e.g., 'laravel', 'php', 'mysql'
   name: string; // e.g., 'Laravel', 'PHP 8.3'
@@ -210,6 +212,17 @@ export interface TechnologyEntity {
   status: ContentStatus;
   version?: number;
   updatedAt: string;
+
+  // Engineering Atlas Knowledge Architecture Extensions
+  disciplineId?: string; // Links to ExpertiseAreaEntity id (e.g. 'backend', 'database', etc.)
+  learningStatus?: LearningStatus; // 'actively_using' | 'learning' | 'exploring' | 'previously_used'
+  capabilitiesList?: string[]; // Granular documented capabilities
+  coreConcepts?: string[]; // Technical engineering sub-concepts
+  practicalExpertise?: string; // Real-world capabilities & what Philopater builds with it
+  relatedTechIds?: string[]; // Architectural sibling technologies
+  relatedProjectSlugs?: string[]; // Connected portfolio project slugs
+  learningNotes?: string; // Continuous growth notes and current exploration focus
+  associatedArticleSlugs?: string[]; // Connected engineering journal notes
 }
 
 export type CreateTechnologyInput = Omit<TechnologyEntity, 'id' | 'updatedAt' | 'version'> & { id?: string };
@@ -226,6 +239,12 @@ export interface ExpertiseAreaEntity {
   status: ContentStatus;
   version?: number;
   updatedAt: string;
+
+  // Engineering Atlas Discipline Extensions
+  associatedTechIds?: string[];
+  associatedCapabilities?: string[];
+  relatedProjectSlugs?: string[];
+  learningTopics?: string[];
 }
 
 export type CreateExpertiseAreaInput = Omit<ExpertiseAreaEntity, 'id' | 'updatedAt' | 'version'> & { id?: string };

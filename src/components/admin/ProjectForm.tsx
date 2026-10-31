@@ -24,6 +24,7 @@ import {
   Code2,
   ExternalLink,
   Sparkles,
+  Image as ImageIcon,
 } from 'lucide-react';
 import type {
   ProjectEntity,
@@ -43,6 +44,7 @@ import {
 } from '@/app/admin/projects/actions';
 import { generateSlug } from '@/cms/validation/validators';
 import { MediaField } from './MediaField';
+import { MediaPickerModal } from './MediaPickerModal';
 
 interface ProjectFormProps {
   mode: 'create' | 'edit';
@@ -84,8 +86,9 @@ export function ProjectForm({ mode, initialProject }: ProjectFormProps) {
 
   // Links & Visualizer
   const [demoVisualType, setDemoVisualType] = useState<DemoVisualType>(initialProject?.demoVisualType || 'task-flow');
-  const [hasLiveDemo, setHasLiveDemo] = useState(initialProject?.hasLiveDemo ?? false);
-  const [demoUrl, setDemoUrl] = useState(initialProject?.demoUrl || '');
+  const [hasLiveDemo, setHasLiveDemo] = useState(initialProject?.hasLiveDemo ?? Boolean(initialProject?.demoUrl || initialProject?.productionUrl));
+  const [demoUrl, setDemoUrl] = useState(initialProject?.demoUrl || initialProject?.productionUrl || '');
+  const [productionUrl, setProductionUrl] = useState(initialProject?.productionUrl || initialProject?.demoUrl || '');
   const [githubUrl, setGithubUrl] = useState(initialProject?.githubUrl || '');
 
   // Narrative Text
@@ -140,11 +143,28 @@ export function ProjectForm({ mode, initialProject }: ProjectFormProps) {
         ]
   );
 
-  // Media & SEO
-  const [thumbnailUrl, setThumbnailUrl] = useState(initialProject?.thumbnailUrl || '');
+  // Media & Gallery
+  const [coverImageUrl, setCoverImageUrl] = useState(initialProject?.coverImageUrl || initialProject?.thumbnailUrl || '');
+  const [thumbnailUrl, setThumbnailUrl] = useState(initialProject?.thumbnailUrl || initialProject?.coverImageUrl || '');
+  const [galleryImages, setGalleryImages] = useState<string[]>(initialProject?.galleryImages || []);
+  const [newGalleryUrl, setNewGalleryUrl] = useState('');
+  const [isGalleryPickerOpen, setIsGalleryPickerOpen] = useState(false);
   const [ogImageUrl, setOgImageUrl] = useState(initialProject?.ogImageUrl || '');
   const [seoTitle, setSeoTitle] = useState(initialProject?.seoTitle || '');
   const [seoDescription, setSeoDescription] = useState(initialProject?.seoDescription || '');
+
+  const addGalleryImage = (url: string) => {
+    const trimmed = url.trim();
+    if (!trimmed) return;
+    if (!galleryImages.includes(trimmed)) {
+      setGalleryImages((prev) => [...prev, trimmed]);
+    }
+    setNewGalleryUrl('');
+  };
+
+  const removeGalleryImage = (idx: number) => {
+    setGalleryImages((prev) => prev.filter((_, i) => i !== idx));
+  };
 
   // Feedback & Validation Errors
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -268,7 +288,8 @@ export function ProjectForm({ mode, initialProject }: ProjectFormProps) {
           displayOrder: 99,
           demoVisualType,
           hasLiveDemo,
-          demoUrl: demoUrl.trim() || undefined,
+          demoUrl: productionUrl.trim() || demoUrl.trim() || undefined,
+          productionUrl: productionUrl.trim() || demoUrl.trim() || undefined,
           githubUrl: githubUrl.trim() || undefined,
           shortSummary: shortSummary.trim(),
           summary: summary.trim(),
@@ -280,7 +301,9 @@ export function ProjectForm({ mode, initialProject }: ProjectFormProps) {
           technicalDecisions: cleanDecisions,
           responsibilities: cleanResponsibilities,
           lessonsLearned: cleanLessons,
-          thumbnailUrl: thumbnailUrl.trim() || undefined,
+          coverImageUrl: coverImageUrl.trim() || undefined,
+          thumbnailUrl: coverImageUrl.trim() || thumbnailUrl.trim() || undefined,
+          galleryImages: galleryImages.filter((img) => img.trim().length > 0),
           ogImageUrl: ogImageUrl.trim() || undefined,
           seoTitle: seoTitle.trim() || undefined,
           seoDescription: seoDescription.trim() || undefined,
@@ -317,7 +340,8 @@ export function ProjectForm({ mode, initialProject }: ProjectFormProps) {
           status: chosenStatus,
           demoVisualType,
           hasLiveDemo,
-          demoUrl: demoUrl.trim() || undefined,
+          demoUrl: productionUrl.trim() || demoUrl.trim() || undefined,
+          productionUrl: productionUrl.trim() || demoUrl.trim() || undefined,
           githubUrl: githubUrl.trim() || undefined,
           shortSummary: shortSummary.trim(),
           summary: summary.trim(),
@@ -329,7 +353,9 @@ export function ProjectForm({ mode, initialProject }: ProjectFormProps) {
           technicalDecisions: cleanDecisions,
           responsibilities: cleanResponsibilities,
           lessonsLearned: cleanLessons,
-          thumbnailUrl: thumbnailUrl.trim() || undefined,
+          coverImageUrl: coverImageUrl.trim() || undefined,
+          thumbnailUrl: coverImageUrl.trim() || thumbnailUrl.trim() || undefined,
+          galleryImages: galleryImages.filter((img) => img.trim().length > 0),
           ogImageUrl: ogImageUrl.trim() || undefined,
           seoTitle: seoTitle.trim() || undefined,
           seoDescription: seoDescription.trim() || undefined,
@@ -771,30 +797,58 @@ export function ProjectForm({ mode, initialProject }: ProjectFormProps) {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
-          {/* Live Demo URL */}
+          {/* Live Production / Demo URL */}
           <div className="admin-form-group">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <label htmlFor="field-demo-url" className="admin-form-label">
-                Live Production / Demo URL
+                Live Production / Demo Website URL
               </label>
-              <label style={{ fontSize: '0.72rem', color: 'var(--color-text-dim)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <input
-                  type="checkbox"
-                  checked={hasLiveDemo}
-                  onChange={(e) => setHasLiveDemo(e.target.checked)}
-                />
-                <span>Has Live Demo</span>
-              </label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                {productionUrl && (
+                  <a
+                    href={productionUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      fontSize: '0.75rem',
+                      color: 'var(--color-gold-light)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    <span>Test Link</span>
+                    <ExternalLink size={12} />
+                  </a>
+                )}
+                <label style={{ fontSize: '0.72rem', color: 'var(--color-text-dim)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <input
+                    type="checkbox"
+                    checked={hasLiveDemo}
+                    onChange={(e) => setHasLiveDemo(e.target.checked)}
+                  />
+                  <span>Has Live Demo</span>
+                </label>
+              </div>
             </div>
             <input
               id="field-demo-url"
               type="url"
               className="admin-form-input"
-              value={demoUrl}
-              onChange={(e) => setDemoUrl(e.target.value)}
+              value={productionUrl}
+              onChange={(e) => {
+                const val = e.target.value;
+                setProductionUrl(val);
+                setDemoUrl(val);
+                if (val.trim() && !hasLiveDemo) {
+                  setHasLiveDemo(true);
+                }
+              }}
               placeholder="https://app.example.com"
             />
             {fieldErrors.demoUrl && <div className="admin-form-error">{fieldErrors.demoUrl}</div>}
+            {fieldErrors.productionUrl && <div className="admin-form-error">{fieldErrors.productionUrl}</div>}
           </div>
 
           {/* GitHub URL */}
@@ -1278,20 +1332,61 @@ export function ProjectForm({ mode, initialProject }: ProjectFormProps) {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
-          {/* Thumbnail URL with Media Library Picker */}
-          <MediaField
-            id="field-thumbnail-url"
-            label="Thumbnail Image Path / URL"
-            value={thumbnailUrl}
-            onChange={setThumbnailUrl}
-            placeholder="/images/projects/orchestrator-thumb.png"
-            folder="projects"
-          />
+          {/* Card Cover Image with Media Library Picker */}
+          <div>
+            <MediaField
+              id="field-cover-url"
+              label="Project Card Cover Image (Image Path / URL)"
+              value={coverImageUrl || thumbnailUrl}
+              onChange={(val) => {
+                setCoverImageUrl(val);
+                setThumbnailUrl(val);
+              }}
+              placeholder="/images/projects/project-cover.png"
+              folder="projects"
+              description="Displayed at the top of the project card on homepage and archive"
+            />
+            {(coverImageUrl || thumbnailUrl) && (
+              <div
+                style={{
+                  marginTop: '0.75rem',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  border: '1px solid var(--color-gold-border)',
+                  maxWidth: '240px',
+                  maxHeight: '135px',
+                  position: 'relative',
+                  backgroundColor: '#0A0A0D',
+                }}
+              >
+                <img
+                  src={coverImageUrl || thumbnailUrl}
+                  alt="Cover Preview"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+                <span
+                  style={{
+                    position: 'absolute',
+                    bottom: '4px',
+                    right: '6px',
+                    fontSize: '0.65rem',
+                    fontFamily: 'var(--font-mono)',
+                    color: 'var(--color-gold-light)',
+                    background: 'rgba(10, 10, 13, 0.8)',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                  }}
+                >
+                  Card Cover Preview
+                </span>
+              </div>
+            )}
+          </div>
 
           {/* OG Image URL with Media Library Picker */}
           <MediaField
             id="field-og-url"
-            label="OpenGraph Card Image Path / URL"
+            label="OpenGraph Social Card Image Path / URL"
             value={ogImageUrl}
             onChange={setOgImageUrl}
             placeholder="/images/projects/orchestrator-og.png"
@@ -1330,6 +1425,171 @@ export function ProjectForm({ mode, initialProject }: ProjectFormProps) {
             />
           </div>
         </div>
+      </div>
+
+      {/* SECTION 7: Project Showcase Gallery (Screenshots) */}
+      <div className="admin-card">
+        <div className="admin-card-header">
+          <div>
+            <h2 className="admin-card-title">
+              <ImageIcon size={18} style={{ color: 'var(--color-gold)' }} />
+              <span>Project Showcase Gallery (Screenshots)</span>
+            </h2>
+            <p className="admin-card-subtitle">
+              Upload or attach high-resolution screenshots, dashboards, and architecture visuals displayed on the case study page
+            </p>
+          </div>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary"
+            onClick={() => setIsGalleryPickerOpen(true)}
+            style={{ fontSize: '0.8rem', padding: '0.45rem 0.9rem' }}
+          >
+            <Plus size={14} />
+            <span>Select from Media Library</span>
+          </button>
+        </div>
+
+        {/* Add from URL bar */}
+        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            className="admin-form-input"
+            value={newGalleryUrl}
+            onChange={(e) => setNewGalleryUrl(e.target.value)}
+            placeholder="Or paste screenshot URL or path (e.g. /images/projects/screen1.png)..."
+            style={{ flex: 1, minWidth: '260px' }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                addGalleryImage(newGalleryUrl);
+              }
+            }}
+          />
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary"
+            onClick={() => addGalleryImage(newGalleryUrl)}
+            disabled={!newGalleryUrl.trim()}
+          >
+            <Plus size={14} />
+            <span>Add Screenshot</span>
+          </button>
+        </div>
+
+        {/* Gallery Thumbnails List */}
+        {galleryImages.length > 0 ? (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+              gap: '1.25rem',
+            }}
+          >
+            {galleryImages.map((src, idx) => (
+              <div
+                key={src + idx}
+                style={{
+                  position: 'relative',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  border: '1px solid var(--color-gold-border)',
+                  backgroundColor: '#0D0E13',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+                }}
+              >
+                <div style={{ width: '100%', height: '140px', position: 'relative' }}>
+                  <img
+                    src={src}
+                    alt={`Screenshot ${idx + 1}`}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '6px',
+                      left: '6px',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      color: 'var(--color-gold-light)',
+                      background: 'rgba(10, 10, 13, 0.85)',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    #{idx + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeGalleryImage(idx)}
+                    title="Remove Screenshot"
+                    style={{
+                      position: 'absolute',
+                      top: '6px',
+                      right: '6px',
+                      background: 'rgba(239, 68, 68, 0.9)',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '26px',
+                      height: '26px',
+                      color: '#FFF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                    }}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+                <div style={{ padding: '0.6rem 0.75rem', fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--color-text-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {src}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div
+            style={{
+              padding: '2.5rem 1.5rem',
+              textAlign: 'center',
+              borderRadius: '8px',
+              border: '1px dashed var(--color-gold-border)',
+              backgroundColor: 'rgba(201, 164, 92, 0.03)',
+            }}
+          >
+            <ImageIcon size={32} style={{ color: 'var(--color-gold-muted)', margin: '0 auto 0.75rem' }} />
+            <div style={{ color: 'var(--color-ivory)', fontWeight: 600, fontSize: '0.95rem', marginBottom: '0.35rem' }}>
+              No Screenshots Added Yet
+            </div>
+            <p style={{ color: 'var(--color-text-dim)', fontSize: '0.85rem', maxWidth: '45ch', margin: '0 auto 1.25rem' }}>
+              Add production screenshots, admin panels, or architecture graphs to display in the case study gallery.
+            </p>
+            <button
+              type="button"
+              className="admin-btn admin-btn-secondary"
+              onClick={() => setIsGalleryPickerOpen(true)}
+              style={{ fontSize: '0.85rem' }}
+            >
+              <Plus size={14} />
+              <span>Browse Media Library</span>
+            </button>
+          </div>
+        )}
+
+        {/* Media Picker Modal */}
+        <MediaPickerModal
+          isOpen={isGalleryPickerOpen}
+          onClose={() => setIsGalleryPickerOpen(false)}
+          onSelect={(asset) => {
+            addGalleryImage(asset.url);
+            setIsGalleryPickerOpen(false);
+          }}
+          folderFilter="projects"
+          mimePrefix="image/"
+        />
       </div>
 
       {/* Bottom Sticky Action Bar */}

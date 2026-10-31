@@ -258,3 +258,38 @@ export function getTechLogo(logoKey: string): React.ComponentType<{ size?: numbe
   return TECH_LOGO_MAP[normalized] || PhpLogo;
 }
 
+export function TechLogo({
+  logoKey,
+  size = 36,
+  className = '',
+}: {
+  logoKey: string;
+  size?: number;
+  className?: string;
+}) {
+  const normalized = logoKey.toLowerCase().trim();
+  switch (normalized) {
+    case 'laravel':
+      return <LaravelLogo size={size} className={className} />;
+    case 'php':
+      return <PhpLogo size={size} className={className} />;
+    case 'mysql':
+      return <MysqlLogo size={size} className={className} />;
+    case 'javascript':
+      return <JavascriptLogo size={size} className={className} />;
+    case 'react':
+      return <ReactLogo size={size} className={className} />;
+    case 'nextjs':
+      return <NextjsLogo size={size} className={className} />;
+    case 'redis':
+      return <RedisLogo size={size} className={className} />;
+    case 'docker':
+      return <DockerLogo size={size} className={className} />;
+    case 'linux':
+      return <LinuxLogo size={size} className={className} />;
+    default:
+      return <PhpLogo size={size} className={className} />;
+  }
+}
+
+

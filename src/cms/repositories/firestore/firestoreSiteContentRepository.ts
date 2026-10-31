@@ -923,6 +923,17 @@ function docToTechnology(d: FirebaseFirestore.DocumentData, id: string): Technol
     status: (d.status as TechnologyEntity['status']) || 'published',
     version: (d.version as number) ?? 1,
     updatedAt: (d.updatedAt as string) || new Date().toISOString(),
+
+    // Atlas Knowledge Architecture Extensions
+    disciplineId: (d.disciplineId as string) || undefined,
+    learningStatus: (d.learningStatus as TechnologyEntity['learningStatus']) || 'actively_using',
+    capabilitiesList: Array.isArray(d.capabilitiesList) ? (d.capabilitiesList as string[]) : undefined,
+    coreConcepts: Array.isArray(d.coreConcepts) ? (d.coreConcepts as string[]) : undefined,
+    practicalExpertise: (d.practicalExpertise as string) || undefined,
+    relatedTechIds: Array.isArray(d.relatedTechIds) ? (d.relatedTechIds as string[]) : undefined,
+    relatedProjectSlugs: Array.isArray(d.relatedProjectSlugs) ? (d.relatedProjectSlugs as string[]) : undefined,
+    learningNotes: (d.learningNotes as string) || undefined,
+    associatedArticleSlugs: Array.isArray(d.associatedArticleSlugs) ? (d.associatedArticleSlugs as string[]) : undefined,
   };
 }
 
@@ -938,6 +949,12 @@ function docToExpertiseArea(d: FirebaseFirestore.DocumentData, id: string): Expe
     status: (d.status as ExpertiseAreaEntity['status']) || 'published',
     version: (d.version as number) ?? 1,
     updatedAt: (d.updatedAt as string) || new Date().toISOString(),
+
+    // Atlas Discipline Extensions
+    associatedTechIds: Array.isArray(d.associatedTechIds) ? (d.associatedTechIds as string[]) : undefined,
+    associatedCapabilities: Array.isArray(d.associatedCapabilities) ? (d.associatedCapabilities as string[]) : undefined,
+    relatedProjectSlugs: Array.isArray(d.relatedProjectSlugs) ? (d.relatedProjectSlugs as string[]) : undefined,
+    learningTopics: Array.isArray(d.learningTopics) ? (d.learningTopics as string[]) : undefined,
   };
 }
 

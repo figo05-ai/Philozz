@@ -304,13 +304,28 @@ export function ProjectsArchiveView({ initialProjects, initialCategories }: Proj
                       className="gallery-project-card"
                       data-project-index={overallIndex}
                     >
-                      {/* Compact Architecture Schematic Preview */}
+                      {/* Visual Preview Header (Cover Image or Compact Architectural Diagram) */}
                       <div className="gallery-card-visual">
-                        <ProjectSchematicVisual
-                          type={project.demoVisualType}
-                          slug={project.slug}
-                          variant="compact"
-                        />
+                        {project.coverImageUrl || project.thumbnailUrl ? (
+                          <div className="gallery-card-cover-wrap">
+                            <img
+                              src={project.coverImageUrl || project.thumbnailUrl}
+                              alt={`${project.title} Cover`}
+                              className="gallery-card-cover-img"
+                              loading="lazy"
+                            />
+                            <div className="gallery-card-cover-badge">
+                              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: (project.productionUrl || project.demoUrl) ? '#55E58C' : 'var(--color-gold)' }} />
+                              <span>{(project.productionUrl || project.demoUrl) ? 'LIVE' : 'VERIFIED'}</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <ProjectSchematicVisual
+                            type={project.demoVisualType}
+                            slug={project.slug}
+                            variant="compact"
+                          />
+                        )}
                       </div>
 
                       {/* Card Body */}
@@ -343,15 +358,44 @@ export function ProjectsArchiveView({ initialProjects, initialCategories }: Proj
                       </div>
 
                       {/* Action Link */}
-                      <div className="gallery-card-footer">
+                      <div className="gallery-card-footer" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                         <Link
                           href={`/work/${project.slug}`}
                           className="btn-gold gallery-explore-btn"
                           aria-label={`Explore Case Study: ${project.title}`}
+                          style={{ flex: 1, minWidth: '135px', justifyContent: 'center' }}
                         >
-                          <span>Explore Case Study</span>
+                          <span>Case Study</span>
                           <ArrowUpRight size={16} />
                         </Link>
+
+                        {(project.productionUrl || project.demoUrl) && (
+                          <a
+                            href={project.productionUrl || project.demoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="gallery-live-btn"
+                            aria-label={`Live Demo of ${project.title}`}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '0.62rem 0.95rem',
+                              background: 'rgba(201, 164, 92, 0.12)',
+                              border: '1px solid rgba(201, 164, 92, 0.35)',
+                              borderRadius: '6px',
+                              color: 'var(--color-gold-light)',
+                              fontSize: '0.82rem',
+                              fontWeight: 600,
+                              fontFamily: 'var(--font-mono)',
+                              textDecoration: 'none',
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#55E58C' }} />
+                            <span>Live ↗</span>
+                          </a>
+                        )}
                       </div>
                     </article>
                   );

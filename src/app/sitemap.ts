@@ -9,10 +9,11 @@ import { siteContentRepository } from '@/cms/repositories';
  * Prevents URL duplicates and uses meaningful content timestamps.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [projects, notes, seoConfig] = await Promise.all([
+  const [projects, notes, seoConfig, technologies] = await Promise.all([
     getPublishedProjects(),
     getPublishedNotes(),
     siteContentRepository.getSeoConfig(),
+    siteContentRepository.getTechnologies(),
   ]);
 
   const siteLastModified = seoConfig.updatedAt ? new Date(seoConfig.updatedAt) : new Date();
@@ -27,6 +28,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: siteLastModified,
       changeFrequency: 'weekly',
       priority: 1.0,
+    },
+    {
+      url: `${SITE_CONFIG.url}/skills`,
+      lastModified: siteLastModified,
+      changeFrequency: 'weekly',
+      priority: 0.95,
     },
     {
       url: `${SITE_CONFIG.url}/projects`,
@@ -73,6 +80,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified,
       changeFrequency: 'monthly',
       priority: 0.8,
+    });
+  }
+
+  // 4. Published Skills / Technologies (strictly exclude drafts / archived)
+  const publishedTechs = technologies.filter((t) => t.status === 'published');
+  for (const t of publishedTechs) {
+    const techUrl = `${SITE_CONFIG.url}/skills/${t.id}`;
+    const lastModified = t.updatedAt ? new Date(t.updatedAt) : siteLastModified;
+
+    urlMap.set(techUrl, {
+      url: techUrl,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.85,
     });
   }
 
