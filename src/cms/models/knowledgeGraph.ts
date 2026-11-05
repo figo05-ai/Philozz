@@ -81,4 +81,11 @@ export const ARCHITECTURAL_EDGES: readonly ArchitecturalEdge[] = [
     relationship:
       'Linux systemd supervisor units orchestrate background Laravel queue workers and scheduled cron tasks with automatic restart.',
   },
+  {
+    source: 'rust',
+    target: 'linux',
+    label: 'Native Systems Execution',
+    relationship:
+      'Compiles to standalone native Linux ELF binaries with zero runtime dependencies and predictable memory footprints.',
+  },
 ];

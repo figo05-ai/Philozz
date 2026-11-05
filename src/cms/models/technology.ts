@@ -15,6 +15,7 @@ export const SUPPORTED_TECH_LOGOS = [
   'redis',
   'docker',
   'linux',
+  'rust',
 ] as const;
 
 export type SupportedTechLogoKey = (typeof SUPPORTED_TECH_LOGOS)[number];

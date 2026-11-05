@@ -573,6 +573,42 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
         learningNotes:
           'Exploring automated infrastructure scripting with Ansible and systemd socket activation.',
       },
+      {
+        id: 'rust',
+        name: 'Rust',
+        label: 'Rust',
+        category: 'Systems Language',
+        role: 'Memory safety without GC, zero-cost abstractions, fearless concurrency',
+        description: 'Systems programming, high-performance services, and reliable concurrent software.',
+        capability: 'Memory Safety • Concurrency • Zero-Cost Abstractions',
+        logoKey: 'rust',
+        logoSize: 36,
+        displayOrder: 10,
+        status: 'published',
+        updatedAt: '2026-04-15T00:00:00.000Z',
+        disciplineId: 'backend',
+        learningStatus: 'exploring',
+        capabilitiesList: [
+          'Ownership & Borrow Checker Mechanics',
+          'Zero-Cost Abstractions & Traits',
+          'Fearless Concurrency & Async I/O',
+          'Cargo Ecosystem & High-Performance Tooling',
+        ],
+        coreConcepts: [
+          'Ownership & Lifetimes',
+          'Traits & Generics',
+          'Pattern Matching & Enums',
+          'Tokio Async Runtime',
+          'Cargo & Crates Ecosystem',
+          'Compile-Time Memory Safety',
+        ],
+        practicalExpertise:
+          'Explores memory-safe backend microservices, high-throughput CLI utilities, and WebAssembly compilation with zero garbage-collection pause overhead.',
+        relatedTechIds: ['linux', 'docker', 'redis'],
+        relatedProjectSlugs: [],
+        learningNotes:
+          'Deepening async systems programming with Tokio, Axum REST web services, and high-performance pipeline integrations.',
+      },
     ];
 
     const DISCIPLINE_EXTENSIONS: Record<
@@ -585,7 +621,7 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
       }
     > = {
       backend: {
-        associatedTechIds: ['laravel', 'php'],
+        associatedTechIds: ['laravel', 'php', 'rust'],
         associatedCapabilities: [
           'RESTful API Design',
           'Service-Oriented Architecture',

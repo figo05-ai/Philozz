@@ -26,6 +26,7 @@ const GRAPH_NODES: NodePosition[] = [
   // Infrastructure (Bottom-Center)
   { id: 'docker', name: 'Docker', category: 'Containerization', x: 380, y: 380, color: '#2496ED' },
   { id: 'linux', name: 'Linux', category: 'Infrastructure', x: 600, y: 390, color: '#C9A45C' },
+  { id: 'rust', name: 'Rust', category: 'Systems Language', x: 230, y: 390, color: '#DEA584' },
 
   // Frontend & Full-Stack (Right-Center)
   { id: 'nextjs', name: 'Next.js 16', category: 'Full-Stack', x: 670, y: 140, color: '#E4C88A' },
