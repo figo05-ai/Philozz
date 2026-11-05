@@ -450,7 +450,6 @@ export const PROJECTS: ProjectItem[] = [
       '/images/projects/academy/02_landing_courses.png',
       '/images/projects/academy/05_student_my_courses.png',
       '/images/projects/academy/06_student_explore_courses.png',
-      '/images/projects/academy/10_sketchup_license_authorize.png',
       '/images/projects/academy/03_login_page.png',
     ],
     githubUrl: 'https://github.com/figo05-ai',
