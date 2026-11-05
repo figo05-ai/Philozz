@@ -1289,6 +1289,15 @@ export function SectionsStudioView({
                 onChange={(e) => setBrand({ ...brand, linkedin: e.target.value })}
               />
             </div>
+            <div>
+              <label className="admin-form-label">Facebook Page URL</label>
+              <input
+                type="text"
+                className="admin-form-input"
+                value={brand.facebook || ''}
+                onChange={(e) => setBrand({ ...brand, facebook: e.target.value })}
+              />
+            </div>
           </div>
 
           <div>

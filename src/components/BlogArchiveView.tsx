@@ -174,7 +174,7 @@ export function BlogArchiveView({ initialNotes, initialCategories }: BlogArchive
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <Link href="/" className="archive-brand-tag">
-              {BRAND_INFO.name} {'//'} {BRAND_INFO.developerName}
+              {BRAND_INFO.name} {'//'} Philopater (Philo)
             </Link>
           </div>
         </div>

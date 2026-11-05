@@ -671,6 +671,16 @@ export function SettingsStudioView({
                 <div style={{ color: '#EF4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>{fieldErrors.linkedin}</div>
               )}
             </div>
+
+            <div>
+              <label className="admin-form-label">Facebook Page URL</label>
+              <input
+                type="text"
+                className="admin-form-input"
+                value={(config as any).facebook || ''}
+                onChange={(e) => updateField('facebook' as any, e.target.value)}
+              />
+            </div>
           </div>
 
           <div

@@ -26,6 +26,14 @@ function LinkedinIcon({ size = 16 }: { size?: number }) {
   );
 }
 
+function FacebookIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  );
+}
+
 export interface FinaleSceneProps {
   config?: ContactSectionConfig;
   brand?: BrandInfoEntity;
@@ -42,6 +50,7 @@ export function FinaleScene({ config, brand }: FinaleSceneProps = {}) {
   const domain = brand?.domain || BRAND_INFO.domain;
   const github = brand?.github || BRAND_INFO.github;
   const linkedin = brand?.linkedin || BRAND_INFO.linkedin;
+  const facebook = brand?.facebook || BRAND_INFO.facebook;
   const cvUrl = config?.secondaryCtaHref || brand?.cvUrl || BRAND_INFO.cvUrl;
   const isCvAvailable = brand?.cvAvailable !== false;
   const primaryCtaLabel = config?.primaryCtaLabel || 'Send a Message';
@@ -120,9 +129,9 @@ export function FinaleScene({ config, brand }: FinaleSceneProps = {}) {
 
             {/* Direct Channels */}
             <div className="contact-links-list contact-channels-group">
-              <a href={`mailto:${email}`} className="contact-link-pill">
+              <a href={`mailto:${email}`} className="contact-link-pill" aria-label={`Send email to ${email}`}>
                 <Mail size={16} style={{ color: 'var(--color-gold-light)' }} />
-                <span>{email}</span>
+                <span>Gmail</span>
               </a>
 
               <a
@@ -130,9 +139,10 @@ export function FinaleScene({ config, brand }: FinaleSceneProps = {}) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="contact-link-pill"
+                aria-label="LinkedIn Profile"
               >
                 <LinkedinIcon size={16} />
-                <span>{linkedin.replace(/^https?:\/\/(www\.)?/, '')}</span>
+                <span>LinkedIn</span>
               </a>
 
               <a
@@ -140,10 +150,24 @@ export function FinaleScene({ config, brand }: FinaleSceneProps = {}) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="contact-link-pill"
+                aria-label="GitHub Profile"
               >
                 <GithubIcon size={16} />
-                <span>{github.replace(/^https?:\/\/(www\.)?/, '')}</span>
+                <span>GitHub</span>
               </a>
+
+              {facebook && (
+                <a
+                  href={facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-link-pill"
+                  aria-label="Facebook Profile"
+                >
+                  <FacebookIcon size={16} />
+                  <span>Facebook</span>
+                </a>
+              )}
 
               <div className="contact-link-pill" style={{ cursor: 'default' }}>
                 <Globe size={16} style={{ color: 'var(--color-gold-light)' }} />

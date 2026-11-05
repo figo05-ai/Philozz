@@ -37,7 +37,7 @@ export function ProjectSchematicVisual({
   let resolvedType = type;
   if (slug === 'skillup-platform' || type === 'task-flow' || type === 'skillup-horizon') {
     resolvedType = 'skillup-horizon';
-  } else if (slug === 'smartpos-erp' || type === 'license-matrix' || type === 'smartpos-hardware') {
+  } else if (slug === 'smartpos-erp' || slug === 'wholesale-produce-pos' || type === 'license-matrix' || type === 'smartpos-hardware') {
     resolvedType = 'smartpos-hardware';
   } else if (slug === 'tanqia-skills' || type === 'tanqia-pipeline') {
     resolvedType = 'tanqia-pipeline';

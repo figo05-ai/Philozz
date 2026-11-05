@@ -21,6 +21,7 @@ export interface BrandInfoEntity {
   location: string;
   github: string;
   linkedin: string;
+  facebook?: string;
   cvAvailable: boolean;
   cvUrl: string;
   experienceYears: string;

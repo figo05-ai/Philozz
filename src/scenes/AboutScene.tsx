@@ -18,7 +18,7 @@ export function AboutScene({ isTransitionStage = false, config, brand }: AboutSc
   const brandName = brand?.name || BRAND_INFO.name;
   const paragraph1 =
     config?.narrativeParagraph1 ||
-    "I'm Felopater Nabil, a backend-focused Full-Stack Software Engineer specializing in PHP and Laravel. I build APIs, database-driven applications, and reliable backend workflows that turn complex requirements into practical software.";
+    "I'm Philopater Nabil (Philo), a backend-focused Full-Stack Software Engineer specializing in PHP and Laravel. I build APIs, database-driven applications, and reliable backend workflows that turn complex requirements into practical software.";
   const paragraph2 =
     config?.narrativeParagraph2 ||
     'My work spans RESTful API design, database optimization, Redis caching, background jobs, and clean application architecture. I enjoy solving engineering problems, exploring better approaches, and building systems that are easier to maintain and evolve.';

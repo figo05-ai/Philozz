@@ -50,7 +50,7 @@ function computeJsonLdPreview(brand: BrandInfoEntity, seo: SiteSeoConfigEntity) 
         description: seo.defaultDescription || brand.statement,
         url: CANONICAL_ORIGIN,
         image: `${CANONICAL_ORIGIN}/images/felopater-portrait-thinking.jpg`,
-        sameAs: [brand.github, brand.linkedin],
+        sameAs: [brand.github, brand.linkedin, brand.facebook].filter(Boolean),
         knowsAbout: [
           'Backend Engineering',
           'Laravel',

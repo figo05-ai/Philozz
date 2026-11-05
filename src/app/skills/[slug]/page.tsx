@@ -180,7 +180,7 @@ export default async function TechnologyDetailPage({ params }: Props) {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <Link href="/" className="archive-brand-tag">
-              {brand?.name || 'PHILOZZ'} {'//'} {brand?.developerName || 'Felopater Nabil'}
+              {brand?.name || 'PHILOZZ'} {'//'} {brand?.developerName || 'Philopater (Philo)'}
             </Link>
           </div>
         </div>

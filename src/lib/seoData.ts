@@ -12,11 +12,12 @@ export const SITE_CONFIG = {
   tagline: BRAND_INFO.tagline, // 'Full-Stack Engineer. Backend at Heart.'
   url: 'https://philozz.com',
   description:
-    'Portfolio and Engineering Journal of Felopater Nabil (PHILOZZ), a Backend-focused Full-Stack Software Engineer specializing in Laravel, system architecture, database optimization, and high-concurrency queue topologies.',
+    'Portfolio and Engineering Journal of Philopater Nabil (PHILOZZ), a Backend-focused Full-Stack Software Engineer specializing in Laravel, system architecture, database optimization, and high-concurrency queue topologies.',
   ogImage: 'https://philozz.com/images/philozz-cinematic-hero.png',
   locale: 'en_US',
   github: BRAND_INFO.github,
   linkedin: BRAND_INFO.linkedin,
+  facebook: BRAND_INFO.facebook,
   email: BRAND_INFO.email,
   location: BRAND_INFO.location,
 } as const;
@@ -83,6 +84,7 @@ export function getPersonAndWebSiteJsonLd(
   const desc = seoConfig?.defaultDescription || brandInfo?.statement || SITE_CONFIG.description;
   const github = brandInfo?.github || SITE_CONFIG.github;
   const linkedin = brandInfo?.linkedin || SITE_CONFIG.linkedin;
+  const facebook = brandInfo?.facebook || SITE_CONFIG.facebook;
   const locality = brandInfo?.location ? brandInfo.location.split(',')[0].trim() : 'Alexandria';
 
   return {
@@ -97,7 +99,7 @@ export function getPersonAndWebSiteJsonLd(
         description: desc,
         url: SITE_CONFIG.url,
         image: `${SITE_CONFIG.url}/images/felopater-portrait-thinking.jpg`,
-        sameAs: [github, linkedin],
+        sameAs: [github, linkedin, facebook],
         knowsAbout: [
           'Backend Engineering',
           'Laravel',

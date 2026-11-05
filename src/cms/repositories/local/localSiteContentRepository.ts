@@ -68,6 +68,7 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
       location: BRAND_INFO.location,
       github: BRAND_INFO.github,
       linkedin: BRAND_INFO.linkedin,
+      facebook: BRAND_INFO.facebook,
       cvAvailable: BRAND_INFO.cvAvailable,
       cvUrl: BRAND_INFO.cvUrl,
       experienceYears: BRAND_INFO.experienceYears,
@@ -105,7 +106,7 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
         sectionTag: 'ABOUT ME',
         titlePrefix: 'The Engineer',
         narrativeParagraph1:
-          "I'm Felopater Nabil, a backend-focused Full-Stack Software Engineer specializing in PHP and Laravel. I build APIs, database-driven applications, and reliable backend workflows that turn complex requirements into practical software.",
+          "I'm Philopater Nabil (Philo), a backend-focused Full-Stack Software Engineer specializing in PHP and Laravel. I build APIs, database-driven applications, and reliable backend workflows that turn complex requirements into practical software.",
         narrativeParagraph2:
           'My work spans RESTful API design, database optimization, Redis caching, background jobs, and clean application architecture. I enjoy solving engineering problems, exploring better approaches, and building systems that are easier to maintain and evolve.',
         badges: [
@@ -169,6 +170,7 @@ export class LocalSiteContentRepository implements ISiteContentRepository {
         socialLinks: [
           { platform: 'GitHub', url: BRAND_INFO.github, label: 'figo05-ai' },
           { platform: 'LinkedIn', url: BRAND_INFO.linkedin, label: 'felopter-alexandir' },
+          { platform: 'Facebook', url: BRAND_INFO.facebook, label: 'Facebook / Philozz' },
         ],
         footerTagline: 'Engineering with discipline. Designed for impact.',
       },
